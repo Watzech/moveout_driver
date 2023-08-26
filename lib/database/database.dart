@@ -24,7 +24,7 @@ class Database{
       return users;
     } catch (e) {
       print(e);
-      return Future.value(e);
+      return null;
     }
   }
 

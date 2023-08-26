@@ -14,10 +14,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'MoveOut',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        primaryColor: Color(0xFF6fa8dc),
+        primaryColorDark: Color(0xFF7ca4b7),
+        fontFamily: 'Open Sans',
       ),
       home: const MyHomePage(),
     );
@@ -35,14 +37,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(30,30,30,30),
-      child: Scaffold(
-        body: SafeArea(
-          top: true,
-          child: AuthScreen(),
-        ),
-      ),
+    return Scaffold(
+      body: SafeArea(
+        top: false,
+        child: AuthScreen(),
+      )
     );
   }
 }
