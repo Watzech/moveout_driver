@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:moveout1/screens/login.dart';
+import 'package:moveout1/screens/signup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,9 +22,11 @@ class MyApp extends StatelessWidget {
         primaryColorDark: Color(0xFF7ca4b7),
         colorScheme: ColorScheme(
           primary: Color(0xFF6fa8dc),
-          onPrimary: Color(0xFF7ca4b7),
+          //onPrimary: Color(0xFF7ca4b7),
+          onPrimary: Color.fromARGB(255, 96, 130, 145),
           secondary: Color(0xFFf1c232),
-          onSecondary: Color(0xFFe4b82f),
+          //onSecondary: Color(0xFFe4b82f),
+          onSecondary: Color.fromARGB(255, 186, 149, 39),
           background: Color(0xFFffffff),
           onBackground: Color(0xFFeeeeee),
           surface: Color(0xFFfbfbfb),
@@ -63,7 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: const <Widget>[
-              AuthScreen(),
+              //AuthScreen(),
+              SignupScreen(),
             ],
           )
         ))

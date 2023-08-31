@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:moveout1/widgets/login_fields.dart';
+import 'package:moveout1/widgets/confirm_button.dart';
+import 'package:moveout1/widgets/background_container.dart';
 
 void main() {
   runApp(const AuthScreen());
@@ -17,15 +20,8 @@ class AuthScreen extends StatelessWidget {
         systemNavigationBarContrastEnforced: true,
       ),
     );
-    return Container(
-      width: MediaQuery.sizeOf(context).width,
-      height: MediaQuery.sizeOf(context).height,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/backgrounds/mbl_bg_3.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
+    return BackgroundContainer(
+      src: 'assets/images/backgrounds/mbl_bg_3.png',
       child: SafeArea(
         minimum: const EdgeInsets.all(15.0),
         child: Column(
@@ -60,30 +56,18 @@ class AuthScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const LoginTextWidget(lbl: 'E-mail ou CPF:', obscure: false),
+                        const LoginTextField(lbl: 'E-mail ou CPF:'),
                         const SizedBox(height: 50),
-                        const Column(
+                        Column(
                           children: [
-                            LoginTextWidget(lbl: 'Senha:', obscure: true),
-                            LoginTextButton(txt: 'Esqueci a Senha', color: Colors.white),
+                            LoginPasswordTextField(lbl: 'Senha:'),
+                            const LoginTextButton(txt: 'Esqueci a Senha', color: Colors.white),
                           ],
                         ),
                         const SizedBox(height: 40),
-                        Center(
-                          child: FilledButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.secondary),
-                              fixedSize: MaterialStateProperty.all(const Size(200, 60)),
-                            ),
-                            child: const Text(
-                              'Entrar',
-                              textDirection: TextDirection.ltr,
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                        )),
+                        const Center(
+                          child: ConfirmButtonWidget(lbl:'Entrar'),
+                        ),
                         const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -135,31 +119,5 @@ class LoginTextButton extends StatelessWidget {
             ),
           ),
         ));
-  }
-}
-
-class LoginTextWidget extends StatelessWidget {
-  final String lbl;
-  final bool obscure;
-  const LoginTextWidget({super.key, required this.lbl, required this.obscure});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        enabledBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(
-          width: 1,
-          color: Colors.white,
-        )),
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white, width: 1.0),
-        ),
-        labelText: lbl,
-        labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
-      ),
-    );
   }
 }
