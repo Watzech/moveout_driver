@@ -45,6 +45,5 @@ class Client {
     photo = map['photo'],
     address = map['address'],
     createdAt = map['createdAt'],
-  updatedAt = map['updatedAt'];
-
+    updatedAt = map['updatedAt'];
 }

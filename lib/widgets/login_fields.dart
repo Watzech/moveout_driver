@@ -11,13 +11,53 @@ const cLabelStyle = TextStyle(color: Colors.white, fontSize: 15);
 const cBorder = UnderlineInputBorder(
     borderSide: BorderSide(color: Colors.white, width: 1.0));
 
-class LoginTextField extends StatelessWidget {
-  final String lbl;
-  const LoginTextField({super.key, required this.lbl});
+class NavigatorTextButton extends StatelessWidget {
+  final String txt;
+  final Color color;
+  final Widget destinationWidget;
+  const NavigatorTextButton(
+      {super.key,
+      required this.txt,
+      this.color = Colors.white,
+      required this.destinationWidget});
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => destinationWidget),
+          );
+        },
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            txt,
+            textDirection: TextDirection.ltr,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+              decoration: TextDecoration.underline,
+              decorationColor: color,
+              decorationThickness: 2,
+            ),
+          ),
+        ));
+  }
+}
+
+class LoginTextFormField extends StatelessWidget {
+  final String lbl;
+  final TextEditingController controller;
+  final String? Function(String?) validatorFunction;
+  const LoginTextFormField({super.key, required this.lbl, required this.controller, required this.validatorFunction});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      validator: validatorFunction,
+      controller: controller,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         enabledBorder: cBorder,
@@ -29,72 +69,13 @@ class LoginTextField extends StatelessWidget {
   }
 }
 
-class LoginPasswordTextField extends StatefulWidget {
-  final String lbl;
-  bool obscure = true;
-  LoginPasswordTextField({super.key, required this.lbl});
-
-  @override
-  State<LoginPasswordTextField> createState() => _LoginPasswordTextField();
-}
-
-class _LoginPasswordTextField extends State<LoginPasswordTextField> {
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      obscureText: widget.obscure,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        enabledBorder: cBorder,
-        focusedBorder: cBorder,
-        labelText: widget.lbl,
-        labelStyle: cLabelStyle,
-        suffixIcon: IconButton(
-          icon: Icon(
-            widget.obscure ? Icons.visibility_off : Icons.visibility,
-            color: Theme.of(context).colorScheme.onBackground,
-          ),
-          onPressed: () {
-            setState(() {
-              widget.obscure = !widget.obscure;
-            });
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class LoginTextFormField extends StatefulWidget {
-  final String lbl;
-  const LoginTextFormField({super.key, required this.lbl});
-
-  @override
-  State<LoginTextFormField> createState() => _LoginTextFormFieldState();
-}
-
-class _LoginTextFormFieldState extends State<LoginTextFormField> {
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        enabledBorder: cBorder,
-        focusedBorder: cBorder,
-        labelText: widget.lbl,
-        labelStyle: cLabelStyle,
-      ),
-      validator: (String? value) {
-        return (value == null) ? 'Esse campo é obrigatório.' : null;
-      },
-    );
-  }
-}
-
 class LoginPasswordTextFormField extends StatefulWidget {
   final String lbl;
+  final TextEditingController controller;
   bool obscure = true;
-  LoginPasswordTextFormField({super.key, required this.lbl});
+  final String? Function(String?) validatorFunction;
+  LoginPasswordTextFormField(
+      {super.key, required this.lbl, required this.controller, required this.validatorFunction});
 
   @override
   State<LoginPasswordTextFormField> createState() =>
@@ -105,6 +86,7 @@ class _LoginPasswordTextFormField extends State<LoginPasswordTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: widget.controller,
       obscureText: widget.obscure,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -124,26 +106,29 @@ class _LoginPasswordTextFormField extends State<LoginPasswordTextFormField> {
           },
         ),
       ),
-      validator: (String? value) {
-        return (value == null) ? 'Esse campo é obrigatório.' : null;
-      },
+      validator: widget.validatorFunction,
     );
   }
 }
 
 class MaskedLoginTextFormField extends StatelessWidget {
   final String lbl;
+  final TextEditingController controller;
   final bool obscure;
   final MaskTextInputFormatter maskFormatter;
+  final String? Function(String?) validatorFunction;
   const MaskedLoginTextFormField(
       {super.key,
       required this.lbl,
+      required this.controller,
       this.obscure = false,
-      required this.maskFormatter});
+      required this.maskFormatter,
+      required this.validatorFunction});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       obscureText: obscure,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -152,9 +137,7 @@ class MaskedLoginTextFormField extends StatelessWidget {
         labelText: lbl,
         labelStyle: cLabelStyle,
       ),
-      validator: (String? value) {
-        return (value == null) ? 'Esse campo é obrigatório.' : null;
-      },
+      validator: validatorFunction,
       inputFormatters: [maskFormatter],
     );
   }
@@ -204,46 +187,47 @@ class LoginPhotoFieldState extends State<LoginPhotoField> {
                 imageQuality: 50,
               );
               setState(() {
-                if(image != null){
+                if (image != null) {
                   _image = File(image.path);
                 }
               });
             },
-            child: _image != null 
-            ? Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onBackground,
-                  border: Border.all(
-                    width: 3,
-                    color: Theme.of(context).colorScheme.secondary,
+            child: _image != null
+                ? Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      border: Border.all(
+                        width: 3,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      borderRadius: BorderRadius.circular(200),
+                      image: DecorationImage(
+                          image: FileImage(_image), fit: BoxFit.cover),
+                    ),
+                    // width: MediaQuery.sizeOf(context).width * 0.50,
+                    // height: MediaQuery.sizeOf(context).height * 0.23,
+                    width: 225,
+                    height: 225,
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      border: Border.all(
+                        width: 3,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      borderRadius: BorderRadius.circular(200),
+                    ),
+                    // width: MediaQuery.sizeOf(context).width * 0.50,
+                    // height: MediaQuery.sizeOf(context).height * 0.23,
+                    width: 225,
+                    height: 225,
+                    child: Icon(
+                      Icons.camera_alt,
+                      size: MediaQuery.sizeOf(context).width * 0.075,
+                      color: Theme.of(context).colorScheme.background,
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(200),
-                  image: DecorationImage(image: FileImage(_image), fit: BoxFit.cover),
-                ),
-                // width: MediaQuery.sizeOf(context).width * 0.50,
-                // height: MediaQuery.sizeOf(context).height * 0.23,
-                width: 225,
-                height: 225,
-            )
-            : Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onBackground,
-                  border: Border.all(
-                    width: 3,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  borderRadius: BorderRadius.circular(200),
-                ),
-                // width: MediaQuery.sizeOf(context).width * 0.50,
-                // height: MediaQuery.sizeOf(context).height * 0.23,
-                width: 225,
-                height: 225,
-                child: Icon(
-                  Icons.camera_alt,
-                  size: MediaQuery.sizeOf(context).width * 0.075,
-                  color: Theme.of(context).colorScheme.background,
-                ),
-            ),
           ),
         )
       ],

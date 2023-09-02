@@ -1,17 +1,22 @@
-
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:validation_pro/validate.dart';
+
 import 'package:moveout1/widgets/confirm_button.dart';
-import 'package:moveout1/widgets/singup_forms.dart';
+import 'package:moveout1/widgets/login_fields.dart';
+import 'package:moveout1/database/client.dart';
 
 enum ImageSourceType { gallery, camera }
 
+const String emptyValidationFail = 'Este campo é obrigatório.';
+const String submitValidationFail = 'Erro de validação, verifique os campos';
+
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
-
-  // final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -21,92 +26,318 @@ class SignupScreen extends StatelessWidget {
       ),
     );
     return Container(
-      width: MediaQuery.sizeOf(context).width,
-      height: MediaQuery.sizeOf(context).height,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/backgrounds/mbl_bg_3.png'),
-          fit: BoxFit.cover,
+        width: MediaQuery.sizeOf(context).width,
+        height: MediaQuery.sizeOf(context).height,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/backgrounds/mbl_bg_3.png'),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      child: SingupTabBar()
-    );
+        child: SingupTabBar());
   }
 }
 
-class SingupTabBar extends StatelessWidget {
+class SingupTabBar extends StatefulWidget {
   const SingupTabBar({super.key});
+
+  @override
+  State<SingupTabBar> createState() => _SingupTabBarState();
+}
+
+class _SingupTabBarState extends State<SingupTabBar> {
+  final _personalDataFormkey = GlobalKey<FormState>();
+
+  final _additionalDataFormkey = GlobalKey<FormState>();
+
+  final TextEditingController _nameFormFieldController =
+      TextEditingController();
+
+  final TextEditingController _cpfFormFieldController = TextEditingController();
+
+  final TextEditingController _phoneFormFieldController =
+      TextEditingController();
+
+  final TextEditingController _emailFormFieldController =
+      TextEditingController();
+
+  final TextEditingController _passwordFormFieldController =
+      TextEditingController();
+
+  final TextEditingController _confirmPasswordFormFieldController =
+      TextEditingController();
+
+  final TextEditingController _addressFormFieldController =
+      TextEditingController();
+
+  void submitData() {
+    if (_personalDataFormkey.currentState!.validate() &&
+        _additionalDataFormkey.currentState!.validate()) {
+      //form correto, cria a entidade e envia pro BD
+      Client clientData = Client(
+          name: _nameFormFieldController.text,
+          cpf: _cpfFormFieldController.text,
+          phone: _phoneFormFieldController.text,
+          email: _emailFormFieldController.text,
+          password: _passwordFormFieldController.text,
+          photo: 'Work in Progress',
+          address: _addressFormFieldController.text,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now());
+    } else {
+      //ih deu merda
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(submitValidationFail),
+        backgroundColor: Theme.of(context).colorScheme.error,
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 1,
+      initialIndex: 0,
       length: 2,
-      child: Stack(
-        children: [
-          Image.asset(
-            "assets/images/backgrounds/mbl_bg_1.png",
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            fit: BoxFit.cover,
-          ),
-          Scaffold(
-            backgroundColor: Colors.transparent,
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              toolbarHeight: 0,
-              bottom: TabBar(
-                indicatorColor: Theme.of(context).colorScheme.background,
-                labelColor: Theme.of(context).colorScheme.background,
-                unselectedLabelColor: Theme.of(context).colorScheme.onSecondary,
-                tabs: <Widget>[
-                  Tab(
-                    child: Text(
-                      'Dados Pessoais',
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Image.asset(
+              "assets/images/backgrounds/mbl_bg_1.png",
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.cover,
+            ),
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                toolbarHeight: 0,
+                bottom: TabBar(
+                  indicatorColor: Theme.of(context).colorScheme.background,
+                  labelColor: Theme.of(context).colorScheme.background,
+                  unselectedLabelColor:
+                      Theme.of(context).colorScheme.onSecondary,
+                  tabs: <Widget>[
+                    Tab(
+                      child: Text(
+                        'Dados Pessoais',
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        'Informações Adicionais',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              body: TabBarView(
+                children: <Widget>[
+                  Center(
+                    child: Form(
+                      key: _personalDataFormkey,
+                      child: ListView(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: false,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 25.0,
+                                bottom: 25.0),
+                            child: LoginTextFormField(
+                              lbl: 'Nome completo:',
+                              controller: _nameFormFieldController,
+                              validatorFunction: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return emptyValidationFail;
+                                } else if (Validate.isUsername(value)) {
+                                  return 'Insira um nome válido.';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 25.0,
+                                bottom: 25.0),
+                            child: MaskedLoginTextFormField(
+                                lbl: 'CPF:',
+                                controller: _cpfFormFieldController,
+                                maskFormatter: MaskTextInputFormatter(
+                                    mask: '###.###.###-##',
+                                    filter: {"#": RegExp(r'[0-9]')},
+                                    type: MaskAutoCompletionType.lazy),
+                                validatorFunction: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return emptyValidationFail;
+                                  }
+                                  //vamos inserir isso depois de conseguirmos implementar a validação de CPF.
+                                  // else if(Validate.isEmail(email)){
+                                  //   return 'Insira um CPF válido.';
+                                  // }
+                                  return null;
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 25.0,
+                                bottom: 25.0),
+                            child: LoginTextFormField(
+                              lbl: 'E-mail:',
+                              controller: _emailFormFieldController,
+                              validatorFunction: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return emptyValidationFail;
+                                } else if (Validate.isEmail(value)) {
+                                  return 'Insira um e-mail válido.';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 25.0,
+                                bottom: 25.0),
+                            child: LoginPasswordTextFormField(
+                              lbl: 'Senha:',
+                              controller: _passwordFormFieldController,
+                              validatorFunction: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return emptyValidationFail;
+                                } else if (Validate.isPassword(value)) {
+                                  /// Min 6 and Max 12 characters
+                                  /// At least one uppercase character
+                                  /// At least one lowercase character
+                                  /// At least one number
+                                  /// At least one special character
+                                  /// como demonstrar esses requisitos para o usuário?
+                                  return 'Insira uma senha válida.';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 25.0,
+                                bottom: 25.0),
+                            child: LoginPasswordTextFormField(
+                              lbl: 'Confirme a Senha:',
+                              controller: _confirmPasswordFormFieldController,
+                              validatorFunction: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return emptyValidationFail;
+                                } else if (Validate.isPassword(value)) {
+                                  /// Min 6 and Max 12 characters
+                                  /// At least one uppercase character
+                                  /// At least one lowercase character
+                                  /// At least one number
+                                  /// At least one special character
+                                  /// como demonstrar esses requisitos para o usuário?
+                                  return 'Insira uma senha válida.';
+                                }
+                                // else if(Validate.isPassword(value)){
+                                //   / Min 6 and Max 12 characters
+                                //   / At least one uppercase character
+                                //   / At least one lowercase character
+                                //   / At least one number
+                                //   / At least one special character
+                                //   / como demonstrar esses requisitos para o usuário?
+                                //   return 'Insira uma senha válida.';
+                                // }
+                                // como implementar uma validação dupla de senha?
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Tab(
-                    child: Text(
-                      'Informações Adicionais',
+                  Center(
+                    child: Form(
+                      key: _additionalDataFormkey,
+                      child: ListView(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 25.0,
+                                bottom: 25.0),
+                            child: LoginPhotoField(ImageSourceType.gallery),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 25.0,
+                                bottom: 25.0),
+                            child: MaskedLoginTextFormField(
+                                lbl: 'Telefone:',
+                                controller: _phoneFormFieldController,
+                                maskFormatter: MaskTextInputFormatter(
+                                    mask: '(##) #####-####',
+                                    filter: {"#": RegExp(r'[0-9]')},
+                                    type: MaskAutoCompletionType.lazy),
+                                validatorFunction: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return emptyValidationFail;
+                                  }
+                                  return null;
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 25.0,
+                                bottom: 25.0),
+                            child: LoginTextFormField(
+                              lbl: 'Endereço (CEP por enquanto):',
+                              controller: _addressFormFieldController,
+                              validatorFunction: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return emptyValidationFail;
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            body: TabBarView(
-              children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
                 Center(
-                  child: PersonalDataFormListView(),
-                ),
-                Center(
-                  child: AdditionalDataFormListView(),
-                ),
+                    child: Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: ConfirmButtonWidget(
+                      lbl: 'Cadastrar', submitFunction: submitData),
+                )),
               ],
             ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: ConfirmButtonWidget(lbl: 'Cadastrar'),
-                )
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
-/*  final String name;
-  final String cpf;
-  final String phone;
-  final String email;
-  final String password;
-  final String photo;
-  final String address;
-  final DateTime createdAt;
-  final DateTime updatedAt;*/

@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:moveout1/screens/login.dart';
-import 'package:moveout1/screens/signup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +35,6 @@ class MyApp extends StatelessWidget {
           onError: Color(0xFF000000),
         ),
         fontFamily: 'Open Sans',
-        
       ),
       home: const MyHomePage(),
     );
@@ -51,27 +49,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-          minWidth: MediaQuery.of(context).size.width,
-          minHeight: MediaQuery.of(context).size.height,
-        ),
-        child: IntrinsicHeight(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: const <Widget>[
-              //AuthScreen(),
-              SignupScreen(),
-            ],
-          )
-        ))
-      )
-    );
+    return AuthScreen();
   }
 }
