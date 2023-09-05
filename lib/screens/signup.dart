@@ -9,6 +9,7 @@ import 'package:validation_pro/validate.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/database/client.dart';
+import 'package:moveout1/database/database.dart';
 
 enum ImageSourceType { gallery, camera }
 
@@ -71,19 +72,23 @@ class _SingupTabBarState extends State<SingupTabBar> {
       TextEditingController();
 
   void submitData() {
-    if (_personalDataFormkey.currentState!.validate() &&
-        _additionalDataFormkey.currentState!.validate()) {
+    if (true &&
+        true) {
       //form correto, cria a entidade e envia pro BD
+      print("Uploading...");
       Client clientData = Client(
-          name: _nameFormFieldController.text,
-          cpf: _cpfFormFieldController.text,
-          phone: _phoneFormFieldController.text,
-          email: _emailFormFieldController.text,
-          password: _passwordFormFieldController.text,
-          photo: 'Work in Progress',
-          address: _addressFormFieldController.text,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now());
+        name: _nameFormFieldController.text,
+        cpf: _cpfFormFieldController.text,
+        phone: _phoneFormFieldController.text,
+        email: _emailFormFieldController.text,
+        password: _passwordFormFieldController.text,
+        photo: 'Work in Progress',
+        address: _addressFormFieldController.text,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      Database.insert(clientData);
     } else {
       //ih deu merda
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -195,8 +200,6 @@ class _SingupTabBarState extends State<SingupTabBar> {
                               validatorFunction: (value) {
                                 if (value == null || value.isEmpty) {
                                   return emptyValidationFail;
-                                } else if (Validate.isEmail(value)) {
-                                  return 'Insira um e-mail válido.';
                                 }
                                 return null;
                               },
@@ -328,11 +331,12 @@ class _SingupTabBarState extends State<SingupTabBar> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Center(
-                    child: Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: ConfirmButtonWidget(
-                      lbl: 'Cadastrar', submitFunction: submitData),
-                )),
+                  child: Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: ConfirmButtonWidget(
+                        lbl: 'Cadastrar', submitFunction: submitData),
+                  ),
+                ),
               ],
             ),
           ],
