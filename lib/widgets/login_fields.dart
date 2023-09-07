@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_this, no_logic_in_create_state, prefer_typing_uninitialized_variables, must_be_immutable
+// ignore_for_file: prefer_const_constructors, unnecessary_this, no_logic_in_create_state, prefer_typing_uninitialized_variables, must_be_immutable, library_private_types_in_public_api
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -10,6 +10,7 @@ enum ImageSourceType { gallery, camera }
 const cLabelStyle = TextStyle(color: Colors.white, fontSize: 15);
 const cBorder = UnderlineInputBorder(
     borderSide: BorderSide(color: Colors.white, width: 1.0));
+const helperEmpty = ' ';
 
 class NavigatorTextButton extends StatelessWidget {
   final String txt;
@@ -47,42 +48,55 @@ class NavigatorTextButton extends StatelessWidget {
   }
 }
 
-class LoginTextFormField extends StatelessWidget {
+class LoginTextFormField extends StatefulWidget {
   final String lbl;
   final TextEditingController controller;
   final String? Function(String?) validatorFunction;
-  const LoginTextFormField({super.key, required this.lbl, required this.controller, required this.validatorFunction});
+  const LoginTextFormField(
+      {super.key,
+      required this.lbl,
+      required this.controller,
+      required this.validatorFunction});
 
+  @override
+  State<LoginTextFormField> createState() => _LoginTextFormFieldState();
+}
+
+class _LoginTextFormFieldState extends State<LoginTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      validator: validatorFunction,
-      controller: controller,
+      validator: widget.validatorFunction,
+      controller: widget.controller,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         enabledBorder: cBorder,
         focusedBorder: cBorder,
-        labelText: lbl,
+        labelText: widget.lbl,
         labelStyle: cLabelStyle,
+        helperText:
+            helperEmpty, // Helper text como uma string contendo um espaço.
       ),
     );
   }
 }
 
-class LoginPasswordTextFormField extends StatefulWidget {
+class LoginPasswordFormField extends StatefulWidget {
   final String lbl;
   final TextEditingController controller;
   bool obscure = true;
   final String? Function(String?) validatorFunction;
-  LoginPasswordTextFormField(
-      {super.key, required this.lbl, required this.controller, required this.validatorFunction});
+  LoginPasswordFormField(
+      {super.key,
+      required this.lbl,
+      required this.controller,
+      required this.validatorFunction});
 
   @override
-  State<LoginPasswordTextFormField> createState() =>
-      _LoginPasswordTextFormField();
+  State<LoginPasswordFormField> createState() => _LoginPasswordFormFieldState();
 }
 
-class _LoginPasswordTextFormField extends State<LoginPasswordTextFormField> {
+class _LoginPasswordFormFieldState extends State<LoginPasswordFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -94,9 +108,11 @@ class _LoginPasswordTextFormField extends State<LoginPasswordTextFormField> {
         focusedBorder: cBorder,
         labelText: widget.lbl,
         labelStyle: cLabelStyle,
+        helperText:
+            helperEmpty, // Helper text como uma string contendo um espaço.
         suffixIcon: IconButton(
           icon: Icon(
-            widget.obscure ? Icons.visibility_off : Icons.visibility,
+            widget.obscure ? Icons.visibility : Icons.visibility_off,
             color: Theme.of(context).colorScheme.onBackground,
           ),
           onPressed: () {
@@ -111,7 +127,7 @@ class _LoginPasswordTextFormField extends State<LoginPasswordTextFormField> {
   }
 }
 
-class MaskedLoginTextFormField extends StatelessWidget {
+class MaskedLoginTextFormField extends StatefulWidget {
   final String lbl;
   final TextEditingController controller;
   final bool obscure;
@@ -126,19 +142,27 @@ class MaskedLoginTextFormField extends StatelessWidget {
       required this.validatorFunction});
 
   @override
+  State<MaskedLoginTextFormField> createState() =>
+      _MaskedLoginTextFormFieldState();
+}
+
+class _MaskedLoginTextFormFieldState extends State<MaskedLoginTextFormField> {
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      obscureText: obscure,
+      controller: widget.controller,
+      obscureText: widget.obscure,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         enabledBorder: cBorder,
         focusedBorder: cBorder,
-        labelText: lbl,
+        labelText: widget.lbl,
         labelStyle: cLabelStyle,
+        helperText:
+            helperEmpty, // Helper text como uma string contendo um espaço.
       ),
-      validator: validatorFunction,
-      inputFormatters: [maskFormatter],
+      validator: widget.validatorFunction,
+      inputFormatters: [widget.maskFormatter],
     );
   }
 }
@@ -148,15 +172,15 @@ class LoginPhotoField extends StatefulWidget {
   const LoginPhotoField(this.type, {super.key});
 
   @override
-  LoginPhotoFieldState createState() => LoginPhotoFieldState(this.type);
+  _LoginPhotoFieldState createState() => _LoginPhotoFieldState(this.type);
 }
 
-class LoginPhotoFieldState extends State<LoginPhotoField> {
+class _LoginPhotoFieldState extends State<LoginPhotoField> {
   var _image;
   var imagePicker;
   var type;
 
-  LoginPhotoFieldState(this.type);
+  _LoginPhotoFieldState(this.type);
 
   @override
   void initState() {
@@ -168,13 +192,6 @@ class LoginPhotoFieldState extends State<LoginPhotoField> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Align(
-        //   alignment: Alignment.topLeft,
-        //   child: Text(
-        //     'Foto:',
-        //     style: cLabelStyle,
-        //   ),
-        // ),
         SizedBox(
           height: 20,
         ),
@@ -231,6 +248,51 @@ class LoginPhotoFieldState extends State<LoginPhotoField> {
           ),
         )
       ],
+    );
+  }
+}
+
+class AddressPickerFormField extends StatefulWidget {
+  final String lbl;
+  final TextEditingController controller;
+  final String? Function(String?) validatorFunction;
+  const AddressPickerFormField(
+      {super.key,
+      required this.lbl,
+      required this.controller,
+      required this.validatorFunction});
+
+  @override
+  State<AddressPickerFormField> createState() => _AddressPickerFormFieldState();
+}
+
+class _AddressPickerFormFieldState extends State<AddressPickerFormField> {
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.controller,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        enabledBorder: cBorder,
+        focusedBorder: cBorder,
+        labelText: widget.lbl,
+        labelStyle: cLabelStyle,
+        helperText:
+            helperEmpty, // Helper text como uma string contendo um espaço.
+        suffixIcon: IconButton(
+          icon: Icon(
+            Icons.room,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
+          onPressed: () {
+            //aqui, abrir o mapa para selecionar o endereço
+            setState(() {
+
+            });
+          },
+        ),
+      ),
+      validator: widget.validatorFunction,
     );
   }
 }

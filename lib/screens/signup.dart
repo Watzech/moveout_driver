@@ -46,14 +46,13 @@ class SingupTabBar extends StatefulWidget {
 }
 
 class _SingupTabBarState extends State<SingupTabBar> {
-  final _personalDataFormkey = GlobalKey<FormState>();
-
-  final _additionalDataFormkey = GlobalKey<FormState>();
+  final _formkey = GlobalKey<FormState>();
 
   final TextEditingController _nameFormFieldController =
       TextEditingController();
 
-  final TextEditingController _cpfFormFieldController = TextEditingController();
+  final TextEditingController _cpfFormFieldController = 
+      TextEditingController();
 
   final TextEditingController _phoneFormFieldController =
       TextEditingController();
@@ -71,9 +70,7 @@ class _SingupTabBarState extends State<SingupTabBar> {
       TextEditingController();
 
   void submitData() {
-    if (_personalDataFormkey.currentState!.validate() &&
-        _additionalDataFormkey.currentState!.validate()) {
-      //form correto, cria a entidade e envia pro BD
+    if (_formkey.currentState!.validate()) {
       Client clientData = Client(
           name: _nameFormFieldController.text,
           cpf: _cpfFormFieldController.text,
@@ -85,7 +82,6 @@ class _SingupTabBarState extends State<SingupTabBar> {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now());
     } else {
-      //ih deu merda
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(submitValidationFail),
         backgroundColor: Theme.of(context).colorScheme.error,
@@ -97,9 +93,8 @@ class _SingupTabBarState extends State<SingupTabBar> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       initialIndex: 0,
-      length: 2,
-      child: Scaffold(
-        body: Stack(
+      length: 1,
+      child: Stack(
           children: [
             Image.asset(
               "assets/images/backgrounds/mbl_bg_1.png",
@@ -120,12 +115,11 @@ class _SingupTabBarState extends State<SingupTabBar> {
                   tabs: <Widget>[
                     Tab(
                       child: Text(
-                        'Dados Pessoais',
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Informações Adicionais',
+                        'Cadastro',
+                        style: TextStyle(
+                          fontFamily: 'BebasKai',
+                          fontSize: 30,
+                        ),
                       ),
                     ),
                   ],
@@ -135,17 +129,25 @@ class _SingupTabBarState extends State<SingupTabBar> {
                 children: <Widget>[
                   Center(
                     child: Form(
-                      key: _personalDataFormkey,
+                      key: _formkey,
                       child: ListView(
                         scrollDirection: Axis.vertical,
                         shrinkWrap: false,
                         children: [
+                                                    Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 15.0,
+                                bottom: 15.0),
+                            child: LoginPhotoField(ImageSourceType.gallery),
+                          ),
                           Padding(
                             padding: const EdgeInsets.only(
                                 left: 25.0,
                                 right: 25.0,
-                                top: 25.0,
-                                bottom: 25.0),
+                                top: 15.0,
+                                bottom: 15.0),
                             child: LoginTextFormField(
                               lbl: 'Nome completo:',
                               controller: _nameFormFieldController,
@@ -163,8 +165,8 @@ class _SingupTabBarState extends State<SingupTabBar> {
                             padding: const EdgeInsets.only(
                                 left: 25.0,
                                 right: 25.0,
-                                top: 25.0,
-                                bottom: 25.0),
+                                top: 15.0,
+                                bottom: 15.0),
                             child: MaskedLoginTextFormField(
                                 lbl: 'CPF:',
                                 controller: _cpfFormFieldController,
@@ -187,15 +189,15 @@ class _SingupTabBarState extends State<SingupTabBar> {
                             padding: const EdgeInsets.only(
                                 left: 25.0,
                                 right: 25.0,
-                                top: 25.0,
-                                bottom: 25.0),
+                                top: 15.0,
+                                bottom: 15.0),
                             child: LoginTextFormField(
                               lbl: 'E-mail:',
                               controller: _emailFormFieldController,
                               validatorFunction: (value) {
                                 if (value == null || value.isEmpty) {
                                   return emptyValidationFail;
-                                } else if (Validate.isEmail(value)) {
+                                } else if (!Validate.isEmail(value)) {
                                   return 'Insira um e-mail válido.';
                                 }
                                 return null;
@@ -206,85 +208,8 @@ class _SingupTabBarState extends State<SingupTabBar> {
                             padding: const EdgeInsets.only(
                                 left: 25.0,
                                 right: 25.0,
-                                top: 25.0,
-                                bottom: 25.0),
-                            child: LoginPasswordTextFormField(
-                              lbl: 'Senha:',
-                              controller: _passwordFormFieldController,
-                              validatorFunction: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return emptyValidationFail;
-                                } else if (Validate.isPassword(value)) {
-                                  /// Min 6 and Max 12 characters
-                                  /// At least one uppercase character
-                                  /// At least one lowercase character
-                                  /// At least one number
-                                  /// At least one special character
-                                  /// como demonstrar esses requisitos para o usuário?
-                                  return 'Insira uma senha válida.';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 25.0,
-                                right: 25.0,
-                                top: 25.0,
-                                bottom: 25.0),
-                            child: LoginPasswordTextFormField(
-                              lbl: 'Confirme a Senha:',
-                              controller: _confirmPasswordFormFieldController,
-                              validatorFunction: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return emptyValidationFail;
-                                } else if (Validate.isPassword(value)) {
-                                  /// Min 6 and Max 12 characters
-                                  /// At least one uppercase character
-                                  /// At least one lowercase character
-                                  /// At least one number
-                                  /// At least one special character
-                                  /// como demonstrar esses requisitos para o usuário?
-                                  return 'Insira uma senha válida.';
-                                }
-                                // else if(Validate.isPassword(value)){
-                                //   / Min 6 and Max 12 characters
-                                //   / At least one uppercase character
-                                //   / At least one lowercase character
-                                //   / At least one number
-                                //   / At least one special character
-                                //   / como demonstrar esses requisitos para o usuário?
-                                //   return 'Insira uma senha válida.';
-                                // }
-                                // como implementar uma validação dupla de senha?
-                                return null;
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Form(
-                      key: _additionalDataFormkey,
-                      child: ListView(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 25.0,
-                                right: 25.0,
-                                top: 25.0,
-                                bottom: 25.0),
-                            child: LoginPhotoField(ImageSourceType.gallery),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 25.0,
-                                right: 25.0,
-                                top: 25.0,
-                                bottom: 25.0),
+                                top: 15.0,
+                                bottom: 15.0),
                             child: MaskedLoginTextFormField(
                                 lbl: 'Telefone:',
                                 controller: _phoneFormFieldController,
@@ -303,9 +228,9 @@ class _SingupTabBarState extends State<SingupTabBar> {
                             padding: const EdgeInsets.only(
                                 left: 25.0,
                                 right: 25.0,
-                                top: 25.0,
-                                bottom: 25.0),
-                            child: LoginTextFormField(
+                                top: 15.0,
+                                bottom: 15.0),
+                            child: AddressPickerFormField(
                               lbl: 'Endereço (CEP por enquanto):',
                               controller: _addressFormFieldController,
                               validatorFunction: (value) {
@@ -316,6 +241,69 @@ class _SingupTabBarState extends State<SingupTabBar> {
                               },
                             ),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 15.0,
+                                bottom: 15.0),
+                            child: LoginPasswordFormField(
+                              lbl: 'Senha:',
+                              controller: _passwordFormFieldController,
+                              validatorFunction: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return emptyValidationFail;
+                                } else if (!Validate.isPassword(value)) {
+                                  /// Min 6 and Max 12 characters
+                                  /// At least one uppercase character
+                                  /// At least one lowercase character
+                                  /// At least one number
+                                  /// At least one special character
+                                  /// como demonstrar esses requisitos para o usuário?
+                                  return 'Insira uma senha válida.';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0,
+                                right: 25.0,
+                                top: 15.0,
+                                bottom: 15.0),
+                            child: LoginPasswordFormField(
+                              lbl: 'Confirme a Senha:',
+                              controller: _confirmPasswordFormFieldController,
+                              validatorFunction: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return emptyValidationFail;
+                                } else if (_passwordFormFieldController.text != _confirmPasswordFormFieldController.text) {
+                                  /// Min 6 and Max 12 characters
+                                  /// At least one uppercase character
+                                  /// At least one lowercase character
+                                  /// At least one number
+                                  /// At least one special character
+                                  /// como demonstrar esses requisitos para o usuário?
+                                  return 'As senhas não coincidem.';
+                                } else if (!Validate.isPassword(value)) {
+                                  /// Min 6 and Max 12 characters
+                                  /// At least one uppercase character
+                                  /// At least one lowercase character
+                                  /// At least one number
+                                  /// At least one special character
+                                  /// como demonstrar esses requisitos para o usuário?
+                                  return 'Insira uma senha válida.';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(25.0),
+                            child: ConfirmButtonWidget(
+                                lbl: 'Cadastrar', submitFunction: submitData),
+                          ),
                         ],
                       ),
                     ),
@@ -323,21 +311,8 @@ class _SingupTabBarState extends State<SingupTabBar> {
                 ],
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                    child: Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: ConfirmButtonWidget(
-                      lbl: 'Cadastrar', submitFunction: submitData),
-                )),
-              ],
-            ),
           ],
         ),
-      ),
     );
   }
 }
