@@ -112,7 +112,7 @@ class _LoginPasswordFormFieldState extends State<LoginPasswordFormField> {
             helperEmpty, // Helper text como uma string contendo um espaço.
         suffixIcon: IconButton(
           icon: Icon(
-            widget.obscure ? Icons.visibility : Icons.visibility_off,
+            widget.obscure ? Icons.visibility_off : Icons.visibility,
             color: Theme.of(context).colorScheme.onBackground,
           ),
           onPressed: () {
