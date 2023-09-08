@@ -118,10 +118,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                                   return null;
                                                 },
                                               ),
-                                              const SizedBox(height: 50),
+                                              const SizedBox(height: 40),
                                               Column(
                                                 children: [
-                                                  LoginPasswordTextFormField(
+                                                  LoginPasswordFormField(
                                                       lbl: 'Senha:',
                                                       controller:
                                                           _passwordFormFieldController,
