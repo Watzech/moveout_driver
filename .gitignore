@@ -3,11 +3,11 @@
 *.log
 *.pyc
 *.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
+**/.DS_Store
+**/.atom/
+**/.buildlog/
+**/.history
+**/.svn/
 migrate_working_dir/
 **/.flutter-plugins
 **/.flutter-plugins-dependencies
@@ -22,13 +22,14 @@ migrate_working_dir/
 #.vscode/
 # Flutter/Dart/Pub related
 **/doc/api/
+**/package_config.json
 **/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
 /build/
 # Symbolication related
 app.*.symbols
@@ -39,4 +40,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /android/app/release
-.flutter-plugins-dependencies
+**/.flutter-plugins-dependencies
