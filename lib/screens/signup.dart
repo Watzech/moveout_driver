@@ -7,7 +7,7 @@ import 'package:validation_pro/validate.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/database/client.dart';
-import 'package:moveout1/database/database.dart';
+// import 'package:moveout1/database/database.dart';
 
 enum ImageSourceType { gallery, camera }
 
@@ -84,7 +84,7 @@ class _SingupTabBarState extends State<SingupTabBar> {
         updatedAt: DateTime.now(),
       );
 
-      Database.insert(clientData);
+      // Database.insert(clientData);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text(submitValidationFail),

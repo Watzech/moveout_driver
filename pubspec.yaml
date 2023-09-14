@@ -42,6 +42,10 @@ dependencies:
   mongo_dart: ^0.9.1
   mask_text_input_formatter: ^2.5.0
   image_picker: ^0.8.2
+  flutter_styled_toast: ^2.0.1
+  google_maps_flutter: ^2.5.0
+  location: ^5.0.3
+  flutter_sliding_up_panel: ^2.1.1
 
 dev_dependencies:
   flutter_test:

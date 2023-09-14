@@ -17,8 +17,6 @@ class MyApp extends StatelessWidget {
       //Day Theme Prototype:
       theme: ThemeData(
         useMaterial3: true,
-        primaryColor: Color(0xFF6fa8dc),
-        primaryColorDark: Color(0xFF7ca4b7),
         colorScheme: ColorScheme(
           primary: Color(0xFF6fa8dc),
           //onPrimary: Color(0xFF7ca4b7),
@@ -27,12 +25,13 @@ class MyApp extends StatelessWidget {
           //onSecondary: Color(0xFFe4b82f),
           onSecondary: Color.fromARGB(255, 186, 149, 39),
           background: Color(0xFFffffff),
-          onBackground: Color(0xFFeeeeee),
+          onBackground: Color.fromARGB(255, 168, 168, 168),
           surface: Color(0xFFfbfbfb),
           onSurface: Color(0xFF000000),
           brightness: Brightness.light,
           error: Color(0xFFBA0027),
           onError: Color(0xFF000000),
+          shadow: Color(0x11000000),
         ),
         fontFamily: 'Open Sans',
       ),

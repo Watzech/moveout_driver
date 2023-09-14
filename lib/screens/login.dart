@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/signup.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
@@ -28,11 +29,15 @@ class _AuthScreenState extends State<AuthScreen> {
       TextEditingController();
 
   void submitData() {
-    if (_formkey.currentState!.validate()) {
+    // if (_formkey.currentState!.validate()) {
       print('aqui, o login foi validado e pode ser enviado');
-    }else{
-      print('aqui, o login falhou a validação e não será enviado');
-    }
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MapScreen()),
+      );
+    // }else{
+    //   print('aqui, o login falhou a validação e não será enviado');
+    // }
   }
 
   @override

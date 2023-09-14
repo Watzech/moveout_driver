@@ -113,7 +113,7 @@ class _LoginPasswordFormFieldState extends State<LoginPasswordFormField> {
         suffixIcon: IconButton(
           icon: Icon(
             widget.obscure ? Icons.visibility_off : Icons.visibility,
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Colors.white,
           ),
           onPressed: () {
             setState(() {
@@ -228,7 +228,7 @@ class _LoginPhotoFieldState extends State<LoginPhotoField> {
                   )
                 : Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.background,
                       border: Border.all(
                         width: 3,
                         color: Theme.of(context).colorScheme.secondary,
@@ -242,7 +242,7 @@ class _LoginPhotoFieldState extends State<LoginPhotoField> {
                     child: Icon(
                       Icons.camera_alt,
                       size: MediaQuery.sizeOf(context).width * 0.075,
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                   ),
           ),
@@ -282,7 +282,7 @@ class _AddressPickerFormFieldState extends State<AddressPickerFormField> {
         suffixIcon: IconButton(
           icon: Icon(
             Icons.room,
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Colors.white,
           ),
           onPressed: () {
             //aqui, abrir o mapa para selecionar o endereço
