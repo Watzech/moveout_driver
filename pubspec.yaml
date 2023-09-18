@@ -46,7 +46,7 @@ dependencies:
   google_maps_flutter: ^2.5.0
   google_places_flutter: ^2.0.6
   location: ^5.0.3
-  flutter_sliding_up_panel: ^2.1.1
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:
