@@ -36,8 +36,8 @@ class Client {
     };
   }
 
-  Client.fromMap(Map<String, dynamic> map)
-    : name = map['name'],
+  Client.fromMap(Map<String, dynamic> map):
+    name = map['name'],
     cpf = map['cpf'],
     phone = map['phone'],
     email = map['email'],
