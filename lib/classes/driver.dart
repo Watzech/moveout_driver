@@ -39,8 +39,8 @@ class Driver {
     };
   }
 
-  Driver.fromMap(Map<String, dynamic> map)
-    : name = map['name'],
+  Driver.fromMap(Map<String, dynamic> map):
+    name = map['name'],
     cpf = map['cpf'],
     phone = map['phone'],
     email = map['email'],

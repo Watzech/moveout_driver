@@ -1,15 +1,13 @@
 
-import 'package:moveout1/database/vehicle.dart';
-
 class Request {
   final String id;
   final String cpfClient;
-  final double price;
-  final String originAddress;
-  final String destinyAddress;
-  final int helpers;
-  List<Vehicle> interesteds = [];
-  final String load;
+  double price;
+  String originAddress;
+  String destinyAddress;
+  int helpers;
+  List<String> interesteds = [];
+  String load;
   final DateTime createdAt;
   final DateTime updatedAt;
 

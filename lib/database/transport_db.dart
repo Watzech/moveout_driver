@@ -1,4 +1,4 @@
-import 'package:moveout1/database/transport.dart';
+import 'package:moveout1/classes/transport.dart';
 
 import '../constants/main.dart' as constants;
 import 'package:mongo_dart/mongo_dart.dart';

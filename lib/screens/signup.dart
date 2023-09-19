@@ -6,8 +6,7 @@ import 'package:validation_pro/validate.dart';
 
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/login_fields.dart';
-import 'package:moveout1/database/client.dart';
-// import 'package:moveout1/database/database.dart';
+import 'package:moveout1/classes/client.dart';
 
 enum ImageSourceType { gallery, camera }
 

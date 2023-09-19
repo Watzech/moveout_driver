@@ -1,4 +1,4 @@
-import 'package:moveout1/database/driver.dart';
+import 'package:moveout1/classes/driver.dart';
 
 import '../constants/main.dart' as constants;
 import 'package:mongo_dart/mongo_dart.dart';
@@ -37,6 +37,16 @@ class DriverDb{
     try {
       final drivers = await driverCollection?.find(where.sortBy('_id')).toList();
       return drivers;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>?> getInfoByField(List<String> values, String fieldName) async {
+    try {
+      final itemList = await driverCollection?.find(where.oneFrom(fieldName, values)).toList();
+      return itemList;
     } catch (e) {
       print(e);
       return null;
