@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 class ConfirmButtonWidget extends StatelessWidget {
   final String lbl;
   final VoidCallback submitFunction;
-  const ConfirmButtonWidget(
-      {super.key, required this.lbl, required this.submitFunction});
+  double fontSize;
+  String fontFamily;
+  ConfirmButtonWidget(
+      {super.key,
+      required this.lbl,
+      required this.submitFunction,
+      this.fontSize = 12,
+      this.fontFamily = ' '});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +24,15 @@ class ConfirmButtonWidget extends StatelessWidget {
       child: Text(
         lbl,
         textDirection: TextDirection.ltr,
-        style: const TextStyle(
+        style: fontFamily == ' ' 
+        ? TextStyle(
           color: Colors.white,
+          fontSize: fontSize,
+        )
+        : TextStyle(
+          color: Colors.white,
+          fontSize: fontSize,
+          fontFamily: fontFamily
         ),
       ),
     );

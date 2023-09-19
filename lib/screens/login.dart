@@ -147,6 +147,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                               Center(
                                                 child: ConfirmButtonWidget(
                                                     lbl: 'Entrar',
+                                                    fontSize: 25,
+                                                    fontFamily: 'BebasKai',
                                                     submitFunction: submitData),
                                               ),
                                               const SizedBox(height: 20),

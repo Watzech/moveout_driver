@@ -1,23 +1,21 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-class CustomIcons {
-  CustomIcons._();
+import 'sliding_panel_widgets/custom_address_text_form.dart';
+import 'sliding_panel_widgets/custom_checkbox_list_tile.dart';
+import 'sliding_panel_widgets/custom_confirm_button_widget.dart';
+import 'sliding_panel_widgets/custom_date_picker.dart';
+import 'sliding_panel_widgets/custom_divider.dart';
+import 'sliding_panel_widgets/custom_title.dart';
+import 'sliding_panel_widgets/transport_size_segmented_button.dart';
 
-  static const _kFontFam = 'CustomIcons';
-  static const String? _kFontPkg = null;
+const String submitValidationFail = 'Erro de validação, verifique os campos';
 
-  static const IconData truck =
-      IconData(0xf0d1, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData truckMoving =
-      IconData(0xf4df, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData truckPickup =
-      IconData(0xf63c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-}
-
-class CustomSlidingPanel extends StatelessWidget {
-  CustomSlidingPanel({
+class CustomSlidingPanel extends StatefulWidget {
+  const CustomSlidingPanel({
     super.key,
     required this.panelController,
     required this.scrollController,
@@ -33,36 +31,98 @@ class CustomSlidingPanel extends StatelessWidget {
   final TextEditingController destinationAddressController;
   final TextEditingController firstDateController;
   final TextEditingController secondDateController;
+
+  @override
+  State<CustomSlidingPanel> createState() => _CustomSlidingPanelState();
+}
+
+class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   final _formkey = GlobalKey<FormState>();
+  bool isButtonEnabled = false;
+  String transportSizeValue = ' ';
+  void _handleTransportSizeValue(String data) {
+    setState(() {
+      transportSizeValue = data;
+    });
+  }
+
+  bool helperCheckValue = false;
+  void _handleHelperCheckValue(bool data) {
+    setState(() {
+      helperCheckValue = data;
+    });
+  }
+
+  bool packageCheckValue = false;
+  void _handlePackageCheckValue(bool data) {
+    setState(() {
+      packageCheckValue = data;
+    });
+  }
+
+  bool furnitureCheckValue = false;
+  void _handleFurnitureCheckValue(bool data) {
+    setState(() {
+      furnitureCheckValue = data;
+    });
+  }
+
+  bool boxCheckValue = false;
+  void _handleBoxCheckValue(bool data) {
+    setState(() {
+      helperCheckValue = data;
+    });
+  }
+
+  bool fragileCheckValue = false;
+  void _handleFragileCheckValue(bool data) {
+    setState(() {
+      fragileCheckValue = data;
+    });
+  }
+
+  bool otherCheckValue = false;
+  void _handleOtherCheckValue(bool data) {
+    setState(() {
+      otherCheckValue = data;
+    });
+  }
+
+  bool isEmpty() {
+    setState(() {
+      if ((widget.originAddressController.text.isNotEmpty) &&
+          (widget.destinationAddressController.text.isNotEmpty) &&
+          ((furnitureCheckValue ||
+              boxCheckValue ||
+              fragileCheckValue ||
+              otherCheckValue)) &&
+          (widget.firstDateController.text.isNotEmpty) &&
+          (widget.secondDateController.text.isNotEmpty)) {
+        isButtonEnabled = true;
+      } else {
+        isButtonEnabled = false;
+      }
+    });
+    return isButtonEnabled;
+  }
 
   void submitData() {
     if (_formkey.currentState!.validate()) {
-      //form correto, cria a entidade e envia pro BD
+      // form correto, cria a entidade e envia pro BD
+      print('opaa ' + widget.originAddressController.text);
       print("Uploading...");
-      // Client clientData = Client(
-      //   name: _nameFormFieldController.text,
-      //   cpf: _cpfFormFieldController.text,
-      //   phone: _phoneFormFieldController.text,
-      //   email: _emailFormFieldController.text,
-      //   password: _passwordFormFieldController.text,
-      //   photo: 'Work in Progress',
-      //   address: _addressFormFieldController.text,
-      //   createdAt: DateTime.now(),
-      //   updatedAt: DateTime.now(),
-      // );
-
       // Database.insert(clientData);
     } else {
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   content: const Text(submitValidationFail),
-      //   backgroundColor: Theme.of(context).colorScheme.error,
-      // ));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Erro na validação, verifique os campos'),
+        backgroundColor: Theme.of(context).colorScheme.error,
+      ));
     }
   }
 
-  void togglePanel() => panelController.isPanelOpen
-      ? panelController.close()
-      : panelController.open();
+  void togglePanel() => widget.panelController.isPanelOpen
+      ? widget.panelController.close()
+      : widget.panelController.open();
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +133,7 @@ class CustomSlidingPanel extends StatelessWidget {
             spreadRadius: 2.0,
             color: Theme.of(context).colorScheme.shadow)
       ],
-      controller: panelController,
+      controller: widget.panelController,
       minHeight: MediaQuery.of(context).size.height * 0.058,
       maxHeight: MediaQuery.of(context).size.height * 0.75,
       borderRadius: const BorderRadius.only(
@@ -99,56 +159,132 @@ class CustomSlidingPanel extends StatelessWidget {
           ),
           const CustomDivider(),
           Form(
+            key: _formkey,
             child: Expanded(
               child: ListView(
+                padding: const EdgeInsets.all(0),
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
+                        left: 20.0, right: 20.0, top: 20.0, bottom: 15.0),
                     child: CustomTitle(label: 'Endereços:'),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
                     child: CustomAddressTextForm(
+                      fontSize: 14,
                       hintText: 'Endereço de origem...',
-                      textFieldController: originAddressController,
+                      textFieldController: widget.originAddressController,
                       icon: Icons.add_location_alt,
+                      onChangedFunction: (value) {
+                        isEmpty();
+                      },
                     ),
                   ),
                   Center(
                     child: SizedBox.fromSize(
-                        size: const Size(2, 20),
+                        size: const Size(2, 30),
                         child: ColoredBox(
                             color: Theme.of(context).colorScheme.primary)),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 0.0, bottom: 10.0),
+                        left: 15.0, right: 15.0, top: 0.0, bottom: 0.0),
                     child: CustomAddressTextForm(
+                      fontSize: 14,
                       hintText: 'Endereço de destino...',
-                      textFieldController: destinationAddressController,
+                      textFieldController: widget.destinationAddressController,
                       icon: Icons.add_location_alt,
+                      onChangedFunction: (value) {
+                        isEmpty();
+                      },
                     ),
                   ),
-                  const CustomCheckboxListTile(label: 'Preciso de Ajudantes'),
-                  const CustomCheckboxListTile(label: 'Preciso de Embalagem'),
-                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10.0, right: 5.0, top: 15.0, bottom: 0.0),
+                    child: CustomCheckboxListTile(
+                        label: 'Preciso de Ajudantes',
+                        callback: _handleHelperCheckValue,
+                        onChangedFunction:(){}),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10.0, right: 5.0, top: 0.0, bottom: 15.0),
+                    child: CustomCheckboxListTile(
+                        label: 'Preciso de Embalagem',
+                        callback: _handlePackageCheckValue,
+                        onChangedFunction:(){}),
+                  ),
                   const CustomDivider(),
                   const Padding(
                     padding: EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
+                        left: 20.0, right: 20.0, top: 20.0, bottom: 15.0),
                     child: CustomTitle(label: 'Tamanho do Transporte:'),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 10.0, bottom: 20.0),
-                    child: Center(child: TransportSizeChoice()),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 10.0, bottom: 30.0),
+                    child: Center(
+                        child: TransportSizeSegmentedButton(
+                            callback: _handleTransportSizeValue)),
                   ),
                   const CustomDivider(),
                   const Padding(
                     padding: EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
+                        left: 20.0, right: 20.0, top: 20.0, bottom: 15.0),
+                    child: CustomTitle(label: 'Lista de Itens:'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
+                    child: CustomCheckboxListTile(
+                        label: 'Móveis / Eletrodomésticos de grande porte',
+                        callback: _handleFurnitureCheckValue,
+                        onChangedFunction: isEmpty),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
+                    child: CustomCheckboxListTile(
+                        label: 'Caixas / Itens diversos',
+                        callback: _handleBoxCheckValue,
+                        onChangedFunction: isEmpty),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
+                    child: CustomCheckboxListTile(
+                        label: 'Vidros / Objetos frágeis',
+                        callback: _handleFragileCheckValue,
+                        onChangedFunction: isEmpty),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
+                    child: CustomCheckboxListTile(
+                        label: 'Outros', 
+                        callback: _handleOtherCheckValue,
+                        onChangedFunction: isEmpty),
+                  ),
+                  Center(
+                    child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 15.0, right: 15.0, top: 15.0, bottom: 15.0),
+                        child: Text(
+                          'Selecione ao menos um tipo de item',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontSize: 12,
+                          ),
+                        )),
+                  ),
+                  const SizedBox(height: 10),
+                  const CustomDivider(),
+                  const Padding(
+                    padding: EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 20.0, bottom: 15.0),
                     child: CustomTitle(label: 'Agendamento:'),
                   ),
                   Center(
@@ -156,11 +292,15 @@ class CustomSlidingPanel extends StatelessWidget {
                         padding: const EdgeInsets.only(
                             left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
                         child: CustomDatePicker(
-                            dateController: firstDateController)),
+                          dateController: widget.firstDateController,
+                          onChangedFunction: (value) {
+                            isEmpty();
+                          },
+                        )),
                   ),
                   Center(
                     child: SizedBox.fromSize(
-                        size: const Size(2, 12),
+                        size: const Size(2, 25),
                         child: ColoredBox(
                             color: Theme.of(context).colorScheme.primary)),
                   ),
@@ -169,12 +309,16 @@ class CustomSlidingPanel extends StatelessWidget {
                         padding: const EdgeInsets.only(
                             left: 15.0, right: 15.0, top: 0.0, bottom: 0.0),
                         child: CustomDatePicker(
-                            dateController: secondDateController)),
+                          dateController: widget.secondDateController,
+                          onChangedFunction: (value) {
+                            isEmpty();
+                          },
+                        )),
                   ),
                   Center(
                     child: Padding(
                         padding: const EdgeInsets.only(
-                            left: 15.0, right: 15.0, top: 10.0, bottom: 15.0),
+                            left: 15.0, right: 15.0, top: 25.0, bottom: 15.0),
                         child: Text(
                           'Selecione ao menos duas datas disponíveis',
                           style: TextStyle(
@@ -185,12 +329,22 @@ class CustomSlidingPanel extends StatelessWidget {
                   ),
                   Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(15.0),
+                      padding: const EdgeInsets.all(25.0),
                       child: SizedBox(
                         width: MediaQuery.sizeOf(context).width * 0.75,
-                        child: ConfirmButtonWidget(
-                          lbl: 'Continuar',
+                        child: SlidingPanelConfirmButtonWidget(
+                          text: 'Fazer Pedido',
                           submitFunction: submitData,
+                          originAddressController:
+                              widget.originAddressController,
+                          destinationAddressController:
+                              widget.destinationAddressController,
+                          firstDateController: widget.firstDateController,
+                          secondDateController: widget.secondDateController,
+                          furnitureCheckValue: furnitureCheckValue,
+                          boxCheckValue: boxCheckValue,
+                          fragileCheckValue: fragileCheckValue,
+                          otherCheckValue: otherCheckValue,
                         ),
                       ),
                     ),
@@ -201,253 +355,6 @@ class CustomSlidingPanel extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class CustomDatePicker extends StatefulWidget {
-  final TextEditingController dateController;
-
-  const CustomDatePicker({
-    super.key,
-    required this.dateController,
-  });
-
-  @override
-  State<CustomDatePicker> createState() => _CustomDatePickerState();
-}
-
-class _CustomDatePickerState extends State<CustomDatePicker> {
-  DateTime _date = DateTime.now();
-
-  void _showDatePicker(BuildContext context, TextEditingController controller) {
-    showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 3),
-    ).then((value) {
-      setState(() {
-        if (value != null) {
-          _date = value;
-          String month = _date.month <= 9
-              ? '0${_date.month}'
-              : _date.month.toString();
-          controller.text = '${_date.day} / $month / ${_date.year}';
-        }
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    OutlineInputBorder outlineBorder = OutlineInputBorder(
-      borderRadius: const BorderRadius.all(Radius.circular(20)),
-      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
-    );
-    return SizedBox(
-      width: MediaQuery.sizeOf(context).width * 0.45,
-      child: TextField(
-        controller: widget.dateController,
-        readOnly: true,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 15,
-        ),
-        decoration: InputDecoration(
-            hintText: '.. / .. / ....',
-            contentPadding: const EdgeInsets.all(1),
-            suffixIcon: Icon(
-              Icons.calendar_month,
-              size: 25,
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-            border: outlineBorder,
-            enabledBorder: outlineBorder),
-        onTap: () => _showDatePicker(context, widget.dateController),
-      ),
-    );
-  }
-}
-
-class CustomDivider extends StatelessWidget {
-  const CustomDivider({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Divider(
-      height: 0.25,
-      color: Colors.grey[200],
-    );
-  }
-}
-
-class CustomTitle extends StatelessWidget {
-  const CustomTitle({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.bold,
-          fontSize: 20),
-    );
-  }
-}
-
-class CustomCheckboxListTile extends StatefulWidget {
-  final String label;
-  const CustomCheckboxListTile({super.key, required this.label});
-
-  @override
-  State<CustomCheckboxListTile> createState() => _CustomCheckboxListTileState();
-}
-
-class _CustomCheckboxListTileState extends State<CustomCheckboxListTile> {
-  bool checkboxValue = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return CheckboxListTile(
-      title: Text(
-        widget.label,
-        style: const TextStyle(
-          fontSize: 13,
-        ),
-      ),
-      side: BorderSide(color: Theme.of(context).colorScheme.primary),
-      dense: true,
-      checkColor: Theme.of(context).colorScheme.secondary,
-      value: checkboxValue,
-      onChanged: (bool? value) {
-        setState(() {
-          checkboxValue = value!;
-        });
-      },
-    );
-  }
-}
-
-class CustomAddressTextForm extends StatelessWidget {
-  const CustomAddressTextForm({
-    super.key,
-    required this.icon,
-    this.fontSize = 12,
-    this.iconSize = 25,
-    this.hintText = ' ',
-    required this.textFieldController,
-  });
-
-  final IconData icon;
-  final double fontSize;
-  final double iconSize;
-  final String hintText;
-  final TextEditingController textFieldController;
-
-  @override
-  Widget build(BuildContext context) {
-    OutlineInputBorder outlineBorder = OutlineInputBorder(
-      borderRadius: const BorderRadius.all(Radius.circular(20)),
-      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
-    );
-
-    return TextFormField(
-      controller: textFieldController,
-      style: TextStyle(
-        fontSize: fontSize,
-      ),
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(1),
-        hintText: hintText,
-        prefixIcon: Icon(
-          icon,
-          size: iconSize,
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-        enabledBorder: outlineBorder,
-        border: outlineBorder,
-      ),
-      onChanged: (value) {
-        // Implementar lógica para buscar sugestões de lugares aqui
-      },
-    );
-  }
-}
-
-class TransportSizeChoice extends StatefulWidget {
-  const TransportSizeChoice({super.key});
-
-  @override
-  State<TransportSizeChoice> createState() => _TransportSizeChoiceState();
-}
-
-class _TransportSizeChoiceState extends State<TransportSizeChoice> {
-  String transportView = ' ';
-  Color sColor = Colors.white;
-  Color mColor = Colors.white;
-  Color lColor = Colors.white;
-
-  @override
-  Widget build(BuildContext context) {
-    return SegmentedButton<String>(
-      segments: <ButtonSegment<String>>[
-        ButtonSegment<String>(
-            value: 'S',
-            label: Text(' Pequeno', style: TextStyle(color: sColor)),
-            icon: Icon(
-              CustomIcons.truckPickup,
-              color: sColor,
-            )),
-        ButtonSegment<String>(
-            value: 'M',
-            label: Text(' Médio', style: TextStyle(color: mColor)),
-            icon: Icon(
-              CustomIcons.truck,
-              color: mColor,
-            )),
-        ButtonSegment<String>(
-            value: 'L',
-            label: Text(' Grande', style: TextStyle(color: lColor)),
-            icon: Icon(
-              CustomIcons.truckMoving,
-              color: lColor,
-            )),
-      ],
-      showSelectedIcon: false,
-      style: ButtonStyle(
-        backgroundColor:
-            MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
-        side: MaterialStateProperty.all(const BorderSide(color: Colors.white)),
-      ),
-      selected: <String>{transportView},
-      onSelectionChanged: (Set<String> newSelection) {
-        setState(() {
-          transportView = newSelection.first;
-          switch (transportView) {
-            case 'S':
-              sColor = Theme.of(context).colorScheme.secondary;
-              mColor = Colors.white;
-              lColor = Colors.white;
-              break;
-            case 'M':
-              sColor = Colors.white;
-              mColor = Theme.of(context).colorScheme.secondary;
-              lColor = Colors.white;
-              break;
-            case 'L':
-              sColor = Colors.white;
-              mColor = Colors.white;
-              lColor = Theme.of(context).colorScheme.secondary;
-              break;
-          }
-        });
-      },
     );
   }
 }
