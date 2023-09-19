@@ -1,6 +1,6 @@
 import '../constants/main.dart' as constants;
 import 'package:mongo_dart/mongo_dart.dart';
-import './client.dart';
+import '../classes/client.dart';
 
 String url = constants.URL_CONNECTION;
 String clientCollectionURL = constants.CLIENT_COLLECTION;
@@ -36,6 +36,16 @@ class ClientDb{
     try {
       final users = await clientCollection?.find(where.sortBy('_id')).toList();
       return users;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getOneBy(String email, String password) async {
+    try {
+      final user = await clientCollection?.findOne({"email": email, "password": password});
+      return user;
     } catch (e) {
       print(e);
       return null;

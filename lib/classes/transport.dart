@@ -1,8 +1,8 @@
 
-import 'package:moveout1/database/client.dart';
-import 'package:moveout1/database/driver.dart';
-import 'package:moveout1/database/request.dart';
-import 'package:moveout1/database/vehicle.dart';
+import 'package:moveout1/classes/client.dart';
+import 'package:moveout1/classes/driver.dart';
+import 'package:moveout1/classes/request.dart';
+import 'package:moveout1/classes/vehicle.dart';
 
 enum Situation {
   running,

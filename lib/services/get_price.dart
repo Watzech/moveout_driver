@@ -1,4 +1,4 @@
-Future<double> getRequestPrice(double distance, String size, double plus) async {
+Future<double> getPrice(double distance, String size, double plus, int helpers) async {
 
   double truck = 0;
 
@@ -33,5 +33,5 @@ Future<double> getRequestPrice(double distance, String size, double plus) async 
     km = 1.5;
   }
 
-  return ((distance * 2) * km + (obj * plus) + truck);
+  return ((distance * 2) * km + (obj * plus) + truck + (helpers * 70));
 }
