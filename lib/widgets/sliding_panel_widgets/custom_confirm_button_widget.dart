@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class SlidingPanelConfirmButtonWidget extends StatefulWidget {
   final String text;
   final VoidCallback submitFunction;
+  final bool isButtonEnabled;
   final TextEditingController originAddressController;
   final TextEditingController destinationAddressController;
   final TextEditingController firstDateController;
@@ -14,12 +15,11 @@ class SlidingPanelConfirmButtonWidget extends StatefulWidget {
   final bool fragileCheckValue;
   final bool otherCheckValue;
 
-  bool isButtonEnabled = false;
-
-  SlidingPanelConfirmButtonWidget({
+  const SlidingPanelConfirmButtonWidget({
     super.key,
     required this.text,
     required this.submitFunction,
+    required this.isButtonEnabled,
     required this.originAddressController,
     required this.destinationAddressController,
     required this.firstDateController,
@@ -37,40 +37,40 @@ class SlidingPanelConfirmButtonWidget extends StatefulWidget {
 
 class _SlidingPanelConfirmButtonWidgetState
     extends State<SlidingPanelConfirmButtonWidget> {
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      if ((widget.originAddressController.text.isNotEmpty) &&
-          (widget.destinationAddressController.text.isNotEmpty) &&
-          ((widget.furnitureCheckValue ||
-              widget.boxCheckValue ||
-              widget.fragileCheckValue ||
-              widget.otherCheckValue)) &&
-          (widget.firstDateController.text.isNotEmpty) &&
-          (widget.secondDateController.text.isNotEmpty)) {
-        widget.isButtonEnabled = true;
-      } else {
-        widget.isButtonEnabled = false;
-      }
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   setState(() {
+  //     if ((widget.originAddressController.text.isNotEmpty) &&
+  //         (widget.destinationAddressController.text.isNotEmpty) &&
+  //         ((widget.furnitureCheckValue ||
+  //             widget.boxCheckValue ||
+  //             widget.fragileCheckValue ||
+  //             widget.otherCheckValue)) &&
+  //         (widget.firstDateController.text.isNotEmpty) &&
+  //         (widget.secondDateController.text.isNotEmpty)) {
+  //       widget.isButtonEnabled = true;
+  //     } else {
+  //       widget.isButtonEnabled = false;
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: widget.isButtonEnabled ? widget.submitFunction : null,
-      style: widget.isButtonEnabled 
-      ? ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(
-            Theme.of(context).colorScheme.secondary),
-        fixedSize: MaterialStateProperty.all(const Size(200, 60)),
-      )
-      : ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(
-            Theme.of(context).colorScheme.onBackground),
-        fixedSize: MaterialStateProperty.all(const Size(200, 60)),
-      ),
+      style: widget.isButtonEnabled
+          ? ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Theme.of(context).colorScheme.secondary),
+              fixedSize: MaterialStateProperty.all(const Size(200, 60)),
+            )
+          : ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Theme.of(context).colorScheme.onBackground),
+              fixedSize: MaterialStateProperty.all(const Size(200, 60)),
+            ),
       child: Text(
         widget.text,
         textDirection: TextDirection.ltr,

@@ -18,7 +18,10 @@ class CustomCheckboxListTile extends StatefulWidget {
   State<CustomCheckboxListTile> createState() => _CustomCheckboxListTileState();
 }
 
-class _CustomCheckboxListTileState extends State<CustomCheckboxListTile> {
+class _CustomCheckboxListTileState extends State<CustomCheckboxListTile>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   bool checkboxValue = false;
 
   void _sendDataToParent(bool value) {
@@ -27,6 +30,7 @@ class _CustomCheckboxListTileState extends State<CustomCheckboxListTile> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CheckboxListTile(
       title: Text(
         widget.label,
@@ -42,8 +46,8 @@ class _CustomCheckboxListTileState extends State<CustomCheckboxListTile> {
         setState(() {
           checkboxValue = value!;
           _sendDataToParent(checkboxValue);
-          widget.onChangedFunction;
         });
+        widget.onChangedFunction();
       },
     );
   }
