@@ -42,10 +42,10 @@ class ClientDb{
     }
   }
 
-  static Future<Map<String, dynamic>?> getOneBy(String email, String password) async {
+  static Future<List<Map<String, dynamic>>?> getInfoByField(List<String> values, String fieldName) async {
     try {
-      final user = await clientCollection?.findOne({"email": email, "password": password});
-      return user;
+      final users = await clientCollection?.find(where.oneFrom(fieldName, values)).toList();
+      return users;
     } catch (e) {
       print(e);
       return null;
