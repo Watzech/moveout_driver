@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -38,7 +39,7 @@ class CustomSlidingPanel extends StatefulWidget {
 
 class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   final _formkey = GlobalKey<FormState>();
-  bool isButtonEnabled = false;
+  ValueNotifier<bool> isButtonEnabled = ValueNotifier(false);
   String transportSizeValue = ' ';
   void _handleTransportSizeValue(String data) {
     setState(() {
@@ -88,7 +89,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     });
   }
 
-  bool isEmpty() {
+  ValueNotifier<bool> isEmpty() {
     setState(() {
       if ((widget.originAddressController.text.isNotEmpty) &&
           (widget.destinationAddressController.text.isNotEmpty) &&
@@ -98,9 +99,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
               otherCheckValue)) &&
           (widget.firstDateController.text.isNotEmpty) &&
           (widget.secondDateController.text.isNotEmpty)) {
-        isButtonEnabled = true;
+        isButtonEnabled = ValueNotifier(true);
       } else {
-        isButtonEnabled = false;
+        isButtonEnabled = ValueNotifier(false);
       }
     });
     return isButtonEnabled;
@@ -112,11 +113,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       print('opaa ' + widget.originAddressController.text);
       print("Uploading...");
       // Database.insert(clientData);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('Erro na validação, verifique os campos'),
-        backgroundColor: Theme.of(context).colorScheme.error,
-      ));
     }
   }
 
@@ -207,7 +203,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     child: CustomCheckboxListTile(
                         label: 'Preciso de Ajudantes',
                         callback: _handleHelperCheckValue,
-                        onChangedFunction:(){}),
+                        onChangedFunction: () {}),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -215,7 +211,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     child: CustomCheckboxListTile(
                         label: 'Preciso de Embalagem',
                         callback: _handlePackageCheckValue,
-                        onChangedFunction:(){}),
+                        onChangedFunction: () {}),
                   ),
                   const CustomDivider(),
                   const Padding(
@@ -242,7 +238,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     child: CustomCheckboxListTile(
                         label: 'Móveis / Eletrodomésticos de grande porte',
                         callback: _handleFurnitureCheckValue,
-                        onChangedFunction: isEmpty),
+                        onChangedFunction: () {
+                          isEmpty();
+                        }),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -250,7 +248,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     child: CustomCheckboxListTile(
                         label: 'Caixas / Itens diversos',
                         callback: _handleBoxCheckValue,
-                        onChangedFunction: isEmpty),
+                        onChangedFunction: () {
+                          isEmpty();
+                        }),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -258,15 +258,19 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     child: CustomCheckboxListTile(
                         label: 'Vidros / Objetos frágeis',
                         callback: _handleFragileCheckValue,
-                        onChangedFunction: isEmpty),
+                        onChangedFunction: () {
+                          isEmpty();
+                        }),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
                     child: CustomCheckboxListTile(
-                        label: 'Outros', 
+                        label: 'Outros',
                         callback: _handleOtherCheckValue,
-                        onChangedFunction: isEmpty),
+                        onChangedFunction: () {
+                          isEmpty();
+                        }),
                   ),
                   Center(
                     child: Padding(
@@ -331,22 +335,28 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     child: Padding(
                       padding: const EdgeInsets.all(25.0),
                       child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width * 0.75,
-                        child: SlidingPanelConfirmButtonWidget(
-                          text: 'Fazer Pedido',
-                          submitFunction: submitData,
-                          originAddressController:
-                              widget.originAddressController,
-                          destinationAddressController:
-                              widget.destinationAddressController,
-                          firstDateController: widget.firstDateController,
-                          secondDateController: widget.secondDateController,
-                          furnitureCheckValue: furnitureCheckValue,
-                          boxCheckValue: boxCheckValue,
-                          fragileCheckValue: fragileCheckValue,
-                          otherCheckValue: otherCheckValue,
-                        ),
-                      ),
+                          width: MediaQuery.sizeOf(context).width * 0.75,
+                          child: ValueListenableBuilder<bool>(
+                              valueListenable: isButtonEnabled,
+                              builder: (context, value, child) {
+                                return SlidingPanelConfirmButtonWidget(
+                                  text: 'Fazer Pedido',
+                                  submitFunction: submitData,
+                                  isButtonEnabled: isButtonEnabled.value,
+                                  originAddressController:
+                                      widget.originAddressController,
+                                  destinationAddressController:
+                                      widget.destinationAddressController,
+                                  firstDateController:
+                                      widget.firstDateController,
+                                  secondDateController:
+                                      widget.secondDateController,
+                                  furnitureCheckValue: furnitureCheckValue,
+                                  boxCheckValue: boxCheckValue,
+                                  fragileCheckValue: fragileCheckValue,
+                                  otherCheckValue: otherCheckValue,
+                                );
+                              })),
                     ),
                   )
                 ],
