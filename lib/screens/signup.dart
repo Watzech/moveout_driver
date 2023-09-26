@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:moveout1/screens/mapscreen.dart';
+import 'package:moveout1/services/do_login.dart';
 import 'package:validation_pro/validate.dart';
 
 import 'package:moveout1/widgets/confirm_button.dart';
@@ -67,23 +69,33 @@ class _SingupTabBarState extends State<SingupTabBar> {
   final TextEditingController _addressFormFieldController =
       TextEditingController();
 
-  void submitData() {
-    if (_formkey.currentState!.validate()) {
-      //form correto, cria a entidade e envia pro BD
-      print("Uploading...");
-      Client clientData = Client(
-        name: _nameFormFieldController.text,
-        cpf: _cpfFormFieldController.text,
-        phone: _phoneFormFieldController.text,
-        email: _emailFormFieldController.text,
-        password: _passwordFormFieldController.text,
-        photo: 'Work in Progress',
-        address: _addressFormFieldController.text,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+  void goMap(){
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MapScreen()),
+    );
+  }
 
-      // Database.insert(clientData);
+  void submitData() async {
+    if (_formkey.currentState!.validate()) {
+      String name = _nameFormFieldController.text;
+      String cpf = _cpfFormFieldController.text;
+      String phone = _phoneFormFieldController.text;
+      String email = _emailFormFieldController.text;
+      String password = _passwordFormFieldController.text;
+      var photo = 'Work in Progress';
+      String address = _addressFormFieldController.text;
+      DateTime createdAt = DateTime.now();
+      DateTime updatedAt = DateTime.now();
+
+      bool signup = await doSignup(name, cpf, phone, email, password, photo, address, createdAt, updatedAt);
+
+      if(signup){
+        goMap();
+      }
+      else{
+        // Verifique suas informações e tente novamente
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text(submitValidationFail),
@@ -187,7 +199,7 @@ class _SingupTabBarState extends State<SingupTabBar> {
                             validatorFunction: (value) {
                               if (value == null || value.isEmpty) {
                                 return emptyValidationFail;
-                              } else if (Validate.isEmail(value)) {
+                              } else if (!Validate.isEmail(value)) {
                                 return 'Insira um e-mail válido.';
                               }
                               return null;

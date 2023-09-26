@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/signup.dart';
+import 'package:moveout1/services/addresses.dart';
+import 'package:moveout1/services/do_login.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/background_container.dart';
@@ -28,16 +30,25 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _passwordFormFieldController =
       TextEditingController();
 
-  void submitData() {
-    // if (_formkey.currentState!.validate()) {
-      print('aqui, o login foi validado e pode ser enviado');
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MapScreen()),
-      );
-    // }else{
-    //   print('aqui, o login falhou a validação e não será enviado');
-    // }
+  void goMap(){
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MapScreen()),
+    );
+  }
+
+  Future<void> submitData() async {
+    String email = _emailOrCpfFormFieldController.text;
+    String password = _passwordFormFieldController.text;
+    bool login = await doLogin(email, password);
+
+    if(login){
+      goMap();
+    }
+    else{
+      // Verifique suas informações e tente novamente
+      print("Não deu");
+    }
   }
 
   @override
@@ -113,7 +124,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                             shrinkWrap: true,
                                             children: [
                                               LoginTextFormField(
-                                                lbl: 'E-mail ou CPF:',
+                                                lbl: 'E-mail:',
                                                 controller:
                                                     _emailOrCpfFormFieldController,
                                                 validatorFunction: (value) {
