@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/signup.dart';
-import 'package:moveout1/services/addresses.dart';
 import 'package:moveout1/services/do_login.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/widgets/confirm_button.dart';

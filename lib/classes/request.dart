@@ -1,18 +1,17 @@
 
 class Request {
-  final String id;
+  String? id;
   final String cpfClient;
   double price;
   String originAddress;
   String destinyAddress;
-  int helpers;
+  bool helpers;
   List<String> interesteds = [];
   String load;
   final DateTime createdAt;
   final DateTime updatedAt;
 
   Request({
-    required this.id,
     required this.cpfClient,
     required this.price,
     required this.originAddress,
@@ -21,6 +20,7 @@ class Request {
     required this.load,
     required this.createdAt,
     required this.updatedAt,
+    this.id
   });
 
   Map<String, dynamic> toMap() {
