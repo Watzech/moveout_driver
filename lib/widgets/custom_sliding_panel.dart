@@ -2,6 +2,9 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:moveout1/services/do_request.dart';
+import 'package:moveout1/services/get_addresses.dart';
+import 'package:moveout1/services/get_price.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -48,6 +51,7 @@ class CustomSlidingPanel extends StatefulWidget {
 class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   final _formkey = GlobalKey<FormState>();
   ValueNotifier<bool> isButtonEnabled = ValueNotifier(false);
+
   String transportSizeValue = ' ';
   void _handleTransportSizeValue(String data) {
     setState(() {
@@ -148,12 +152,42 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     return isButtonEnabled;
   }
 
-  void submitData() {
+  void submitData() async {
     if (_formkey.currentState!.validate()) {
-      // form correto, cria a entidade e envia pro BD
-      print('opaa ' + widget.originAddressController.text);
-      print("Uploading...");
-      // Database.insert(clientData);
+
+      Map<String, dynamic> info = {};
+      
+      dynamic originAddress = await getAddresses(widget.originAddressController.text);
+      dynamic destinationAddress = await getAddresses(widget.destinationAddressController.text);
+      String firstDate = widget.firstDateController.text;
+      String secondDate = widget.secondDateController.text;
+      String furnitureCheck = widget.furnitureCheckController.text;
+      String boxCheck = widget.boxCheckController.text;
+      String fragileCheck = widget.fragileCheckController.text;
+      String otherCheck = widget.otherCheckController.text;
+
+      info["date"] = [firstDate, secondDate];
+      info["size"] = transportSizeValue;
+      info["plus"] = 2;
+      info["helpers"] = helperCheckValue;
+      info["wrapping"] = packageCheckValue;
+      info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
+
+      // print("originAddress = $originAddress");
+      // print("destinationAddress = $destinationAddress");
+      // print("firstDate = $firstDate");
+      // print("secondDate = $secondDate");
+      // print("furnitureCheck = $furnitureCheck");
+      // print("boxCheck = $boxCheck");
+      // print("fragileCheck = $fragileCheck");
+      // print("otherCheck = $otherCheck");
+      // print("transportSizeValue = $transportSizeValue");
+      // print("helperCheckValue = $helperCheckValue");
+      // print("packageCheckValue = $packageCheckValue");
+
+      dynamic quote = await getQuote(originAddress[0], destinationAddress[0], info);
+      await doRequest(quote);
+
     }
   }
 
