@@ -24,6 +24,10 @@ class CustomSlidingPanel extends StatefulWidget {
     required this.destinationAddressController,
     required this.firstDateController,
     required this.secondDateController,
+    required this.furnitureCheckController,
+    required this.boxCheckController,
+    required this.fragileCheckController,
+    required this.otherCheckController,
   });
 
   final PanelController panelController;
@@ -32,6 +36,10 @@ class CustomSlidingPanel extends StatefulWidget {
   final TextEditingController destinationAddressController;
   final TextEditingController firstDateController;
   final TextEditingController secondDateController;
+  final TextEditingController furnitureCheckController;
+  final TextEditingController boxCheckController;
+  final TextEditingController fragileCheckController;
+  final TextEditingController otherCheckController;
 
   @override
   State<CustomSlidingPanel> createState() => _CustomSlidingPanelState();
@@ -89,14 +97,47 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     });
   }
 
-  ValueNotifier<bool> isEmpty() {
+  ValueNotifier<bool> buttonValidate() {
+    bool verifyCheckboxText(
+        bool checkvalue, TextEditingController textController) {
+      if (checkvalue == true) {
+        return textController.text.isNotEmpty ? true : false;
+      } else {
+        return true;
+      }
+    }
+
+    bool verifyCheckboxesValidation() {
+      bool furnitureCheckValid = verifyCheckboxText(
+          furnitureCheckValue, widget.furnitureCheckController);
+      bool boxCheckValid =
+          verifyCheckboxText(boxCheckValue, widget.boxCheckController);
+      bool fragileCheckValid =
+          verifyCheckboxText(fragileCheckValue, widget.fragileCheckController);
+      bool otherCheckValid =
+          verifyCheckboxText(otherCheckValue, widget.otherCheckController);
+      return (furnitureCheckValid &&
+              boxCheckValid &&
+              fragileCheckValid &&
+              otherCheckValid)
+          ? true
+          : false;
+    }
+
+    bool isAtLeastOneChecked = (furnitureCheckValue ||
+            boxCheckValue ||
+            fragileCheckValue ||
+            otherCheckValue)
+        ? true
+        : false;
+
+    bool allCheckboxesValid =
+        isAtLeastOneChecked ? verifyCheckboxesValidation() : false;
+
     setState(() {
       if ((widget.originAddressController.text.isNotEmpty) &&
           (widget.destinationAddressController.text.isNotEmpty) &&
-          ((furnitureCheckValue ||
-              boxCheckValue ||
-              fragileCheckValue ||
-              otherCheckValue)) &&
+          allCheckboxesValid &&
           (widget.firstDateController.text.isNotEmpty) &&
           (widget.secondDateController.text.isNotEmpty)) {
         isButtonEnabled = ValueNotifier(true);
@@ -131,7 +172,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       ],
       controller: widget.panelController,
       minHeight: MediaQuery.of(context).size.height * 0.058,
-      maxHeight: MediaQuery.of(context).size.height * 0.75,
+      maxHeight: MediaQuery.of(context).size.height * 0.70,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(15.0),
         topRight: Radius.circular(15.0),
@@ -174,7 +215,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                       textFieldController: widget.originAddressController,
                       icon: Icons.add_location_alt,
                       onChangedFunction: (value) {
-                        isEmpty();
+                        buttonValidate();
                       },
                     ),
                   ),
@@ -193,7 +234,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                       textFieldController: widget.destinationAddressController,
                       icon: Icons.add_location_alt,
                       onChangedFunction: (value) {
-                        isEmpty();
+                        buttonValidate();
                       },
                     ),
                   ),
@@ -235,41 +276,45 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
-                    child: CustomCheckboxListTile(
+                    child: CustomCheckboxTextListTile(
                         label: 'Móveis / Eletrodomésticos de grande porte',
                         callback: _handleFurnitureCheckValue,
+                        textController: widget.furnitureCheckController,
                         onChangedFunction: () {
-                          isEmpty();
+                          buttonValidate();
                         }),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
-                    child: CustomCheckboxListTile(
+                    child: CustomCheckboxTextListTile(
                         label: 'Caixas / Itens diversos',
                         callback: _handleBoxCheckValue,
+                        textController: widget.boxCheckController,
                         onChangedFunction: () {
-                          isEmpty();
+                          buttonValidate();
                         }),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
-                    child: CustomCheckboxListTile(
+                    child: CustomCheckboxTextListTile(
                         label: 'Vidros / Objetos frágeis',
                         callback: _handleFragileCheckValue,
+                        textController: widget.fragileCheckController,
                         onChangedFunction: () {
-                          isEmpty();
+                          buttonValidate();
                         }),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 10.0, right: 5.0, top: 0.0, bottom: 0.0),
-                    child: CustomCheckboxListTile(
+                    child: CustomCheckboxTextListTile(
                         label: 'Outros',
                         callback: _handleOtherCheckValue,
+                        textController: widget.otherCheckController,
                         onChangedFunction: () {
-                          isEmpty();
+                          buttonValidate();
                         }),
                   ),
                   Center(
@@ -298,7 +343,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         child: CustomDatePicker(
                           dateController: widget.firstDateController,
                           onChangedFunction: (value) {
-                            isEmpty();
+                            buttonValidate();
                           },
                         )),
                   ),
@@ -315,7 +360,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         child: CustomDatePicker(
                           dateController: widget.secondDateController,
                           onChangedFunction: (value) {
-                            isEmpty();
+                            buttonValidate();
                           },
                         )),
                   ),

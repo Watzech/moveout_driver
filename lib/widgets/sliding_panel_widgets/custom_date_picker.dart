@@ -14,7 +14,9 @@ class CustomDatePicker extends StatefulWidget {
   State<CustomDatePicker> createState() => _CustomDatePickerState();
 }
 
-class _CustomDatePickerState extends State<CustomDatePicker> {
+class _CustomDatePickerState extends State<CustomDatePicker> with AutomaticKeepAliveClientMixin{
+  @override
+  bool get wantKeepAlive => true;
   DateTime _date = DateTime.now();
 
   void _showDatePicker(BuildContext context, TextEditingController controller) {
@@ -41,6 +43,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       borderRadius: const BorderRadius.all(Radius.circular(20)),
       borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
     );
+    super.build(context);
     return SizedBox(
       width: MediaQuery.sizeOf(context).width * 0.45,
       child: TextFormField(
