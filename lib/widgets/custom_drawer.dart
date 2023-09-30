@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:moveout1/screens/mapscreen.dart';
+import 'package:moveout1/screens/request.dart';
 import 'profile_image_container.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -15,8 +17,8 @@ class CustomDrawer extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: ListView(
-          children: const [
-            Row(
+          children: [
+            const Row(
               children: [
                 ImageContainer(),
                 Padding(
@@ -41,14 +43,42 @@ class CustomDrawer extends StatelessWidget {
                 )
               ],
             ),
-            SizedBox(height: 30),
-            CustomListTile(icon: Icons.home, text: 'Início'),
-            SizedBox(height: 15),
-            CustomListTile(icon: Icons.content_paste, text: 'Pedidos'),
-            SizedBox(height: 15),
-            CustomListTile(icon: Icons.calendar_month, text: 'Agenda'),
-            SizedBox(height: 15),
-            CustomListTile(icon: Icons.settings, text: 'Configurações')
+            const SizedBox(height: 30),
+            CustomListTile(
+              icon: Icons.home,
+              text: 'Início',
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => RequestsScreen()));
+              },
+            ),
+            const SizedBox(height: 15),
+            CustomListTile(
+              icon: Icons.content_paste,
+              text: 'Pedidos',
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => RequestsScreen()));
+              },
+            ),
+            const SizedBox(height: 15),
+            CustomListTile(
+              icon: Icons.calendar_month,
+              text: 'Agenda',
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => RequestsScreen()));
+              },
+            ),
+            const SizedBox(height: 15),
+            CustomListTile(
+              icon: Icons.settings,
+              text: 'Configurações',
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => RequestsScreen()));
+              },
+            )
             // selected: _selectedIndex == 0,
             // onTap: () {
             //   // Update the state of the app
@@ -66,29 +96,36 @@ class CustomDrawer extends StatelessWidget {
 class CustomListTile extends StatelessWidget {
   final IconData icon;
   final String text;
+  final VoidCallback onTap;
   const CustomListTile({
     super.key,
     required this.icon,
     required this.text,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Row(
-        children: [
-          Icon(
-            icon,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 25,
-          ),
-          const SizedBox(width: 15),
-          Text(
-            text,
-            style: const TextStyle(
-                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-        ],
+      title: InkWell(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: Theme.of(context).colorScheme.secondary,
+              size: 25,
+            ),
+            const SizedBox(width: 15),
+            Text(
+              text,
+              style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
   }

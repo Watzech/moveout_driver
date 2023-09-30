@@ -7,6 +7,7 @@ import '../widgets/custom_icon_button_container.dart';
 import '../widgets/custom_sliding_panel.dart';
 
 const String cloudMapId = 'f49afda8074367d0';
+const EdgeInsets stackWidgetsPadding = EdgeInsets.fromLTRB(20, 20, 20, 20);
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -25,6 +26,10 @@ class _MapScreenState extends State<MapScreen> {
   TextEditingController destinationAddressController = TextEditingController();
   TextEditingController firstDateController = TextEditingController();
   TextEditingController secondDateController = TextEditingController();
+  TextEditingController furnitureCheckController = TextEditingController();
+  TextEditingController boxCheckController = TextEditingController();
+  TextEditingController fragileCheckController = TextEditingController();
+  TextEditingController otherCheckController = TextEditingController();
   LocationData? _currentLocation;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
@@ -32,12 +37,6 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _getCurrentLocation();
-  }
-
-  void _handleCheckboxChanged(bool checkboxValue, bool newValue) {
-    setState(() {
-      checkboxValue = newValue;
-    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -120,7 +119,7 @@ class _MapScreenState extends State<MapScreen> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        padding: stackWidgetsPadding,
                         child: Center(
                           child: Container(
                             decoration: BoxDecoration(boxShadow: [
@@ -191,7 +190,7 @@ class _MapScreenState extends State<MapScreen> {
                             children: [
                               Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                  stackWidgetsPadding,
                                 child: Align(
                                     alignment: Alignment.topLeft,
                                     child: CustomIconButtonContainer(
@@ -214,7 +213,7 @@ class _MapScreenState extends State<MapScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(7, 7, 7, 7),
+                                padding: stackWidgetsPadding,
                                 child: Align(
                                   alignment: Alignment.topRight,
                                   child: CustomIconButtonContainer(
@@ -246,10 +245,13 @@ class _MapScreenState extends State<MapScreen> {
                   destinationAddressController: destinationAddressController,
                   firstDateController: firstDateController,
                   secondDateController: secondDateController,
+                  furnitureCheckController: furnitureCheckController,
+                  boxCheckController: boxCheckController,
+                  fragileCheckController: fragileCheckController,
+                  otherCheckController: otherCheckController,
                 )
               ],
             ),
     );
   }
 }
-
