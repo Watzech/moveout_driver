@@ -2,12 +2,13 @@
 class Request {
   String? id;
   final String cpfClient;
-  double price;
+  dynamic price;
   String originAddress;
   String destinyAddress;
   bool helpers;
   List<String> interesteds = [];
-  String load;
+  List<dynamic> date = [];
+  List<String> load;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -16,6 +17,7 @@ class Request {
     required this.price,
     required this.originAddress,
     required this.destinyAddress,
+    required this.date,
     required this.helpers,
     required this.load,
     required this.createdAt,
@@ -30,6 +32,7 @@ class Request {
       'originAddress': originAddress,
       'destinyAddress': destinyAddress,
       'interesteds': interesteds,
+      'date': date,
       'helpers': helpers,
       'load': load,
       'createdAt': createdAt,
@@ -45,6 +48,7 @@ class Request {
     destinyAddress = map['destinyAddress'],
     helpers = map['helpers'],
     interesteds = map['interesteds'],
+    date = map['date'],
     load = map['load'],
     createdAt = map['createdAt'],
     updatedAt = map['updatedAt'];

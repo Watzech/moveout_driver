@@ -1,4 +1,5 @@
 import 'package:geocoding/geocoding.dart';
+import 'package:moveout1/constants/main.dart';
 
 Future<List<dynamic>> getAddresses(String address) async {
   List<dynamic> places = [];
@@ -47,4 +48,18 @@ Future<List<dynamic>> getAddresses(String address) async {
     places.add(place);
     return places;
   }
+}
+
+String getState(String address) {
+  String siglaEncontrada = '';
+
+  for (final sigla in STATES) {
+    final regex = RegExp(r'\b' + sigla + r'\b');
+    if (regex.hasMatch(address)) {
+      siglaEncontrada = sigla;
+      break;
+    }
+  }
+
+  return siglaEncontrada;
 }

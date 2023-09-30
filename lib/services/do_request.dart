@@ -10,9 +10,10 @@ Future<void> doRequest(dynamic requestData) async {
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
     cpfClient: cpf,
-    price: requestData["price"]["finalPrice"],
-    helpers: requestData["price"]["valueByHelper"],
-    load: requestData["price"]
+    price: requestData["price"],
+    helpers: requestData["helpers"],
+    load: requestData["load"],
+    date: requestData["date"]
   );
 
   try {

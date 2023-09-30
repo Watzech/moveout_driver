@@ -5,5 +5,8 @@ const String DRIVER_COLLECTION = 'CAD_MOTORISTA';
 const String VEHICLE_COLLECTION = 'CAD_VEICULO';
 const String REQUEST_COLLECTION = 'CAD_SOLICITACAO';
 const String TRANSPORT_COLLECTION = 'CAD_TRANSPORTE';
-
 const String API_KEY = 'AIzaSyAzLqE1W-oS1F7Z5kMDKKZmIXMzUinkbhU';
+
+final STATES = [
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+];

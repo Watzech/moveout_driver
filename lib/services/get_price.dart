@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:moveout1/constants/main.dart';
+import 'package:moveout1/services/get_addresses.dart';
 
-Future<Map<String, dynamic>> getPrice(dynamic info) async {
-
-  double distance =  info["distance"];
+Future<Map<String, dynamic>> getPrice(dynamic info, double distance) async {
+  
   String size =  info["size"];
-  double plus =  info["plus"];
+  int plus =  info["plus"];
   bool helpers =  info["helpers"];
   bool wrapping =  info["wrapping"];
 
@@ -77,21 +77,22 @@ Future<Map<String, dynamic>> getQuote(dynamic fromPlace, dynamic toPlace, dynami
 
       final data = json.decode(response.body);
 
-      quote["price"] = await getPrice(info);
+      quote["distance"] = data["rows"][0]["elements"][0]["distance"]["value"]/1000;
+
+      quote["helpers"] = info["helpers"];
+
+      quote["price"] = await getPrice(info, quote["distance"]);
 
       quote["origin"] = data["origin_addresses"][0];
-      // quote["originState"] = data["origin_addresses"][0];
+      quote["originState"] = getState(data["origin_addresses"][0]);
 
       quote["destiny"] = data["destination_addresses"][0];
-      // quote["destinyState"] = data["destination_addresses"][0];
-
-      quote["distance"] = data["rows"][0]["elements"][0]["distance"]["value"]/1000;
+      quote["destinyState"] = getState(data["destination_addresses"][0]);
 
       quote["travelDuration"] = data["rows"][0]["elements"][0]["duration"]["text"];
 
       quote["date"] = [info["date"][0], info["date"][1]];
-
-      print(quote);
+      quote["load"] = info["load"];
 
       return quote;
 
