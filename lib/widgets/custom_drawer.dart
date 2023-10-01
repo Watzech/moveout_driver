@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moveout1/screens/mapscreen.dart';
-import 'package:moveout1/screens/request.dart';
+import 'package:moveout1/screens/requests.dart';
 import 'profile_image_container.dart';
 
 class CustomDrawer extends StatelessWidget {

@@ -20,14 +20,18 @@ class RequestCard extends StatelessWidget {
   final String size;
   final String status;
   final String destinationAddress;
+  final List<String> itensList;
   final int requestCode;
+  final double price;
 
   const RequestCard(
       {super.key,
       required this.size,
       required this.status,
       required this.destinationAddress,
-      required this.requestCode});
+      required this.requestCode,
+      required this.itensList,
+      required this.price});
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +76,8 @@ class RequestCard extends StatelessWidget {
     }
     return SizedBox(
       height: 115,
+      width: MediaQuery.sizeOf(context).width,
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         children: [
           Column(
             children: [
@@ -113,59 +117,117 @@ class RequestCard extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Pedido $requestCode ',
-                      style: TextStyle(
-                        fontFamily: 'BebasKai',
-                        fontSize: 20,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Pedido $requestCode ',
+                        style: TextStyle(
+                          fontFamily: 'BebasKai',
+                          fontSize: 20,
+                          color: statusColor,
+                        ),
+                      ),
+                      Icon(
+                        Icons.circle,
                         color: statusColor,
+                        size: 5,
                       ),
-                    ),
-                    Icon(
-                      Icons.circle,
-                      color: statusColor,
-                      size: 5,
-                    ),
-                    Text(
-                      ' $statusText',
-                      style: TextStyle(
-                        fontFamily: 'BebasKai',
-                        fontSize: 20,
-                        color: statusColor,
+                      Text(
+                        ' $statusText',
+                        style: TextStyle(
+                          fontFamily: 'BebasKai',
+                          fontSize: 20,
+                          color: statusColor,
+                        ),
                       ),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Destino: ',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            destinationAddress,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      'Destino: ',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.bold,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Carga: ',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            itensList.join(', '),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        price.toString(),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      destinationAddress,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
-                )
-              ],
+                    ],
+                  )
+                ],
+              ),
             ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Icon(
+                  Icons.arrow_right,
+                  // color: Theme.of(context).colorScheme.secondary,
+                  color: Colors.grey.shade500,
+                  size: 35,
+                ),
+              )
+            ],
           )
         ],
       ),
