@@ -1,6 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CustomIcons {
   CustomIcons._();
@@ -35,6 +34,9 @@ class RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Intl.defaultLocale = 'pt_BR';
+    final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
+    
     IconData icon;
     switch (size) {
       case 'S':
@@ -119,7 +121,7 @@ class RequestCard extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
+              padding: const EdgeInsets.fromLTRB(0, 8, 10, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -203,7 +205,7 @@ class RequestCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        price.toString(),
+                        reaisFormatter.format(price),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
