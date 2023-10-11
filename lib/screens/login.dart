@@ -6,6 +6,7 @@ import 'package:moveout1/services/do_login.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/background_container.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String emptyValidationFail = 'Este campo é obrigatório.';
 const String submitValidationFail = 'Erro de validação, verifique os campos';
@@ -29,6 +30,26 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _passwordFormFieldController =
       TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      var prefs = await SharedPreferences.getInstance();
+      final user = prefs.getString("userData") ?? "";
+
+      if(user.length > 1){
+        goMap();
+      }
+    });
+  }
+
+  void saveUser(dynamic user) async{
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userData', user["userData"].toString());
+
+    goMap();
+  }
+
   void goMap(){
     Navigator.push(
       context,
@@ -39,13 +60,12 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> submitData() async {
     String email = _emailOrCpfFormFieldController.text;
     String password = _passwordFormFieldController.text;
-    bool login = await doLogin(email, password);
+    dynamic login = await doLogin(email, password);
 
-    if(login){
-      goMap();
+    if(login["done"]){
+      saveUser(login);
     }
     else{
-      // Verifique suas informações e tente novamente
       print("Não deu");
     }
   }

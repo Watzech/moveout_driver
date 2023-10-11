@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:moveout1/screens/mapscreen.dart';
+import 'package:moveout1/screens/login.dart';
 import 'package:moveout1/services/do_login.dart';
 import 'package:validation_pro/validate.dart';
 
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/login_fields.dart';
-import 'package:moveout1/classes/client.dart';
 
 enum ImageSourceType { gallery, camera }
 
@@ -72,7 +71,7 @@ class _SingupTabBarState extends State<SingupTabBar> {
   void goMap(){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const MapScreen()),
+      MaterialPageRoute(builder: (context) => const AuthScreen()),
     );
   }
 
