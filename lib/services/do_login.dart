@@ -29,7 +29,8 @@ Future<bool> doSignup(String name, String cpf, String phone, String email, Strin
 
 }
 
-Future<bool> doLogin(String email, String password) async {
+Future<dynamic> doLogin(String email, String password) async {
+  Map<String, dynamic> result = {};
 
   try {
     await ClientDb.connect();
@@ -37,23 +38,26 @@ Future<bool> doLogin(String email, String password) async {
     dynamic userList = await ClientDb.getInfoByField([email], "email");
 
     if(userList != null && userList.isNotEmpty){
-      bool isEqual = false;
 
-      userList.forEach((element) { 
+      userList.forEach((element) async { 
         if(element['password'] == password){
-          isEqual = true;
+
+          result["userData"] = element;
+          result["done"] = true;
         }
       });
 
-      return isEqual; 
+      return result;
     }
     else{
-      return false;
+      result["done"] = false;
+      return result;
     }
 
   } catch (e) {
     print(e);
-    return false;
+    result["done"] = false;
+    return result;
   }
 
 }
