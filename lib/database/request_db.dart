@@ -1,6 +1,6 @@
 import 'package:moveout1/classes/request.dart';
 
-import '../constants/main.dart' as constants;
+import 'package:moveout1/constants/main.dart' as constants;
 import 'package:mongo_dart/mongo_dart.dart';
 
 String url = constants.URL_CONNECTION;
@@ -43,6 +43,16 @@ class RequestDb{
     }
   }
 
+  static Future<List<Map<String, dynamic>>?> getInfoByField(List<String> values, String fieldName) async {
+    try {
+      final request = await requestCollection?.find(where.oneFrom(fieldName, values)).toList();
+      return request;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
   static insert(Request request) async {
     await connect();
     await requestCollection?.insertAll([request.toMap()]);
@@ -54,13 +64,32 @@ class RequestDb{
     u?["cpfClient"] = request.cpfClient;
     u?["price"] = request.price;
     u?["originAddress"] = request.originAddress;
-    u?["destinyAddress"] = request.destinyAddress;
+    u?["destinationAddress"] = request.destinationAddress;
     u?["helpers"] = request.helpers;
     u?["load"] = request.load;
     u?["interesteds"] = request.interesteds;
     u?["updatedAt"] = request.updatedAt;
 
     await requestCollection?.replaceOne({"id": request.id}, u!);
+  }
+
+  static Future<List<Map<String, dynamic>>?> getFilteredInfo(String state, String search, bool ascending) async {
+    try {
+      // final filteredResults = await RequestDb.getFilteredInfo("SP", "Vila Santista", true);
+      final request = await requestCollection?.find(
+        where.match("originAddress", state).and(
+          (
+            where.match("originAddress", search)
+          ).or(
+            where.match("destinationAddress", search)
+          )
+        ).sortBy("price.finalPrice", descending: !ascending )
+      ).toList();
+      return request;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 
 }
