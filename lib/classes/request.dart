@@ -4,7 +4,7 @@ class Request {
   final String cpfClient;
   dynamic price;
   String originAddress;
-  String destinyAddress;
+  String destinationAddress;
   bool helpers;
   List<String> interesteds = [];
   List<dynamic> date = [];
@@ -16,7 +16,7 @@ class Request {
     required this.cpfClient,
     required this.price,
     required this.originAddress,
-    required this.destinyAddress,
+    required this.destinationAddress,
     required this.date,
     required this.helpers,
     required this.load,
@@ -30,7 +30,7 @@ class Request {
       'cpfClient': cpfClient,
       'price': price,
       'originAddress': originAddress,
-      'destinyAddress': destinyAddress,
+      'destinationAddress': destinationAddress,
       'interesteds': interesteds,
       'date': date,
       'helpers': helpers,
@@ -45,7 +45,7 @@ class Request {
     cpfClient = map['cpfClient'],
     price = map['price'],
     originAddress = map['originAddress'],
-    destinyAddress = map['destinyAddress'],
+    destinationAddress = map['destinationAddress'],
     helpers = map['helpers'],
     interesteds = map['interesteds'],
     date = map['date'],

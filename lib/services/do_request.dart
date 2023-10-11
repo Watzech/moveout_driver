@@ -6,7 +6,7 @@ var cpf = 'xxx';
 Future<void> doRequest(dynamic requestData) async {
   Request request = Request(
     originAddress: requestData["origin"],
-    destinyAddress: requestData["destiny"],
+    destinationAddress: requestData["destination"],
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
     cpfClient: cpf,

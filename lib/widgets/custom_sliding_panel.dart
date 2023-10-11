@@ -173,18 +173,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       info["wrapping"] = packageCheckValue;
       info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
 
-      // print("originAddress = $originAddress");
-      // print("destinationAddress = $destinationAddress");
-      // print("firstDate = $firstDate");
-      // print("secondDate = $secondDate");
-      // print("furnitureCheck = $furnitureCheck");
-      // print("boxCheck = $boxCheck");
-      // print("fragileCheck = $fragileCheck");
-      // print("otherCheck = $otherCheck");
-      // print("transportSizeValue = $transportSizeValue");
-      // print("helperCheckValue = $helperCheckValue");
-      // print("packageCheckValue = $packageCheckValue");
-
       dynamic quote = await getQuote(originAddress[0], destinationAddress[0], info);
       await doRequest(quote);
 

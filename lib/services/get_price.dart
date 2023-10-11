@@ -5,6 +5,8 @@ import 'package:moveout1/services/get_addresses.dart';
 
 Future<Map<String, dynamic>> getPrice(dynamic info, double distance) async {
   
+  Map<String, dynamic> place = {};
+  
   String size =  info["size"];
   int plus =  info["plus"];
   bool helpers =  info["helpers"];
@@ -12,12 +14,15 @@ Future<Map<String, dynamic>> getPrice(dynamic info, double distance) async {
 
   double truck = 0;
 
-  if (size == "P") {
+  if (size == "S") {
     truck = 50;
+    place["truckSize"] = "Small";
   } else if (size == "M") {
     truck = 100;
+    place["truckSize"] = "Medium";
   } else {
     truck = 170;
+    place["truckSize"] = "Large";
   }
 
   double km = 0;
@@ -44,8 +49,6 @@ Future<Map<String, dynamic>> getPrice(dynamic info, double distance) async {
   } else {
     km = 1.5;
   }
-
-  Map<String, dynamic> place = {};
 
   place["valuePerDistance"] = km*2;
   place["valueByLoad"] = obj*plus;
