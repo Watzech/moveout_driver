@@ -5,15 +5,16 @@ var cpf = 'xxx';
 
 Future<void> doRequest(dynamic requestData) async {
   Request request = Request(
-    originAddress: requestData["origin"],
-    destinationAddress: requestData["destination"],
+    origin: requestData["origin"],
+    destination: requestData["destination"],
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
     cpfClient: cpf,
     price: requestData["price"],
     helpers: requestData["helpers"],
     load: requestData["load"],
-    date: requestData["date"]
+    date: requestData["date"],
+    status: "AG"
   );
 
   try {

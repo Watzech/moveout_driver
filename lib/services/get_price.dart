@@ -55,6 +55,7 @@ Future<Map<String, dynamic>> getPrice(dynamic info, double distance) async {
   place["valueByTruck"] = truck;
   place["valueByHelper"] = helper;
   place["wraping"] = wrap;
+  place["distance"] = distance;
   place["finalPrice"] = km*2 + (obj*plus) + truck + helper + wrap;
 
   return place;
@@ -86,13 +87,15 @@ Future<Map<String, dynamic>> getQuote(dynamic fromPlace, dynamic toPlace, dynami
 
       quote["price"] = await getPrice(info, quote["distance"]);
 
-      quote["origin"] = data["origin_addresses"][0];
-      quote["originState"] = getState(data["origin_addresses"][0]);
+      quote["origin"]["address"] = data["origin_addresses"][0];
+      quote["origin"]["state"] = getState(data["origin_addresses"][0]);
+      quote["origin"]["lat"] = fromPlace["latitude"];
+      quote["origin"]["long"] = fromPlace["longitude"];
 
-      quote["destiny"] = data["destination_addresses"][0];
-      quote["destinyState"] = getState(data["destination_addresses"][0]);
-
-      quote["travelDuration"] = data["rows"][0]["elements"][0]["duration"]["text"];
+      quote["destination"]["address"] = data["destination_addresses"][0];
+      quote["destination"]["state"] = getState(data["destination_addresses"][0]);
+      quote["destination"]["lat"] = toPlace["latitude"];
+      quote["destination"]["long"] = toPlace["longitude"];
 
       quote["date"] = [info["date"][0], info["date"][1]];
       quote["load"] = info["load"];

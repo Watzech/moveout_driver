@@ -63,12 +63,13 @@ class RequestDb{
 
     u?["cpfClient"] = request.cpfClient;
     u?["price"] = request.price;
-    u?["originAddress"] = request.originAddress;
-    u?["destinationAddress"] = request.destinationAddress;
+    u?["origin"] = request.origin;
+    u?["destination"] = request.destination;
     u?["helpers"] = request.helpers;
     u?["load"] = request.load;
     u?["interesteds"] = request.interesteds;
     u?["updatedAt"] = request.updatedAt;
+    u?["status"] = request.status;
 
     await requestCollection?.replaceOne({"id": request.id}, u!);
   }
@@ -77,11 +78,11 @@ class RequestDb{
     try {
       // final filteredResults = await RequestDb.getFilteredInfo("SP", "Vila Santista", true);
       final request = await requestCollection?.find(
-        where.match("originAddress", state).and(
+        where.match("location.origin.address", state).and(
           (
-            where.match("originAddress", search)
+            where.match("location.origin.address", search)
           ).or(
-            where.match("destinationAddress", search)
+            where.match("location.destination.address", search)
           )
         ).sortBy("price.finalPrice", descending: !ascending )
       ).toList();
