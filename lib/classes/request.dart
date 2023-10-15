@@ -3,25 +3,27 @@ class Request {
   String? id;
   final String cpfClient;
   dynamic price;
-  String originAddress;
-  String destinationAddress;
+  dynamic origin;
+  dynamic destination;
   bool helpers;
   List<String> interesteds = [];
   List<dynamic> date = [];
   List<String> load;
   final DateTime createdAt;
   final DateTime updatedAt;
+  String status;
 
   Request({
     required this.cpfClient,
     required this.price,
-    required this.originAddress,
-    required this.destinationAddress,
+    required this.origin,
+    required this.destination,
     required this.date,
     required this.helpers,
     required this.load,
     required this.createdAt,
     required this.updatedAt,
+    required this.status,
     this.id
   });
 
@@ -29,14 +31,15 @@ class Request {
     return {
       'cpfClient': cpfClient,
       'price': price,
-      'originAddress': originAddress,
-      'destinationAddress': destinationAddress,
+      'origin': origin,
+      'destination': destination,
       'interesteds': interesteds,
       'date': date,
       'helpers': helpers,
       'load': load,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'status': status
     };
   }
 
@@ -44,12 +47,13 @@ class Request {
     id = map['id'],
     cpfClient = map['cpfClient'],
     price = map['price'],
-    originAddress = map['originAddress'],
-    destinationAddress = map['destinationAddress'],
+    origin = map['origin'],
+    destination = map['destination'],
     helpers = map['helpers'],
     interesteds = map['interesteds'],
     date = map['date'],
     load = map['load'],
     createdAt = map['createdAt'],
+    status = map['status'],
     updatedAt = map['updatedAt'];
 }
