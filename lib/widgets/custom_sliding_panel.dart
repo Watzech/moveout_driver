@@ -174,8 +174,8 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
 
       dynamic quote = await getQuote(originAddress[0], destinationAddress[0], info);
-      await doRequest(quote);
 
+      await doRequest(quote);
     }
   }
 

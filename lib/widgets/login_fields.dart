@@ -168,8 +168,13 @@ class _MaskedLoginTextFormFieldState extends State<MaskedLoginTextFormField> {
 }
 
 class LoginPhotoField extends StatefulWidget {
+  const LoginPhotoField(this.type, {
+    super.key,
+    required this.callback,
+  });
+  
   final type;
-  const LoginPhotoField(this.type, {super.key});
+  final ValueChanged<XFile> callback;
 
   @override
   _LoginPhotoFieldState createState() => _LoginPhotoFieldState(this.type);
@@ -181,6 +186,10 @@ class _LoginPhotoFieldState extends State<LoginPhotoField> {
   var type;
 
   _LoginPhotoFieldState(this.type);
+
+  void _sendDataToParent(XFile value) {
+    widget.callback(value);
+  }
 
   @override
   void initState() {
@@ -206,6 +215,7 @@ class _LoginPhotoFieldState extends State<LoginPhotoField> {
               setState(() {
                 if (image != null) {
                   _image = File(image.path);
+                  _sendDataToParent(image);
                 }
               });
             },
