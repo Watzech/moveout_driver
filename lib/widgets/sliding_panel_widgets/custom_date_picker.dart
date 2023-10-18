@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 
 class CustomDatePicker extends StatefulWidget {
   final TextEditingController dateController;
-  final void Function(String?) onChangedFunction;
 
   const CustomDatePicker({
     super.key,
     required this.dateController,
-    required this.onChangedFunction,
   });
 
   @override
   State<CustomDatePicker> createState() => _CustomDatePickerState();
 }
 
-class _CustomDatePickerState extends State<CustomDatePicker> with AutomaticKeepAliveClientMixin{
+class _CustomDatePickerState extends State<CustomDatePicker>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
   DateTime _date = DateTime.now();
@@ -64,7 +63,6 @@ class _CustomDatePickerState extends State<CustomDatePicker> with AutomaticKeepA
             border: outlineBorder,
             enabledBorder: outlineBorder),
         onTap: () => _showDatePicker(context, widget.dateController),
-        onChanged: widget.onChangedFunction,
       ),
     );
   }

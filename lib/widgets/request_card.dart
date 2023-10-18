@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:moveout1/classes/request.dart';
 
 class CustomIcons {
   CustomIcons._();
@@ -16,21 +17,12 @@ class CustomIcons {
 }
 
 class RequestCard extends StatelessWidget {
-  final String size;
-  final String status;
-  final String destinationAddress;
-  final List<String> itensList;
-  final int requestCode;
-  final double price;
+  final Request request;
 
   const RequestCard(
       {super.key,
-      required this.size,
-      required this.status,
-      required this.destinationAddress,
-      required this.requestCode,
-      required this.itensList,
-      required this.price});
+      required this.request
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +30,14 @@ class RequestCard extends StatelessWidget {
     final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
     
     IconData icon;
-    switch (size) {
-      case 'S':
+    switch (request.price.trucksize) {
+      case 'Small':
         icon = CustomIcons.truckPickup;
         break;
-      case 'M':
+      case 'Medium':
         icon = CustomIcons.truck;
         break;
-      case 'L':
+      case 'Large':
         icon = CustomIcons.truckMoving;
         break;
       default:
@@ -54,7 +46,7 @@ class RequestCard extends StatelessWidget {
     }
     Color statusColor;
     String statusText;
-    switch (status) {
+    switch (request.status) {
       case 'CO': //Concluído
         statusColor = Colors.green;
         statusText = 'Concluído';
@@ -128,7 +120,8 @@ class RequestCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'Pedido $requestCode ',
+                        //'Pedido $request. ',
+                        'Pedido ??',
                         style: TextStyle(
                           fontFamily: 'BebasKai',
                           fontSize: 20,
@@ -151,7 +144,7 @@ class RequestCard extends StatelessWidget {
                     ],
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                     child: Row(
                       children: [
                         Text(
@@ -164,7 +157,7 @@ class RequestCard extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            destinationAddress,
+                            request.destination.address,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -177,7 +170,7 @@ class RequestCard extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                     child: Row(
                       children: [
                         Text(
@@ -190,7 +183,7 @@ class RequestCard extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            itensList.join(', '),
+                            request.load.join(', '),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -205,7 +198,7 @@ class RequestCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        reaisFormatter.format(price),
+                        reaisFormatter.format(request.price.finalPrice),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,

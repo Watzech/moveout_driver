@@ -10,7 +10,6 @@ class CustomAddressTextForm extends StatelessWidget {
     this.iconSize = 25,
     this.hintText = ' ',
     required this.textFieldController,
-    required this.onChangedFunction,
   });
 
   final IconData icon;
@@ -18,7 +17,6 @@ class CustomAddressTextForm extends StatelessWidget {
   final double iconSize;
   final String hintText;
   final TextEditingController textFieldController;
-  final void Function(String?) onChangedFunction;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +41,6 @@ class CustomAddressTextForm extends StatelessWidget {
         enabledBorder: outlineBorder,
         border: outlineBorder,
       ),
-      onChanged: onChangedFunction,
     );
   }
 }

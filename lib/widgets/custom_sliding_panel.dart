@@ -1,11 +1,8 @@
 // ignore_for_file: must_be_immutable
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moveout1/services/do_request.dart';
 import 'package:moveout1/services/get_addresses.dart';
 import 'package:moveout1/services/get_price.dart';
-import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'sliding_panel_widgets/custom_address_text_form.dart';
@@ -152,13 +149,31 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     return isButtonEnabled;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    widget.originAddressController.addListener(() {
+      if(widget.originAddressController.text.isNotEmpty) buttonValidate();
+    });
+    widget.destinationAddressController.addListener(() {
+      if(widget.destinationAddressController.text.isNotEmpty)buttonValidate();
+    });
+    widget.firstDateController.addListener(() {
+      if(widget.firstDateController.text.isNotEmpty)buttonValidate();
+    });
+    widget.secondDateController.addListener(() {
+      if(widget.secondDateController.text.isNotEmpty)buttonValidate();
+    });
+  }
+
   void submitData() async {
     if (_formkey.currentState!.validate()) {
-
       Map<String, dynamic> info = {};
-      
-      dynamic originAddress = await getAddresses(widget.originAddressController.text);
-      dynamic destinationAddress = await getAddresses(widget.destinationAddressController.text);
+
+      dynamic originAddress =
+          await getAddresses(widget.originAddressController.text);
+      dynamic destinationAddress =
+          await getAddresses(widget.destinationAddressController.text);
       String firstDate = widget.firstDateController.text;
       String secondDate = widget.secondDateController.text;
       String furnitureCheck = widget.furnitureCheckController.text;
@@ -173,15 +188,20 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       info["wrapping"] = packageCheckValue;
       info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
 
-      dynamic quote = await getQuote(originAddress[0], destinationAddress[0], info);
+      dynamic quote =
+          await getQuote(originAddress[0], destinationAddress[0], info);
       await doRequest(quote);
-
     }
   }
 
-  void togglePanel() => widget.panelController.isPanelOpen
-      ? widget.panelController.close()
-      : widget.panelController.open();
+  void togglePanel() {
+    if (widget.panelController.isPanelOpen) {
+      widget.panelController.close();
+      FocusManager.instance.primaryFocus?.unfocus();
+    } else {
+      widget.panelController.open();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,9 +256,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                       hintText: 'Endereço de origem...',
                       textFieldController: widget.originAddressController,
                       icon: Icons.add_location_alt,
-                      onChangedFunction: (value) {
-                        buttonValidate();
-                      },
                     ),
                   ),
                   Center(
@@ -255,9 +272,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                       hintText: 'Endereço de destino...',
                       textFieldController: widget.destinationAddressController,
                       icon: Icons.add_location_alt,
-                      onChangedFunction: (value) {
-                        buttonValidate();
-                      },
                     ),
                   ),
                   Padding(
@@ -364,9 +378,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                             left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
                         child: CustomDatePicker(
                           dateController: widget.firstDateController,
-                          onChangedFunction: (value) {
-                            buttonValidate();
-                          },
                         )),
                   ),
                   Center(
@@ -381,9 +392,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                             left: 15.0, right: 15.0, top: 0.0, bottom: 0.0),
                         child: CustomDatePicker(
                           dateController: widget.secondDateController,
-                          onChangedFunction: (value) {
-                            buttonValidate();
-                          },
                         )),
                   ),
                   Center(
@@ -433,5 +441,14 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.originAddressController.dispose();
+    widget.destinationAddressController.dispose();
+    widget.firstDateController.dispose();
+    widget.secondDateController.dispose();
+    super.dispose();
   }
 }

@@ -13,7 +13,7 @@ Future<List<dynamic>> getAddresses(String address) async {
         List<Placemark> placemarks = await placemarkFromCoordinates(
             location.latitude, location.longitude);
 
-        int maxPlacemarks = 3;
+        int maxPlacemarks = 5;
 
         for (int i = 0; i < placemarks.length && i < maxPlacemarks; i++) {
           Placemark placemark = placemarks[i];
@@ -44,7 +44,7 @@ Future<List<dynamic>> getAddresses(String address) async {
   } catch (e) {
     print("Erro ao geocodificar: $e");
     dynamic place;
-    place["name"] = "Endereço não encontrado";
+    // place["name"] = "Endereço não encontrado";
     places.add(place);
     return places;
   }
