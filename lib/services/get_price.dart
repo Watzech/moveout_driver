@@ -87,11 +87,14 @@ Future<Map<String, dynamic>> getQuote(dynamic fromPlace, dynamic toPlace, dynami
 
       quote["price"] = await getPrice(info, quote["distance"]);
 
+      quote["origin"] = {};
+
       quote["origin"]["address"] = data["origin_addresses"][0];
       quote["origin"]["state"] = getState(data["origin_addresses"][0]);
       quote["origin"]["lat"] = fromPlace["latitude"];
       quote["origin"]["long"] = fromPlace["longitude"];
 
+      quote["destination"] = {};
       quote["destination"]["address"] = data["destination_addresses"][0];
       quote["destination"]["state"] = getState(data["destination_addresses"][0]);
       quote["destination"]["lat"] = toPlace["latitude"];
@@ -104,13 +107,13 @@ Future<Map<String, dynamic>> getQuote(dynamic fromPlace, dynamic toPlace, dynami
 
     } else {
       quote["error"] = 'Erro na requisição: ${response.statusCode}';
-      print('Erro na requisição: ${response.statusCode}');
+      print('Erro na requisição 1: ${response.statusCode}');
 
       return quote;
     }
   } catch (e) {
     quote["error"] = 'Erro na requisição: $e';
-    print('Erro na requisição: $e');
+    print('Erro na requisição 2: $e');
 
     return quote;
   }
