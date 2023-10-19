@@ -28,6 +28,9 @@ class CustomSlidingPanel extends StatefulWidget {
     required this.boxCheckController,
     required this.fragileCheckController,
     required this.otherCheckController,
+    required this.addressTextFormOnTapFunction,
+    required this.originAddressFieldFocus,
+    required this.destinationAddressFieldFocus,
   });
 
   final PanelController panelController;
@@ -40,6 +43,9 @@ class CustomSlidingPanel extends StatefulWidget {
   final TextEditingController boxCheckController;
   final TextEditingController fragileCheckController;
   final TextEditingController otherCheckController;
+  final void Function() addressTextFormOnTapFunction;
+  final FocusNode originAddressFieldFocus;
+  final FocusNode destinationAddressFieldFocus;
 
   @override
   State<CustomSlidingPanel> createState() => _CustomSlidingPanelState();
@@ -98,6 +104,23 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     });
   }
 
+  Map<String, dynamic> originPlace = {};
+  Map<String, dynamic> destinationPlace = {};
+  
+  //  place["name"] = "$street $number, $district - $city, $state";
+  //         place["latitude"] = location.latitude;
+  //         place["longitude"] = location.longitude;
+
+  DateTime formatDate(String dateString) {
+    List<String> dateParts = dateString.split('/').map((part) => part.trim()).toList();
+
+    int day = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int year = int.parse(dateParts[2]);
+
+    return DateTime(year, month, day);
+  }
+
   ValueNotifier<bool> buttonValidate() {
     bool verifyCheckboxText(
         bool checkvalue, TextEditingController textController) {
@@ -153,16 +176,16 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   void initState() {
     super.initState();
     widget.originAddressController.addListener(() {
-      if(widget.originAddressController.text.isNotEmpty) buttonValidate();
+      if (widget.originAddressController.text.isNotEmpty) buttonValidate();
     });
     widget.destinationAddressController.addListener(() {
-      if(widget.destinationAddressController.text.isNotEmpty)buttonValidate();
+      if (widget.destinationAddressController.text.isNotEmpty) buttonValidate();
     });
     widget.firstDateController.addListener(() {
-      if(widget.firstDateController.text.isNotEmpty)buttonValidate();
+      if (widget.firstDateController.text.isNotEmpty) buttonValidate();
     });
     widget.secondDateController.addListener(() {
-      if(widget.secondDateController.text.isNotEmpty)buttonValidate();
+      if (widget.secondDateController.text.isNotEmpty) buttonValidate();
     });
   }
 
@@ -170,9 +193,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     if (_formkey.currentState!.validate()) {
       Map<String, dynamic> info = {};
 
-      dynamic originAddress =
+      dynamic originAddress = //receber um Map<place>
           await getAddresses(widget.originAddressController.text);
-      dynamic destinationAddress =
+      dynamic destinationAddress = //receber um Map<place>
           await getAddresses(widget.destinationAddressController.text);
       String firstDate = widget.firstDateController.text;
       String secondDate = widget.secondDateController.text;
@@ -252,10 +275,10 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
                     child: CustomAddressTextForm(
-                      fontSize: 14,
                       hintText: 'Endereço de origem...',
                       textFieldController: widget.originAddressController,
-                      icon: Icons.add_location_alt,
+                      onTapFunction: widget.addressTextFormOnTapFunction,
+                      addressFieldFocus: widget.originAddressFieldFocus,
                     ),
                   ),
                   Center(
@@ -268,10 +291,10 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, top: 0.0, bottom: 0.0),
                     child: CustomAddressTextForm(
-                      fontSize: 14,
                       hintText: 'Endereço de destino...',
                       textFieldController: widget.destinationAddressController,
-                      icon: Icons.add_location_alt,
+                      onTapFunction: widget.addressTextFormOnTapFunction,
+                      addressFieldFocus: widget.destinationAddressFieldFocus,
                     ),
                   ),
                   Padding(
@@ -377,8 +400,13 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         padding: const EdgeInsets.only(
                             left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
                         child: CustomDatePicker(
-                          dateController: widget.firstDateController,
-                        )),
+                            dateController: widget.firstDateController,
+                            unavailableDates: widget
+                                    .secondDateController.text.isEmpty
+                                ? <DateTime>{}
+                                : <DateTime>{
+                                    formatDate(widget.secondDateController.text)
+                                  })),
                   ),
                   Center(
                     child: SizedBox.fromSize(
@@ -391,8 +419,13 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         padding: const EdgeInsets.only(
                             left: 15.0, right: 15.0, top: 0.0, bottom: 0.0),
                         child: CustomDatePicker(
-                          dateController: widget.secondDateController,
-                        )),
+                            dateController: widget.secondDateController,
+                            unavailableDates: widget
+                                    .firstDateController.text.isEmpty
+                                ? <DateTime>{}
+                                : <DateTime>{
+                                    formatDate(widget.firstDateController.text)
+                                  })),
                   ),
                   Center(
                     child: Padding(
@@ -449,6 +482,10 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     widget.destinationAddressController.dispose();
     widget.firstDateController.dispose();
     widget.secondDateController.dispose();
+    widget.furnitureCheckController.dispose();
+    widget.boxCheckController.dispose();
+    widget.fragileCheckController.dispose();
+    widget.otherCheckController.dispose();
     super.dispose();
   }
 }

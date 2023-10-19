@@ -1,17 +1,15 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CustomDatePicker extends StatefulWidget {
-  final TextEditingController dateController;
-  final Set<DateTime>? unavailableDates;
-
   const CustomDatePicker({
     super.key,
     required this.dateController,
-    this.unavailableDates,
+    required this.unavailableDates,
   });
 
+  final TextEditingController dateController;
+  final Set<DateTime> unavailableDates;
   @override
   State<CustomDatePicker> createState() => _CustomDatePickerState();
 }
@@ -20,28 +18,62 @@ class _CustomDatePickerState extends State<CustomDatePicker>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  DateTime _date = DateTime.now();
+  final DateFormat formatter = DateFormat('dd/MM/yyyy');
+  final DateTime _dateDayAfter = DateTime(
+      DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
+
+  DateTime formatDate(String dateString) {
+    List<String> dateParts =
+        dateString.split('/').map((part) => part.trim()).toList();
+
+    int day = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int year = int.parse(dateParts[2]);
+
+    return DateTime(year, month, day);
+  }
+
+  DateTime addDaystoDate(DateTime date, int days) {
+    return DateTime(date.year, date.month, date.day + 1);
+  }
+
+  bool isDateAvailable(DateTime date) {
+    if (widget.unavailableDates.isNotEmpty) {
+      return !widget.unavailableDates.contains(date);
+    } else {
+      return true;
+    }
+  }
+
+  DateTime initialDateValidator(DateTime date) {
+    if (widget.dateController.text.isNotEmpty) {
+      return formatDate(widget.dateController.text);
+    } else {
+      if (isDateAvailable(_dateDayAfter)) {
+        return _dateDayAfter;
+      } else {
+        return addDaystoDate(_dateDayAfter, 1);
+      }
+    }
+  }
 
   void _showDatePicker(BuildContext context, TextEditingController controller) {
     showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(DateTime.now().day + 1),
-      lastDate: DateTime(DateTime.now().year + 3),
-      selectableDayPredicate: (DateTime val){
-        if(widget.unavailableDates!.isNotEmpty){
-          return !widget.unavailableDates!.contains(val);
-        } else {
-          return true;
-        }
-      }
-    ).then((value) {
+        context: context,
+        initialDate: initialDateValidator(formatDate(controller.text)),
+        firstDate: isDateAvailable(_dateDayAfter)
+            ? _dateDayAfter
+            : addDaystoDate(_dateDayAfter, 1),
+        lastDate: DateTime(DateTime.now().year + 3),
+        selectableDayPredicate: (DateTime val) {
+          return isDateAvailable(val);
+        }).then((value) {
       setState(() {
         if (value != null) {
-          _date = value;
-          String month =
-              _date.month <= 9 ? '0${_date.month}' : _date.month.toString();
-          controller.text = '${_date.day} / $month / ${_date.year}';
+          // String month =
+          //     _date.month <= 9 ? '0${_date.month}' : _date.month.toString();
+          // controller.text = '${_date.day} / $month / ${_date.year}';
+          controller.text = formatter.format(value);
         }
       });
     });

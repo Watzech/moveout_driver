@@ -23,6 +23,8 @@ class SearchAddressTextField extends StatelessWidget {
     return TypeAheadField(
       textFieldConfiguration: TextFieldConfiguration(
         controller: _searchController,
+        focusNode: addressSearchFocusNode,
+        enableSuggestions: true,
         decoration: InputDecoration(
           filled: true,
           hintText: 'Pesquisar Endereço',
@@ -42,7 +44,11 @@ class SearchAddressTextField extends StatelessWidget {
           fillColor: Theme.of(context).colorScheme.background,
         ),
       ),
-      minCharsForSuggestions: 4,
+      minCharsForSuggestions: 3,
+      suggestionsBoxDecoration: SuggestionsBoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        shadowColor: Theme.of(context).colorScheme.shadow,
+      ),
       suggestionsCallback: (value) {
         return getAddresses(value);
       },

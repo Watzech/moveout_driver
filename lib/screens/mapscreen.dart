@@ -21,9 +21,14 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _mapController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   final PanelController _panelController = PanelController();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFieldFocus = FocusNode();
+  final FocusNode _originAddressFieldFocus = FocusNode();
+  final FocusNode _destinationAddressFieldFocus = FocusNode();
+
   TextEditingController originAddressController = TextEditingController();
   TextEditingController destinationAddressController = TextEditingController();
   TextEditingController firstDateController = TextEditingController();
@@ -33,7 +38,6 @@ class _MapScreenState extends State<MapScreen> {
   TextEditingController fragileCheckController = TextEditingController();
   TextEditingController otherCheckController = TextEditingController();
   LocationData? _currentLocation;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   Set<Marker> _markers = {};
 
   @override
@@ -65,7 +69,8 @@ class _MapScreenState extends State<MapScreen> {
 
   _addMarker(LatLng position, BitmapDescriptor descriptor) {
     MarkerId markerId = const MarkerId("locationPin");
-    Marker marker = Marker(markerId: markerId, icon: descriptor, position: position);
+    Marker marker =
+        Marker(markerId: markerId, icon: descriptor, position: position);
     setState(() {
       // _markers.add(marker);
       _markers = {marker};
@@ -74,7 +79,9 @@ class _MapScreenState extends State<MapScreen> {
 
   void _moveTo(LatLng newLocation) {
     if (_mapController != null && _currentLocation != null) {
-      _addMarker(newLocation, BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange));
+      // _addMarker(newLocation, BitmapDescriptor.defaultMarkerWithHue(200));
+      _addMarker(newLocation,
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed));
       _mapController!.animateCamera(
         CameraUpdate.newLatLng(
           LatLng(
@@ -86,11 +93,16 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  void closePanelAndFocusSearch() {
+    _panelController.close();
+    _searchController.text = "";
+    _searchFieldFocus.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    final FocusNode addressSearchFocusNode = FocusNode();
 
     return Scaffold(
       key: _scaffoldKey,
@@ -145,20 +157,20 @@ class _MapScreenState extends State<MapScreen> {
                                   spreadRadius: 2.0,
                                   color: Theme.of(context).colorScheme.shadow)
                             ]),
-                            // child: Focus(
-                            //   onFocusChange: (hasFocus) {
-                            //     if (hasFocus) {
-                            //       _panelController.isPanelOpen
-                            //           ? _panelController.close()
-                            //           : null;
-                            //     }
-                            //   },
-                            child: SearchAddressTextField(
-                              addressSearchFocusNode: addressSearchFocusNode,
-                              searchController: _searchController,
-                              onChangedFunction: _moveTo,
+                            child: Focus(
+                              onFocusChange: (hasFocus) {
+                                if (hasFocus) {
+                                  _panelController.isPanelOpen
+                                      ? _panelController.close()
+                                      : null;
+                                }
+                              },
+                              child: SearchAddressTextField(
+                                addressSearchFocusNode: _searchFieldFocus,
+                                searchController: _searchController,
+                                onChangedFunction: _moveTo,
+                              ),
                             ),
-                            // ),
                           ),
                         ),
                       ),
@@ -231,6 +243,9 @@ class _MapScreenState extends State<MapScreen> {
                   boxCheckController: boxCheckController,
                   fragileCheckController: fragileCheckController,
                   otherCheckController: otherCheckController,
+                  addressTextFormOnTapFunction: closePanelAndFocusSearch,
+                  originAddressFieldFocus: _originAddressFieldFocus,
+                  destinationAddressFieldFocus: _destinationAddressFieldFocus,
                 )
               ],
             ),

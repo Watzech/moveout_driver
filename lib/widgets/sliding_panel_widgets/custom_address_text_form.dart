@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class CustomAddressTextForm extends StatelessWidget {
   const CustomAddressTextForm({
     super.key,
-    required this.icon,
+    this.icon = Icons.add_location_alt,
     this.fontSize = 12,
     this.iconSize = 25,
     this.hintText = ' ',
     required this.textFieldController,
+    required this.onTapFunction,
+    required this.addressFieldFocus,
   });
 
   final IconData icon;
@@ -17,6 +19,8 @@ class CustomAddressTextForm extends StatelessWidget {
   final double iconSize;
   final String hintText;
   final TextEditingController textFieldController;
+  final void Function() onTapFunction;
+  final FocusNode addressFieldFocus;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +45,7 @@ class CustomAddressTextForm extends StatelessWidget {
         enabledBorder: outlineBorder,
         border: outlineBorder,
       ),
+      onTap: onTapFunction,
     );
   }
 }
