@@ -1,11 +1,15 @@
+import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 
 class CustomDatePicker extends StatefulWidget {
   final TextEditingController dateController;
+  final Set<DateTime>? unavailableDates;
 
   const CustomDatePicker({
     super.key,
     required this.dateController,
+    this.unavailableDates,
   });
 
   @override
@@ -22,8 +26,15 @@ class _CustomDatePickerState extends State<CustomDatePicker>
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime(DateTime.now().day + 1),
       lastDate: DateTime(DateTime.now().year + 3),
+      selectableDayPredicate: (DateTime val){
+        if(widget.unavailableDates!.isNotEmpty){
+          return !widget.unavailableDates!.contains(val);
+        } else {
+          return true;
+        }
+      }
     ).then((value) {
       setState(() {
         if (value != null) {

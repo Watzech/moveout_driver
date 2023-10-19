@@ -34,7 +34,7 @@ class _MapScreenState extends State<MapScreen> {
   TextEditingController otherCheckController = TextEditingController();
   LocationData? _currentLocation;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  final Set<Marker> _markers = {};
+  Set<Marker> _markers = {};
 
   @override
   void initState() {
@@ -65,15 +65,16 @@ class _MapScreenState extends State<MapScreen> {
 
   _addMarker(LatLng position, BitmapDescriptor descriptor) {
     MarkerId markerId = const MarkerId("locationPin");
-    Marker marker =
-        Marker(markerId: markerId, icon: descriptor, position: position);
+    Marker marker = Marker(markerId: markerId, icon: descriptor, position: position);
     setState(() {
-      _markers[markerId] = marker;
+      // _markers.add(marker);
+      _markers = {marker};
     });
   }
 
   void _moveTo(LatLng newLocation) {
     if (_mapController != null && _currentLocation != null) {
+      _addMarker(newLocation, BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange));
       _mapController!.animateCamera(
         CameraUpdate.newLatLng(
           LatLng(
@@ -82,7 +83,6 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ),
       );
-      _addMarker(newLocation, id, descriptor)
     }
   }
 
