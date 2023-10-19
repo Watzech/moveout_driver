@@ -31,6 +31,8 @@ class CustomSlidingPanel extends StatefulWidget {
     required this.addressTextFormOnTapFunction,
     required this.originAddressFieldFocus,
     required this.destinationAddressFieldFocus,
+    required this.originPlace,
+    required this.destinationPlace,
   });
 
   final PanelController panelController;
@@ -43,9 +45,12 @@ class CustomSlidingPanel extends StatefulWidget {
   final TextEditingController boxCheckController;
   final TextEditingController fragileCheckController;
   final TextEditingController otherCheckController;
-  final void Function() addressTextFormOnTapFunction;
+  final void Function(TextEditingController?, String, String)
+      addressTextFormOnTapFunction;
   final FocusNode originAddressFieldFocus;
   final FocusNode destinationAddressFieldFocus;
+  final Map<String, dynamic> originPlace;
+  final Map<String, dynamic> destinationPlace;
 
   @override
   State<CustomSlidingPanel> createState() => _CustomSlidingPanelState();
@@ -104,15 +109,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     });
   }
 
-  Map<String, dynamic> originPlace = {};
-  Map<String, dynamic> destinationPlace = {};
-  
-  //  place["name"] = "$street $number, $district - $city, $state";
-  //         place["latitude"] = location.latitude;
-  //         place["longitude"] = location.longitude;
-
   DateTime formatDate(String dateString) {
-    List<String> dateParts = dateString.split('/').map((part) => part.trim()).toList();
+    List<String> dateParts =
+        dateString.split('/').map((part) => part.trim()).toList();
 
     int day = int.parse(dateParts[0]);
     int month = int.parse(dateParts[1]);
@@ -193,10 +192,8 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     if (_formkey.currentState!.validate()) {
       Map<String, dynamic> info = {};
 
-      dynamic originAddress = //receber um Map<place>
-          await getAddresses(widget.originAddressController.text);
-      dynamic destinationAddress = //receber um Map<place>
-          await getAddresses(widget.destinationAddressController.text);
+      dynamic originAddress = widget.originPlace;
+      dynamic destinationAddress = widget.destinationPlace;
       String firstDate = widget.firstDateController.text;
       String secondDate = widget.secondDateController.text;
       String furnitureCheck = widget.furnitureCheckController.text;
@@ -277,7 +274,12 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     child: CustomAddressTextForm(
                       hintText: 'Endereço de origem...',
                       textFieldController: widget.originAddressController,
-                      onTapFunction: widget.addressTextFormOnTapFunction,
+                      onTapFunction: () {
+                        widget.addressTextFormOnTapFunction(
+                            widget.originAddressController,
+                            'Endereço de Origem',
+                            'O');
+                      },
                       addressFieldFocus: widget.originAddressFieldFocus,
                     ),
                   ),
@@ -293,7 +295,12 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     child: CustomAddressTextForm(
                       hintText: 'Endereço de destino...',
                       textFieldController: widget.destinationAddressController,
-                      onTapFunction: widget.addressTextFormOnTapFunction,
+                      onTapFunction: () {
+                        widget.addressTextFormOnTapFunction(
+                            widget.destinationAddressController,
+                            'Endereço de Destino',
+                            'D');
+                      },
                       addressFieldFocus: widget.destinationAddressFieldFocus,
                     ),
                   ),

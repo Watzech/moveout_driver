@@ -60,7 +60,9 @@ class _CustomDatePickerState extends State<CustomDatePicker>
   void _showDatePicker(BuildContext context, TextEditingController controller) {
     showDatePicker(
         context: context,
-        initialDate: initialDateValidator(formatDate(controller.text)),
+        initialDate: widget.dateController.text.isNotEmpty 
+            ? initialDateValidator(formatDate(controller.text))
+            : _dateDayAfter,
         firstDate: isDateAvailable(_dateDayAfter)
             ? _dateDayAfter
             : addDaystoDate(_dateDayAfter, 1),

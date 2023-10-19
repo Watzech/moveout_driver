@@ -12,11 +12,17 @@ class SearchAddressTextField extends StatelessWidget {
     required this.addressSearchFocusNode,
     required TextEditingController searchController,
     required this.onChangedFunction,
+    this.hintText = 'Pesquisar Endereço',
+    this.callerController,
+    this.callerIdentifier,
   }) : _searchController = searchController;
 
   final FocusNode addressSearchFocusNode;
   final TextEditingController _searchController;
-  final void Function(LatLng) onChangedFunction;
+  final void Function(LatLng, TextEditingController?, String?) onChangedFunction;
+  final String hintText;
+  final TextEditingController? callerController;
+  final String? callerIdentifier;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +33,7 @@ class SearchAddressTextField extends StatelessWidget {
         enableSuggestions: true,
         decoration: InputDecoration(
           filled: true,
-          hintText: 'Pesquisar Endereço',
+          hintText: hintText,
           prefixIcon: Icon(
             Icons.search,
             color: Theme.of(context).colorScheme.onBackground,
@@ -55,8 +61,8 @@ class SearchAddressTextField extends StatelessWidget {
       itemBuilder: (context, place) {
         //Map place[3]
         // [0] name
-        // [1] lat
-        // [2] long
+        // [1] latitude
+        // [2] longitude
         return Padding(
           padding: const EdgeInsets.all(15.0),
           child: place != null
@@ -83,9 +89,16 @@ class SearchAddressTextField extends StatelessWidget {
         return const CustomDivider();
       },
       onSuggestionSelected: (suggestion) {
-        _searchController.text = suggestion['name'];
-        LatLng placeLatLng = LatLng(suggestion['latitude'], suggestion['longitude']);
-        onChangedFunction(placeLatLng);
+        LatLng placeLatLng =
+            LatLng(suggestion['latitude'], suggestion['longitude']);
+        if (callerController == null) {
+          _searchController.text = suggestion['name'];
+          onChangedFunction(placeLatLng, null, null);
+        } else {
+          callerController!.text = suggestion['name'];
+          _searchController.text = '';
+          onChangedFunction(placeLatLng, callerController, callerIdentifier!);
+        }
       },
     );
   }

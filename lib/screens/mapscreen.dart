@@ -37,13 +37,30 @@ class _MapScreenState extends State<MapScreen> {
   TextEditingController boxCheckController = TextEditingController();
   TextEditingController fragileCheckController = TextEditingController();
   TextEditingController otherCheckController = TextEditingController();
+  Map<String, dynamic> originPlace = {};
+  Map<String, dynamic> destinationPlace = {};
   LocationData? _currentLocation;
   Set<Marker> _markers = {};
+  TextEditingController? searchCallerController;
+  String searchHintText = 'Pesquisar Endereço';
+  String searchIdentifier = '';
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    originAddressController.addListener(() {
+      _panelController.isPanelOpen ? null : _panelController.open();
+      setState(() {
+        searchHintText = 'Pesquisar Endereço';
+      });
+    });
+    destinationAddressController.addListener(() {
+      _panelController.isPanelOpen ? null : _panelController.open();
+      setState(() {
+        searchHintText = 'Pesquisar Endereço';
+      });
+    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -67,6 +84,29 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  void _addressSelected(
+      LatLng location, TextEditingController? caller, String? identifier) {
+    _moveToAndPin(location);
+    if (caller != null && identifier != null) {
+      Map<String, dynamic> newLocation = {};
+      newLocation['name'] = caller.text;
+      newLocation['latitude'] = location.latitude;
+      newLocation['latitude'] = location.longitude;
+      switch (identifier) {
+        case 'O':
+          setState(() {
+            originPlace = newLocation;
+          });
+          break;
+        case 'D':
+          setState(() {
+            destinationPlace = newLocation;
+          });
+          break;
+      }
+    }
+  }
+
   _addMarker(LatLng position, BitmapDescriptor descriptor) {
     MarkerId markerId = const MarkerId("locationPin");
     Marker marker =
@@ -77,7 +117,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _moveTo(LatLng newLocation) {
+  void _moveToAndPin(LatLng newLocation) {
     if (_mapController != null && _currentLocation != null) {
       // _addMarker(newLocation, BitmapDescriptor.defaultMarkerWithHue(200));
       _addMarker(newLocation,
@@ -93,9 +133,15 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  void closePanelAndFocusSearch() {
+  void closePanelAndFocusSearch(
+      TextEditingController? caller, String newHintText, String identifier) {
     _panelController.close();
-    _searchController.text = "";
+    _searchController.text = '';
+    setState(() {
+      searchCallerController = caller;
+      searchHintText = newHintText;
+      searchIdentifier = identifier;
+    });
     _searchFieldFocus.requestFocus();
   }
 
@@ -166,9 +212,12 @@ class _MapScreenState extends State<MapScreen> {
                                 }
                               },
                               child: SearchAddressTextField(
+                                hintText: searchHintText,
+                                callerController: searchCallerController,
                                 addressSearchFocusNode: _searchFieldFocus,
                                 searchController: _searchController,
-                                onChangedFunction: _moveTo,
+                                onChangedFunction: _addressSelected,
+                                callerIdentifier: searchIdentifier,
                               ),
                             ),
                           ),
@@ -246,6 +295,8 @@ class _MapScreenState extends State<MapScreen> {
                   addressTextFormOnTapFunction: closePanelAndFocusSearch,
                   originAddressFieldFocus: _originAddressFieldFocus,
                   destinationAddressFieldFocus: _destinationAddressFieldFocus,
+                  originPlace: originPlace,
+                  destinationPlace: destinationPlace,
                 )
               ],
             ),

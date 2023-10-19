@@ -6,7 +6,7 @@ class CustomAddressTextForm extends StatelessWidget {
   const CustomAddressTextForm({
     super.key,
     this.icon = Icons.add_location_alt,
-    this.fontSize = 12,
+    this.fontSize = 14,
     this.iconSize = 25,
     this.hintText = ' ',
     required this.textFieldController,
@@ -28,7 +28,7 @@ class CustomAddressTextForm extends StatelessWidget {
       borderRadius: const BorderRadius.all(Radius.circular(20)),
       borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
     );
-
+    
     return TextFormField(
       controller: textFieldController,
       style: TextStyle(
