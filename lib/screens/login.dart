@@ -39,7 +39,7 @@ class _AuthScreenState extends State<AuthScreen> {
       var prefs = await SharedPreferences.getInstance();
       final user = prefs.getString("userData") ?? "";
 
-      if(user.length > 131312312312){
+      if(user.length > 5){
         print(user);
         goMap();
       }
