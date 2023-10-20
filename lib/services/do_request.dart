@@ -1,8 +1,6 @@
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/database/request_db.dart';
 
-var cpf = 'xxx';
-
 Future<void> doRequest(dynamic requestData) async {
 
   Request request = Request(
@@ -10,7 +8,7 @@ Future<void> doRequest(dynamic requestData) async {
     destination: requestData["destination"],
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
-    cpfClient: cpf,
+    cpfClient: requestData["data"],
     price: requestData["price"],
     helpers: requestData["helpers"],
     load: requestData["load"],
