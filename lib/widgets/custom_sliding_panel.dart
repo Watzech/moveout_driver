@@ -1,11 +1,14 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:moveout1/services/do_request.dart';
 import 'package:moveout1/services/get_addresses.dart';
 import 'package:moveout1/services/get_price.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'sliding_panel_widgets/custom_address_text_form.dart';
@@ -174,6 +177,12 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
 
       dynamic quote = await getQuote(originAddress[0], destinationAddress[0], info);
+
+      var prefs = await SharedPreferences.getInstance();
+      String userData = prefs.getString("userData") ?? "";
+      var user = jsonDecode(userData);
+
+      quote["cpf"] = user['cpf'];
 
       await doRequest(quote);
     }
