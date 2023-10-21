@@ -104,13 +104,13 @@ Future<Map<String, dynamic>> getQuote(
       return quote;
     } else {
       quote["error"] = 'Erro na requisição: ${response.statusCode}';
-      print('Erro na requisição: ${response.statusCode}');
+      print('Erro na requisição 1: ${response.statusCode}');
 
       return quote;
     }
   } catch (e) {
     quote["error"] = 'Erro na requisição: $e';
-    print('Erro na requisição: $e');
+    print('Erro na requisição 2: $e');
 
     return quote;
   }

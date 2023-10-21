@@ -37,14 +37,14 @@ Future<List<dynamic>> getAddresses(String address) async {
       return places;
     } else {
       dynamic place;
-      place["name"] = "Endereço não encontrado";
+      place["name"] = "Endereço não encontrado, id 1";
       places.add(place);
       return places;
     }
   } catch (e) {
     print("Erro ao geocodificar: $e");
     dynamic place;
-    // place["name"] = "Endereço não encontrado";
+    place["name"] = "Endereço não encontrado, id 2";
     places.add(place);
     return places;
   }

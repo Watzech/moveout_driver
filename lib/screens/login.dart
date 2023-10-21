@@ -1,9 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/signup.dart';
 import 'package:moveout1/services/do_login.dart';
-import 'package:moveout1/database/request_db.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/background_container.dart';
@@ -38,19 +39,18 @@ class _AuthScreenState extends State<AuthScreen> {
       var prefs = await SharedPreferences.getInstance();
       final user = prefs.getString("userData") ?? "";
 
-      if(user.length > 1){
+      if(user.length > 5){
         print(user);
-        await RequestDb.connect();
-        final filteredResults = await RequestDb.getFilteredInfo("SP", "Vila Santista", true);
-        print(filteredResults);
         goMap();
       }
     });
   }
 
   void saveUser(dynamic user) async{
+    user["userData"]["createdAt"] = user["userData"]["createdAt"].toString();
+    user["userData"]["updatedAt"] = user["userData"]["updatedAt"].toString();
     var prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userData', user["userData"].toString());
+    await prefs.setString('userData', json.encode(user["userData"]));
 
     goMap();
   }
