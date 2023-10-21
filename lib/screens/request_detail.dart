@@ -1,16 +1,17 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/constants/main.dart' as constants;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 class RequestDetailScreen extends StatefulWidget {
-  const RequestDetailScreen({super.key});
+  final Request request;
+  const RequestDetailScreen({super.key, required this.request});
 
   @override
   _RequestDetailScreenState createState() => _RequestDetailScreenState();
@@ -19,8 +20,8 @@ class RequestDetailScreen extends StatefulWidget {
 class _RequestDetailScreenState extends State<RequestDetailScreen> {
   final Completer<GoogleMapController> _controller = Completer();
   late GoogleMapController mapController;
-  double _originLatitude = 6.5212402, _originLongitude = 3.3679965;
-  double _destLatitude = 6.849660, _destLongitude = 3.648190;
+  // double _originLatitude = 6.5212402, _originLongitude = 3.3679965;
+  // double _destLatitude = 6.849660, _destLongitude = 3.648190;
   // double _originLatitude = 26.48424, _originLongitude = 50.04551;
   // double _destLatitude = 26.46423, _destLongitude = 50.06358;
   Map<MarkerId, Marker> markers = {};
@@ -33,10 +34,10 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   void initState() {
     super.initState();
 
-    _addMarker(LatLng(_originLatitude, _originLongitude), "origin",
+    _addMarker(LatLng(widget.request.origin.lat, widget.request.origin.long), "origin",
         BitmapDescriptor.defaultMarker);
 
-    _addMarker(LatLng(_destLatitude, _destLongitude), "destination",
+    _addMarker(LatLng(widget.request.destination.lat, widget.request.destination.long), "destination",
         BitmapDescriptor.defaultMarkerWithHue(90));
 
     _getPolyline();
@@ -91,8 +92,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     _controller.complete(controller);
 
     LatLngBounds bounds = LatLngBounds(
-      southwest: LatLng(_originLatitude, _originLongitude),
-      northeast: LatLng(_destLatitude, _destLongitude),
+      southwest: LatLng(widget.request.origin.lat, widget.request.origin.long),
+      northeast: LatLng(widget.request.destination.lat, widget.request.destination.long),
     );
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -120,8 +121,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   _getPolyline() async {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPiKey,
-        PointLatLng(_originLatitude, _originLongitude),
-        PointLatLng(_destLatitude, _destLongitude),
+        PointLatLng(widget.request.origin.lat, widget.request.origin.long),
+        PointLatLng(widget.request.destination.lat, widget.request.destination.long),
         travelMode: TravelMode.driving,
         wayPoints: [PolylineWayPoint(location: "Sabo, Yaba Lagos Nigeria")]);
     if (result.points.isNotEmpty) {
@@ -134,8 +135,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
 
   CameraPosition _calculateCameraPosition() {
     LatLngBounds bounds = LatLngBounds(
-      southwest: LatLng(_originLatitude, _originLongitude),
-      northeast: LatLng(_destLatitude, _destLongitude),
+      southwest: LatLng(widget.request.origin.lat, widget.request.origin.long),
+      northeast: LatLng(widget.request.destination.lat, widget.request.destination.long),
     );
 
     LatLng center = LatLng(

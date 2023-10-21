@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
 import '../widgets/custom_drawer.dart';
 import '../widgets/custom_icon_button_container.dart';
 import '../widgets/custom_sliding_panel.dart';
+import '../widgets/search_address_text_field.dart';
 
 const String cloudMapId = 'f49afda8074367d0';
 const EdgeInsets stackWidgetsPadding = EdgeInsets.fromLTRB(20, 20, 20, 20);
@@ -19,9 +21,14 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _mapController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   final PanelController _panelController = PanelController();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFieldFocus = FocusNode();
+  final FocusNode _originAddressFieldFocus = FocusNode();
+  final FocusNode _destinationAddressFieldFocus = FocusNode();
+
   TextEditingController originAddressController = TextEditingController();
   TextEditingController destinationAddressController = TextEditingController();
   TextEditingController firstDateController = TextEditingController();
@@ -30,13 +37,30 @@ class _MapScreenState extends State<MapScreen> {
   TextEditingController boxCheckController = TextEditingController();
   TextEditingController fragileCheckController = TextEditingController();
   TextEditingController otherCheckController = TextEditingController();
+  Map<String, dynamic> originPlace = {};
+  Map<String, dynamic> destinationPlace = {};
   LocationData? _currentLocation;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  Set<Marker> _markers = {};
+  TextEditingController? searchCallerController;
+  String searchHintText = 'Pesquisar Endereço';
+  String searchIdentifier = '';
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    originAddressController.addListener(() {
+      _panelController.isPanelOpen ? null : _panelController.open();
+      setState(() {
+        searchHintText = 'Pesquisar Endereço';
+      });
+    });
+    destinationAddressController.addListener(() {
+      _panelController.isPanelOpen ? null : _panelController.open();
+      setState(() {
+        searchHintText = 'Pesquisar Endereço';
+      });
+    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -58,6 +82,67 @@ class _MapScreenState extends State<MapScreen> {
         ),
       );
     }
+  }
+
+  void _addressSelected(
+      LatLng location, TextEditingController? caller, String? identifier) {
+    _moveToAndPin(location);
+    if (caller != null && identifier != null) {
+      Map<String, dynamic> newLocation = {};
+      newLocation['name'] = caller.text;
+      newLocation['latitude'] = location.latitude;
+      newLocation['longitude'] = location.longitude;
+      switch (identifier) {
+        case 'O':
+          setState(() {
+            originPlace = newLocation;
+          });
+          break;
+        case 'D':
+          setState(() {
+            destinationPlace = newLocation;
+          });
+          break;
+      }
+    }
+  }
+
+  _addMarker(LatLng position, BitmapDescriptor descriptor) {
+    MarkerId markerId = const MarkerId("locationPin");
+    Marker marker =
+        Marker(markerId: markerId, icon: descriptor, position: position);
+    setState(() {
+      // _markers.add(marker);
+      _markers = {marker};
+    });
+  }
+
+  void _moveToAndPin(LatLng newLocation) {
+    if (_mapController != null && _currentLocation != null) {
+      // _addMarker(newLocation, BitmapDescriptor.defaultMarkerWithHue(200));
+      _addMarker(newLocation,
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed));
+      _mapController!.animateCamera(
+        CameraUpdate.newLatLng(
+          LatLng(
+            newLocation.latitude,
+            newLocation.longitude,
+          ),
+        ),
+      );
+    }
+  }
+
+  void closePanelAndFocusSearch(
+      TextEditingController? caller, String newHintText, String identifier) {
+    _panelController.close();
+    _searchController.text = '';
+    setState(() {
+      searchCallerController = caller;
+      searchHintText = newHintText;
+      searchIdentifier = identifier;
+    });
+    _searchFieldFocus.requestFocus();
   }
 
   @override
@@ -84,11 +169,13 @@ class _MapScreenState extends State<MapScreen> {
                       top: topPadding,
                       right: 0,
                       left: 0),
+                  compassEnabled: false,
                   myLocationButtonEnabled: false,
                   mapToolbarEnabled: true,
                   zoomControlsEnabled: false,
-
                   cloudMapId: cloudMapId,
+                  markers: _markers,
+                  myLocationEnabled: true,
                   onMapCreated: (controller) {
                     setState(() {
                       _mapController = controller;
@@ -101,17 +188,6 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                     zoom: 15.0,
                   ),
-                  // markers: {
-                  //   Marker(
-                  //     markerId: MarkerId('user_location'),
-                  //     position: LatLng(
-                  //       _currentLocation!.latitude!,
-                  //       _currentLocation!.longitude!,
-                  //     ),
-                  //     infoWindow: InfoWindow(title: 'Sua Localização'),
-                  //   ),
-                  // },
-                  myLocationEnabled: true,
                 ),
                 SafeArea(
                   child: Column(
@@ -128,55 +204,21 @@ class _MapScreenState extends State<MapScreen> {
                                   spreadRadius: 2.0,
                                   color: Theme.of(context).colorScheme.shadow)
                             ]),
-                            // child: GooglePlaceAutoCompleteTextField(
-                            //   textEditingController: _searchController,
-                            //   countries: const ["br"],
-                            //   googleAPIKey:
-                            //       'AIzaSyAzLqE1W-oS1F7Z5kMDKKZmIXMzUinkbhU',
-                            //   textStyle: TextStyle(
-
-                            //   ),
-                            //   boxDecoration: BoxDecoration(
-                            //     color: Theme.of(context).colorScheme.background,
-                            //     boxShadow: [
-                            //       BoxShadow(
-                            //           blurRadius: 5.0,
-                            //           spreadRadius: 2.0,
-                            //           color:
-                            //               Theme.of(context).colorScheme.shadow)
-                            //     ],
-                            //     border: Border.all(color: Colors.transparent),
-                            //     borderRadius:
-                            //         const BorderRadius.all(Radius.circular(5)),
-                            //   ),
-                            // )
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                filled: true,
-                                hintText: 'Pesquisar Endereço',
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onBackground,
-                                ),
-                                enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                  borderSide:
-                                      BorderSide(style: BorderStyle.none),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(5)),
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                ),
-                                fillColor:
-                                    Theme.of(context).colorScheme.background,
+                            child: Focus(
+                              onFocusChange: (hasFocus) {
+                                if (hasFocus) {
+                                  _panelController.isPanelOpen
+                                      ? _panelController.close()
+                                      : null;
+                                }
+                              },
+                              child: SearchAddressTextField(
+                                hintText: searchHintText,
+                                callerController: searchCallerController,
+                                addressSearchFocusNode: _searchFieldFocus,
+                                searchController: _searchController,
+                                onChangedFunction: _addressSelected,
+                                callerIdentifier: searchIdentifier,
                               ),
                             ),
                           ),
@@ -189,13 +231,15 @@ class _MapScreenState extends State<MapScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding:
-                                  stackWidgetsPadding,
+                                padding: stackWidgetsPadding,
                                 child: Align(
                                     alignment: Alignment.topLeft,
                                     child: CustomIconButtonContainer(
                                       submitFunction: () {
                                         _scaffoldKey.currentState?.openDrawer();
+                                        _panelController.isPanelOpen
+                                            ? _panelController.close()
+                                            : null;
                                       },
                                       size: 40,
                                       icon: Icons.format_list_bulleted,
@@ -249,6 +293,11 @@ class _MapScreenState extends State<MapScreen> {
                   boxCheckController: boxCheckController,
                   fragileCheckController: fragileCheckController,
                   otherCheckController: otherCheckController,
+                  addressTextFormOnTapFunction: closePanelAndFocusSearch,
+                  originAddressFieldFocus: _originAddressFieldFocus,
+                  destinationAddressFieldFocus: _destinationAddressFieldFocus,
+                  originPlace: originPlace,
+                  destinationPlace: destinationPlace,
                 )
               ],
             ),
