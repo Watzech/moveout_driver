@@ -74,10 +74,10 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     });
   }
 
-  bool packageCheckValue = false;
+  bool wrappingCheckValue = false;
   void _handlePackageCheckValue(bool data) {
     setState(() {
-      packageCheckValue = data;
+      wrappingCheckValue = data;
     });
   }
 
@@ -188,12 +188,10 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     });
   }
 
-  void submitData() async {
+  void _submitData() async {
     if (_formkey.currentState!.validate()) {
       Map<String, dynamic> info = {};
 
-      dynamic originAddress = widget.originPlace;
-      dynamic destinationAddress = widget.destinationPlace;
       String firstDate = widget.firstDateController.text;
       String secondDate = widget.secondDateController.text;
       String furnitureCheck = widget.furnitureCheckController.text;
@@ -205,16 +203,36 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       info["size"] = transportSizeValue;
       info["plus"] = 2;
       info["helpers"] = helperCheckValue;
-      info["wrapping"] = packageCheckValue;
+      info["wrapping"] = wrappingCheckValue;
       info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
 
       dynamic quote =
-          await getQuote(originAddress[0], destinationAddress[0], info);
+          await getQuote(widget.originPlace, widget.destinationPlace, info);
       await doRequest(quote);
+      _cleanAndClose();
     }
   }
 
-  void togglePanel() {
+  void _cleanAndClose() {
+    // initState();
+    widget.originAddressController.text = "";
+    widget.destinationAddressController.text = "";
+    widget.firstDateController.text = "";
+    widget.secondDateController.text = "";
+    widget.furnitureCheckController.text = "";
+    widget.boxCheckController.text = "";
+    widget.fragileCheckController.text = "";
+    widget.otherCheckController.text = "";
+    helperCheckValue = false;
+    wrappingCheckValue = false;
+    furnitureCheckValue = false;
+    boxCheckValue = false;
+    fragileCheckValue = false;
+    otherCheckValue = false;
+    widget.panelController.isPanelOpen ? widget.panelController.close() : null;
+  }
+
+  void _togglePanel() {
     if (widget.panelController.isPanelOpen) {
       widget.panelController.close();
       FocusManager.instance.primaryFocus?.unfocus();
@@ -244,7 +262,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           GestureDetector(
-            onTap: togglePanel,
+            onTap: _togglePanel,
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -456,7 +474,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                               builder: (context, value, child) {
                                 return SlidingPanelConfirmButtonWidget(
                                   text: 'Fazer Pedido',
-                                  submitFunction: submitData,
+                                  submitFunction: _submitData,
                                   isButtonEnabled: isButtonEnabled.value,
                                   originAddressController:
                                       widget.originAddressController,

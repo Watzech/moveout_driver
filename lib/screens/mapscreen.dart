@@ -91,7 +91,7 @@ class _MapScreenState extends State<MapScreen> {
       Map<String, dynamic> newLocation = {};
       newLocation['name'] = caller.text;
       newLocation['latitude'] = location.latitude;
-      newLocation['latitude'] = location.longitude;
+      newLocation['longitude'] = location.longitude;
       switch (identifier) {
         case 'O':
           setState(() {
@@ -169,6 +169,7 @@ class _MapScreenState extends State<MapScreen> {
                       top: topPadding,
                       right: 0,
                       left: 0),
+                  compassEnabled: false,
                   myLocationButtonEnabled: false,
                   mapToolbarEnabled: true,
                   zoomControlsEnabled: false,

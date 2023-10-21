@@ -4,13 +4,12 @@ import 'package:moveout1/constants/main.dart';
 import 'package:moveout1/services/get_addresses.dart';
 
 Future<Map<String, dynamic>> getPrice(dynamic info, double distance) async {
-  
   Map<String, dynamic> place = {};
-  
-  String size =  info["size"];
-  int plus =  info["plus"];
-  bool helpers =  info["helpers"];
-  bool wrapping =  info["wrapping"];
+
+  String size = info["size"];
+  int plus = info["plus"];
+  bool helpers = info["helpers"];
+  bool wrapping = info["wrapping"];
 
   double truck = 0;
 
@@ -50,48 +49,50 @@ Future<Map<String, dynamic>> getPrice(dynamic info, double distance) async {
     km = 1.5;
   }
 
-  place["valuePerDistance"] = km*2;
-  place["valueByLoad"] = obj*plus;
+  place["valuePerDistance"] = km * 2;
+  place["valueByLoad"] = obj * plus;
   place["valueByTruck"] = truck;
   place["valueByHelper"] = helper;
   place["wraping"] = wrap;
   place["distance"] = distance;
-  place["finalPrice"] = km*2 + (obj*plus) + truck + helper + wrap;
+  place["finalPrice"] = km * 2 + (obj * plus) + truck + helper + wrap;
 
   return place;
-
 }
 
-Future<Map<String, dynamic>> getQuote(dynamic fromPlace, dynamic toPlace, dynamic info) async {
-
+Future<Map<String, dynamic>> getQuote(
+    dynamic fromPlace, dynamic toPlace, dynamic info) async {
   Map<String, dynamic> quote = {};
-  
+
   const baseUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json';
   final origins = Uri.encodeComponent(fromPlace["name"].toString());
   final destinations = Uri.encodeComponent(toPlace["name"].toString());
   const units = 'imperial';
 
-  final url = '$baseUrl?origins=$origins&destinations=$destinations&units=$units&key=$API_KEY';
+  final url =
+      '$baseUrl?origins=$origins&destinations=$destinations&units=$units&key=$API_KEY';
 
   try {
-
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-
       final data = json.decode(response.body);
 
-      quote["distance"] = data["rows"][0]["elements"][0]["distance"]["value"]/1000;
+      quote["distance"] =
+          data["rows"][0]["elements"][0]["distance"]["value"] / 1000;
 
       quote["helpers"] = info["helpers"];
 
       quote["price"] = await getPrice(info, quote["distance"]);
+
+      quote["origin"] = {};
 
       quote["origin"]["address"] = data["origin_addresses"][0];
       quote["origin"]["state"] = getState(data["origin_addresses"][0]);
       quote["origin"]["lat"] = fromPlace["latitude"];
       quote["origin"]["long"] = fromPlace["longitude"];
 
+      quote["destination"] = {};
       quote["destination"]["address"] = data["destination_addresses"][0];
       quote["destination"]["state"] = getState(data["destination_addresses"][0]);
       quote["destination"]["lat"] = toPlace["latitude"];
@@ -101,7 +102,6 @@ Future<Map<String, dynamic>> getQuote(dynamic fromPlace, dynamic toPlace, dynami
       quote["load"] = info["load"];
 
       return quote;
-
     } else {
       quote["error"] = 'Erro na requisição: ${response.statusCode}';
       print('Erro na requisição: ${response.statusCode}');
