@@ -1,133 +1,51 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:moveout1/classes/request.dart';
+import 'package:moveout1/database/request_db.dart';
 import 'package:moveout1/screens/request_detail.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_divider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/request_card.dart';
 
-class RequestsScreen extends StatelessWidget {
-  final List<List<String>> loadItems = [
-    ['aa', 'aa'],
-    ['aa', 'aa'],
-    ['aa', 'aa'],
-    ['aa', 'aa'],
-    ['aa', 'aa'],
-    ['aa', 'aa'],
-    ['aa', 'aa'],
-  ];
-
-  final List<RequestCard> items = [
-    const RequestCard(
-      size: 'S',
-      status: 'EA',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 1,
-    ),
-    const RequestCard(
-      size: 'M',
-      status: 'CO',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 2,
-    ),
-    const RequestCard(
-      size: 'L',
-      status: 'CA',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 3,
-    ),
-    const RequestCard(
-      size: 'S',
-      status: 'AG',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 4,
-    ),
-    const RequestCard(
-      size: 'S',
-      status: 'CO',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 5,
-    ),
-    const RequestCard(
-      size: 'L',
-      status: 'AG',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 6,
-    ),
-    const RequestCard(
-      size: 'S',
-      status: 'EA',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 7,
-    ),
-    const RequestCard(
-      size: 'M',
-      status: 'CO',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 8,
-    ),
-    const RequestCard(
-      size: 'L',
-      status: 'CA',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 9,
-    ),
-    const RequestCard(
-      size: 'S',
-      status: 'AG',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 10,
-    ),
-    const RequestCard(
-      size: 'S',
-      status: 'CO',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 11,
-    ),
-    const RequestCard(
-      size: 'L',
-      status: 'AG',
-      destinationAddress:
-          'Rua dos Flamboyants, 524 - Mairiporã, SP (07621-250)',
-      itensList: ['Sofá', 'Mesa', 'Abacaxi'],
-      price: 1020.10,
-      requestCode: 12,
-    ),
-  ];
-
+class RequestsScreen extends StatefulWidget {
   RequestsScreen({super.key});
+
+  @override
+  State<RequestsScreen> createState() => _RequestsScreenState();
+}
+
+class _RequestsScreenState extends State<RequestsScreen> {
+  List<Request> items = [];
+
+  late List<RequestCard> requests;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      var prefs = await SharedPreferences.getInstance();
+      final user = prefs.getString("userData") ?? "";
+      final userData = json.decode(user);
+
+      await RequestDb.connect();
+      final requestsByUser = await RequestDb.getInfoByField([userData["cpf"]], "cpf");
+
+      requestsByUser?.forEach((element) {
+        items.add(Request(
+            cpfClient: element['cpf'],
+            price: element['price'],
+            origin: element['origin'],
+            destination: element['destination'],
+            date: element['date'],
+            helpers: element['helpers'],
+            load: element['load'],
+            createdAt: element['createdAt'],
+            updatedAt: element['updatedAt'],
+            status: element['status']));
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,16 +79,10 @@ class RequestsScreen extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RequestDetailScreen()));
+                            builder: (context) =>
+                                RequestDetailScreen(request: item)));
                   },
-                  child: RequestCard(
-                    size: item.size,
-                    status: item.status,
-                    destinationAddress: item.destinationAddress,
-                    itensList: item.itensList,
-                    price: item.price,
-                    requestCode: item.requestCode,
-                  )),
+                  child: RequestCard(request: item)),
               const CustomDivider(),
             ],
           );
