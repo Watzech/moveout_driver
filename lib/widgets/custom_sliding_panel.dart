@@ -1,9 +1,7 @@
 // ignore_for_file: must_be_immutable
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:moveout1/services/do_request.dart';
 import 'package:moveout1/services/get_price.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'sliding_panel_widgets/custom_address_text_form.dart';
@@ -647,8 +645,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       if (widget.originAddressController.text.isNotEmpty) _buttonValidate();
     });
     widget.destinationAddressController.addListener(() {
-      if (widget.destinationAddressController.text.isNotEmpty)
-        _buttonValidate();
+      if (widget.destinationAddressController.text.isNotEmpty) _buttonValidate();
     });
     widget.firstDateController.addListener(() {
       if (widget.firstDateController.text.isNotEmpty) _buttonValidate();

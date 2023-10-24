@@ -38,7 +38,7 @@ class ImageContainer extends StatelessWidget {
             height: 75,
             child: provider == null ? const Text('No image selected.') : ClipOval(
               child: SizedBox.fromSize(
-                size: Size.fromRadius(50),
+                size: const Size.fromRadius(50),
                 child: Image(image: provider, fit: BoxFit.cover),
               ),
             )
@@ -46,7 +46,7 @@ class ImageContainer extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         } else {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
