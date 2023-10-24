@@ -1,7 +1,9 @@
 // ignore_for_file: must_be_immutable
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:moveout1/services/do_request.dart';
 import 'package:moveout1/services/get_price.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'sliding_panel_widgets/custom_address_text_form.dart';
@@ -204,10 +206,34 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   }
 
   void _submitData() async {
-    // Future<Map<String, dynamic>> quote = _getFormInfo();
-    // var quote = await getQuote(widget.originPlace, widget.destinationPlace, _getFormInfo());
-    await doRequest(_quote);
-    _cleanAndClose();
+    // if (_formkey.currentState!.validate()) {
+    //   Map<String, dynamic> info = {};
+
+    //   String firstDate = widget.firstDateController.text;
+    //   String secondDate = widget.secondDateController.text;
+    //   String furnitureCheck = widget.furnitureCheckController.text;
+    //   String boxCheck = widget.boxCheckController.text;
+    //   String fragileCheck = widget.fragileCheckController.text;
+    //   String otherCheck = widget.otherCheckController.text;
+
+    //   info["date"] = [firstDate, secondDate];
+    //   info["size"] = transportSizeValue;
+    //   info["plus"] = 2;
+    //   info["helpers"] = helperCheckValue;
+    //   info["wrapping"] = wrappingCheckValue;
+    //   info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
+
+    //   dynamic quote = await getQuote(widget.originPlace, widget.destinationPlace, info);
+
+    //   var prefs = await SharedPreferences.getInstance();
+    //   String userData = prefs.getString("userData") ?? "";
+    //   var user = jsonDecode(userData);
+
+    //   quote["cpf"] = user['cpf'];
+
+      await doRequest(_quote);
+      _cleanAndClose();
+    // }
   }
 
   void _cleanAndClose() {

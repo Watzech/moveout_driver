@@ -92,10 +92,10 @@ class SearchAddressTextField extends StatelessWidget {
         LatLng placeLatLng =
             LatLng(suggestion['latitude'], suggestion['longitude']);
         if (callerController == null) {
-          _searchController.text = suggestion['name'];
+          _searchController.text = suggestion?['name'];
           onChangedFunction(placeLatLng, null, null);
         } else {
-          callerController!.text = suggestion['name'];
+          callerController!.text = suggestion?['name'];
           _searchController.text = '';
           onChangedFunction(placeLatLng, callerController, callerIdentifier!);
         }
