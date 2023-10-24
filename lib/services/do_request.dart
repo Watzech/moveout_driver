@@ -8,7 +8,7 @@ Future<void> doRequest(dynamic requestData) async {
     destination: requestData["destination"],
     createdAt: DateTime.now(),
     updatedAt: DateTime.now(),
-    cpfClient: requestData["data"],
+    cpfClient: requestData["cpf"],
     price: requestData["price"],
     helpers: requestData["helpers"],
     load: requestData["load"],
