@@ -6,28 +6,12 @@ class SlidingPanelConfirmButtonWidget extends StatefulWidget {
   final String text;
   final VoidCallback submitFunction;
   final bool isButtonEnabled;
-  final TextEditingController originAddressController;
-  final TextEditingController destinationAddressController;
-  final TextEditingController firstDateController;
-  final TextEditingController secondDateController;
-  final bool furnitureCheckValue;
-  final bool boxCheckValue;
-  final bool fragileCheckValue;
-  final bool otherCheckValue;
 
   const SlidingPanelConfirmButtonWidget({
     super.key,
     required this.text,
     required this.submitFunction,
     required this.isButtonEnabled,
-    required this.originAddressController,
-    required this.destinationAddressController,
-    required this.firstDateController,
-    required this.secondDateController,
-    required this.furnitureCheckValue,
-    required this.boxCheckValue,
-    required this.fragileCheckValue,
-    required this.otherCheckValue,
   });
 
   @override
@@ -37,25 +21,6 @@ class SlidingPanelConfirmButtonWidget extends StatefulWidget {
 
 class _SlidingPanelConfirmButtonWidgetState
     extends State<SlidingPanelConfirmButtonWidget> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   setState(() {
-  //     if ((widget.originAddressController.text.isNotEmpty) &&
-  //         (widget.destinationAddressController.text.isNotEmpty) &&
-  //         ((widget.furnitureCheckValue ||
-  //             widget.boxCheckValue ||
-  //             widget.fragileCheckValue ||
-  //             widget.otherCheckValue)) &&
-  //         (widget.firstDateController.text.isNotEmpty) &&
-  //         (widget.secondDateController.text.isNotEmpty)) {
-  //       widget.isButtonEnabled = true;
-  //     } else {
-  //       widget.isButtonEnabled = false;
-  //     }
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(

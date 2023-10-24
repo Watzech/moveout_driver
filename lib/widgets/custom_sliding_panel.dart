@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
 import 'package:moveout1/services/do_request.dart';
-import 'package:moveout1/services/get_addresses.dart';
 import 'package:moveout1/services/get_price.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -10,10 +9,16 @@ import 'sliding_panel_widgets/custom_checkbox_list_tile.dart';
 import 'sliding_panel_widgets/custom_confirm_button_widget.dart';
 import 'sliding_panel_widgets/custom_date_picker.dart';
 import 'sliding_panel_widgets/custom_divider.dart';
+import 'sliding_panel_widgets/custom_summary_text_row.dart';
 import 'sliding_panel_widgets/custom_title.dart';
 import 'sliding_panel_widgets/transport_size_segmented_button.dart';
 
 const String submitValidationFail = 'Erro de validação, verifique os campos';
+
+enum PanelState {
+  panelEdit,
+  panelSummary,
+}
 
 class CustomSlidingPanel extends StatefulWidget {
   const CustomSlidingPanel({
@@ -57,7 +62,11 @@ class CustomSlidingPanel extends StatefulWidget {
 }
 
 class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   final _formkey = GlobalKey<FormState>();
+  var summaryScreenKey = GlobalKey<NavigatorState>();
+  var formScreenKey = GlobalKey<NavigatorState>();
+  Map<String, dynamic>? _quote;
   ValueNotifier<bool> isButtonEnabled = ValueNotifier(false);
 
   String transportSizeValue = ' ';
@@ -91,7 +100,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   bool boxCheckValue = false;
   void _handleBoxCheckValue(bool data) {
     setState(() {
-      helperCheckValue = data;
+      boxCheckValue = data;
     });
   }
 
@@ -109,7 +118,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     });
   }
 
-  DateTime formatDate(String dateString) {
+  DateTime _formatDate(String dateString) {
     List<String> dateParts =
         dateString.split('/').map((part) => part.trim()).toList();
 
@@ -120,7 +129,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     return DateTime(year, month, day);
   }
 
-  ValueNotifier<bool> buttonValidate() {
+  ValueNotifier<bool> _buttonValidate() {
     bool verifyCheckboxText(
         bool checkvalue, TextEditingController textController) {
       if (checkvalue == true) {
@@ -171,46 +180,34 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     return isButtonEnabled;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    widget.originAddressController.addListener(() {
-      if (widget.originAddressController.text.isNotEmpty) buttonValidate();
-    });
-    widget.destinationAddressController.addListener(() {
-      if (widget.destinationAddressController.text.isNotEmpty) buttonValidate();
-    });
-    widget.firstDateController.addListener(() {
-      if (widget.firstDateController.text.isNotEmpty) buttonValidate();
-    });
-    widget.secondDateController.addListener(() {
-      if (widget.secondDateController.text.isNotEmpty) buttonValidate();
+  Future<void> _getFormInfo() async {
+    Map<String, dynamic> info = {};
+    String firstDate = widget.firstDateController.text;
+    String secondDate = widget.secondDateController.text;
+    String furnitureCheck = widget.furnitureCheckController.text;
+    String boxCheck = widget.boxCheckController.text;
+    String fragileCheck = widget.fragileCheckController.text;
+    String otherCheck = widget.otherCheckController.text;
+
+    info["date"] = [firstDate, secondDate];
+    info["size"] = transportSizeValue;
+    info["plus"] = 2;
+    info["helpers"] = helperCheckValue;
+    info["wrapping"] = wrappingCheckValue;
+    info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
+
+    var quoteInfo =
+        await getQuote(widget.originPlace, widget.destinationPlace, info);
+    setState(() {
+      _quote = quoteInfo;
     });
   }
 
   void _submitData() async {
-    if (_formkey.currentState!.validate()) {
-      Map<String, dynamic> info = {};
-
-      String firstDate = widget.firstDateController.text;
-      String secondDate = widget.secondDateController.text;
-      String furnitureCheck = widget.furnitureCheckController.text;
-      String boxCheck = widget.boxCheckController.text;
-      String fragileCheck = widget.fragileCheckController.text;
-      String otherCheck = widget.otherCheckController.text;
-
-      info["date"] = [firstDate, secondDate];
-      info["size"] = transportSizeValue;
-      info["plus"] = 2;
-      info["helpers"] = helperCheckValue;
-      info["wrapping"] = wrappingCheckValue;
-      info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
-
-      dynamic quote =
-          await getQuote(widget.originPlace, widget.destinationPlace, info);
-      await doRequest(quote);
-      _cleanAndClose();
-    }
+    // Future<Map<String, dynamic>> quote = _getFormInfo();
+    // var quote = await getQuote(widget.originPlace, widget.destinationPlace, _getFormInfo());
+    await doRequest(_quote);
+    _cleanAndClose();
   }
 
   void _cleanAndClose() {
@@ -241,40 +238,29 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SlidingUpPanel(
-      boxShadow: [
-        BoxShadow(
-            blurRadius: 5.0,
-            spreadRadius: 2.0,
-            color: Theme.of(context).colorScheme.shadow)
-      ],
-      controller: widget.panelController,
-      minHeight: MediaQuery.of(context).size.height * 0.058,
-      maxHeight: MediaQuery.of(context).size.height * 0.70,
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(15.0),
-        topRight: Radius.circular(15.0),
-      ),
-      panel: Column(
-        mainAxisSize: MainAxisSize.min,
+  String _getTransportSizeString(String transportSize) {
+    switch (transportSize) {
+      case 'Small':
+        return 'Pequeno';
+      case 'Medium':
+        return 'Médio';
+      case 'Large':
+        return 'Grande';
+      default:
+        return 'Tamanho Inválido';
+    }
+  }
+
+  Widget _buildFormContent() {
+    return WillPopScope(
+      onWillPop: () async {
+        _togglePanel(); // Fechar o SlidingUpPanel
+        return false;
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          GestureDetector(
-            onTap: _togglePanel,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.drag_handle,
-                  color: Theme.of(context).colorScheme.onBackground,
-                  size: 35,
-                ),
-              ),
-            ),
-          ),
-          const CustomDivider(),
           Form(
             key: _formkey,
             child: Expanded(
@@ -355,7 +341,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                   const Padding(
                     padding: EdgeInsets.only(
                         left: 20.0, right: 20.0, top: 20.0, bottom: 15.0),
-                    child: CustomTitle(label: 'Lista de Itens:'),
+                    child: CustomTitle(label: 'Lista de Carga:'),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -365,7 +351,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         callback: _handleFurnitureCheckValue,
                         textController: widget.furnitureCheckController,
                         onChangedFunction: () {
-                          buttonValidate();
+                          _buttonValidate();
                         }),
                   ),
                   Padding(
@@ -376,7 +362,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         callback: _handleBoxCheckValue,
                         textController: widget.boxCheckController,
                         onChangedFunction: () {
-                          buttonValidate();
+                          _buttonValidate();
                         }),
                   ),
                   Padding(
@@ -387,7 +373,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         callback: _handleFragileCheckValue,
                         textController: widget.fragileCheckController,
                         onChangedFunction: () {
-                          buttonValidate();
+                          _buttonValidate();
                         }),
                   ),
                   Padding(
@@ -398,7 +384,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         callback: _handleOtherCheckValue,
                         textController: widget.otherCheckController,
                         onChangedFunction: () {
-                          buttonValidate();
+                          _buttonValidate();
                         }),
                   ),
                   Center(
@@ -406,7 +392,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                         padding: const EdgeInsets.only(
                             left: 15.0, right: 15.0, top: 15.0, bottom: 15.0),
                         child: Text(
-                          'Selecione ao menos um tipo de item',
+                          'Selecione ao menos um tipo de carga',
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onBackground,
                             fontSize: 12,
@@ -430,7 +416,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                                     .secondDateController.text.isEmpty
                                 ? <DateTime>{}
                                 : <DateTime>{
-                                    formatDate(widget.secondDateController.text)
+                                    _formatDate(widget.secondDateController.text)
                                   })),
                   ),
                   Center(
@@ -449,7 +435,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                                     .firstDateController.text.isEmpty
                                 ? <DateTime>{}
                                 : <DateTime>{
-                                    formatDate(widget.firstDateController.text)
+                                    _formatDate(widget.firstDateController.text)
                                   })),
                   ),
                   Center(
@@ -474,20 +460,12 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                               builder: (context, value, child) {
                                 return SlidingPanelConfirmButtonWidget(
                                   text: 'Fazer Pedido',
-                                  submitFunction: _submitData,
+                                  // submitFunction: _submitData,
+                                  submitFunction: () {
+                                    _navigatorKey.currentState
+                                        ?.pushNamed('/summary');
+                                  },
                                   isButtonEnabled: isButtonEnabled.value,
-                                  originAddressController:
-                                      widget.originAddressController,
-                                  destinationAddressController:
-                                      widget.destinationAddressController,
-                                  firstDateController:
-                                      widget.firstDateController,
-                                  secondDateController:
-                                      widget.secondDateController,
-                                  furnitureCheckValue: furnitureCheckValue,
-                                  boxCheckValue: boxCheckValue,
-                                  fragileCheckValue: fragileCheckValue,
-                                  otherCheckValue: otherCheckValue,
                                 );
                               })),
                     ),
@@ -501,16 +479,265 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     );
   }
 
-  @override
-  void dispose() {
-    widget.originAddressController.dispose();
-    widget.destinationAddressController.dispose();
-    widget.firstDateController.dispose();
-    widget.secondDateController.dispose();
-    widget.furnitureCheckController.dispose();
-    widget.boxCheckController.dispose();
-    widget.fragileCheckController.dispose();
-    widget.otherCheckController.dispose();
-    super.dispose();
+  Widget _buildSummaryContent() {
+    return _quote == null
+        ? Container(
+          color: Colors.white,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ],
+          ),
+        )
+        : Container(
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(0),
+                  children: [
+                    Stack(children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20.0,
+                              right: 20.0,
+                              top: 20.0,
+                              bottom: 15.0),
+                          child: IconButton(
+                              onPressed: () {
+                                _navigatorKey.currentState?.pop();
+                              },
+                              icon: Icon(
+                                Icons.arrow_back_sharp,
+                                color:
+                                    Theme.of(context).colorScheme.secondary,
+                                size: 35,
+                              )),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20.0,
+                            right: 20.0,
+                            top: 20.0,
+                            bottom: 15.0),
+                        child: Center(
+                          child: Text(
+                            'RESUMO',
+                            style: TextStyle(
+                                fontFamily: 'BebasKai',
+                                fontSize: 35,
+                                color:
+                                    Theme.of(context).colorScheme.primary),
+                          ),
+                        ),
+                      )
+                    ]),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                      child: Column(
+                        children: [
+                          CustomSummaryTextRow(
+                              title: 'Origem: ',
+                              text: _quote!['origin']['address']),
+                          CustomSummaryTextRow(
+                              title: 'Destino: ',
+                              text: _quote!['destination']['address']),
+                          CustomSummaryTextRow(
+                            title: 'Distância: ',
+                            text: _quote!['distance'].toStringAsFixed(2) +
+                                ' Km',
+                            textSize: 16,
+                          ),
+                          CustomSummaryTextRow(
+                            title: 'Tamanho do transporte: ',
+                            text: _getTransportSizeString(
+                                _quote!['price']['truckSize']),
+                            textSize: 16,
+                          ),
+                          CustomSummaryTextRow(
+                            title: 'Ajudantes: ',
+                            text: _quote!['helpers'] ? 'Sim' : 'Não',
+                            textSize: 16,
+                          ),
+                          CustomSummaryTextRow(
+                            title: 'Embalagem: ',
+                            text: _quote!['price']['wraping'] > 0
+                                ? 'Sim'
+                                : 'Não',
+                            textSize: 16,
+                          ),
+                          CustomSummaryTextRow(
+                            title: 'Datas: ',
+                            text:
+                                '${_quote!['date'][0]}   -   ${_quote!['date'][1]}',
+                            textSize: 16,
+                          ),
+                          const CustomSummaryTextRow(
+                              title: 'Carga: ', text: ''),
+                          // CustomSummaryTextRow(title: 'Moveis: ', text: _quote!['load'][0]),
+                        ],
+                      ),
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(25.0),
+                        child: SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.75,
+                            child: ValueListenableBuilder<bool>(
+                                valueListenable: isButtonEnabled,
+                                builder: (context, value, child) {
+                                  return SlidingPanelConfirmButtonWidget(
+                                    text: 'CONFIRMAR PEDIDO',
+                                    submitFunction: _submitData,
+                                    isButtonEnabled: true,
+                                  );
+                                })),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
   }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.originAddressController.addListener(() {
+      if (widget.originAddressController.text.isNotEmpty) _buttonValidate();
+    });
+    widget.destinationAddressController.addListener(() {
+      if (widget.destinationAddressController.text.isNotEmpty)
+        _buttonValidate();
+    });
+    widget.firstDateController.addListener(() {
+      if (widget.firstDateController.text.isNotEmpty) _buttonValidate();
+    });
+    widget.secondDateController.addListener(() {
+      if (widget.secondDateController.text.isNotEmpty) _buttonValidate();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlidingUpPanel(
+      boxShadow: [
+        BoxShadow(
+            blurRadius: 5.0,
+            spreadRadius: 2.0,
+            color: Theme.of(context).colorScheme.shadow)
+      ],
+      controller: widget.panelController,
+      minHeight: MediaQuery.of(context).size.height * 0.058,
+      maxHeight: MediaQuery.of(context).size.height * 0.70,
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(15.0),
+        topRight: Radius.circular(15.0),
+      ),
+      panel: Column(
+        children: [
+          GestureDetector(
+            onTap: _togglePanel,
+            child: Container(
+              // color: Colors.white,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15.0),
+                  topRight: Radius.circular(15.0),
+                ),
+              ),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.drag_handle,
+                    color: Theme.of(context).colorScheme.onBackground,
+                    size: 35,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const CustomDivider(),
+          Expanded(
+            child: Navigator(
+              key: _navigatorKey,
+              onGenerateRoute: (settings) {
+                if (settings.name == '/summary') {
+                  return PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      _getFormInfo();
+                      return _buildSummaryContent();
+                    },
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
+                      var tween = Tween(begin: begin, end: end).chain(
+                        CurveTween(curve: curve),
+                      );
+                      var offsetAnimation = animation.drive(tween);
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  );
+                }
+                // Página de edição é a rota padrão
+                return PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return _buildFormContent();
+                  },
+                  // transitionsBuilder:
+                  //     (context, animation, secondaryAnimation, child) {
+                  //   const begin = Offset(-1.0, 0.0);
+                  //   const end = Offset.zero;
+                  //   const curve = Curves.ease;
+                  //   var tween = Tween(begin: begin, end: end).chain(
+                  //     CurveTween(curve: curve),
+                  //   );
+                  //   var offsetAnimation = animation.drive(tween);
+                  //   return SlideTransition(
+                  //     position: offsetAnimation,
+                  //     child: child,
+                  //   );
+                  // },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // @override
+  // void dispose() {
+  //   widget.originAddressController.dispose();
+  //   widget.destinationAddressController.dispose();
+  //   widget.firstDateController.dispose();
+  //   widget.secondDateController.dispose();
+  //   widget.furnitureCheckController.dispose();
+  //   widget.boxCheckController.dispose();
+  //   widget.fragileCheckController.dispose();
+  //   widget.otherCheckController.dispose();
+  //   super.dispose();
+  // }
 }

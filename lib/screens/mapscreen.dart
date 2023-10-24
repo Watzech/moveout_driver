@@ -150,157 +150,168 @@ class _MapScreenState extends State<MapScreen> {
     final topPadding = MediaQuery.of(context).padding.top;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    return Scaffold(
-      key: _scaffoldKey,
-      drawer: const CustomDrawer(),
-      resizeToAvoidBottomInset: false,
-      body: _currentLocation == null
-          ? Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-            )
-          : Stack(
-              children: [
-                GoogleMap(
-                  padding: EdgeInsets.only(
-                      bottom: bottomPadding,
-                      top: topPadding,
-                      right: 0,
-                      left: 0),
-                  compassEnabled: false,
-                  myLocationButtonEnabled: false,
-                  mapToolbarEnabled: true,
-                  zoomControlsEnabled: false,
-                  cloudMapId: cloudMapId,
-                  markers: _markers,
-                  myLocationEnabled: true,
-                  onMapCreated: (controller) {
-                    setState(() {
-                      _mapController = controller;
-                    });
-                  },
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      _currentLocation!.latitude!,
-                      _currentLocation!.longitude!,
-                    ),
-                    zoom: 15.0,
-                  ),
+    return WillPopScope(
+      onWillPop: () async {
+        if (_panelController.isPanelOpen) {
+          _panelController.close();
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+        return false;
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        drawer: const CustomDrawer(),
+        resizeToAvoidBottomInset: false,
+        body: _currentLocation == null
+            ? Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
-                SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding: stackWidgetsPadding,
-                        child: Center(
-                          child: Container(
-                            decoration: BoxDecoration(boxShadow: [
-                              BoxShadow(
-                                  blurRadius: 5.0,
-                                  spreadRadius: 2.0,
-                                  color: Theme.of(context).colorScheme.shadow)
-                            ]),
-                            child: Focus(
-                              onFocusChange: (hasFocus) {
-                                if (hasFocus) {
-                                  _panelController.isPanelOpen
-                                      ? _panelController.close()
-                                      : null;
-                                }
-                              },
-                              child: SearchAddressTextField(
-                                hintText: searchHintText,
-                                callerController: searchCallerController,
-                                addressSearchFocusNode: _searchFieldFocus,
-                                searchController: _searchController,
-                                onChangedFunction: _addressSelected,
-                                callerIdentifier: searchIdentifier,
+              )
+            : Stack(
+                children: [
+                  GoogleMap(
+                    padding: EdgeInsets.only(
+                        bottom: bottomPadding,
+                        top: topPadding,
+                        right: 0,
+                        left: 0),
+                    compassEnabled: false,
+                    myLocationButtonEnabled: false,
+                    mapToolbarEnabled: true,
+                    zoomControlsEnabled: false,
+                    cloudMapId: cloudMapId,
+                    markers: _markers,
+                    myLocationEnabled: true,
+                    onMapCreated: (controller) {
+                      setState(() {
+                        _mapController = controller;
+                      });
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                        _currentLocation!.latitude!,
+                        _currentLocation!.longitude!,
+                      ),
+                      zoom: 15.0,
+                    ),
+                  ),
+                  SafeArea(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: stackWidgetsPadding,
+                          child: Center(
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    blurRadius: 5.0,
+                                    spreadRadius: 2.0,
+                                    color: Theme.of(context).colorScheme.shadow)
+                              ]),
+                              child: Focus(
+                                onFocusChange: (hasFocus) {
+                                  if (hasFocus) {
+                                    _panelController.isPanelOpen
+                                        ? _panelController.close()
+                                        : null;
+                                  }
+                                },
+                                child: SearchAddressTextField(
+                                  hintText: searchHintText,
+                                  callerController: searchCallerController,
+                                  addressSearchFocusNode: _searchFieldFocus,
+                                  searchController: _searchController,
+                                  onChangedFunction: _addressSelected,
+                                  callerIdentifier: searchIdentifier,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Stack(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: stackWidgetsPadding,
-                                child: Align(
-                                    alignment: Alignment.topLeft,
+                        Stack(
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: stackWidgetsPadding,
+                                  child: Align(
+                                      alignment: Alignment.topLeft,
+                                      child: CustomIconButtonContainer(
+                                        submitFunction: () {
+                                          _scaffoldKey.currentState
+                                              ?.openDrawer();
+                                          _panelController.isPanelOpen
+                                              ? _panelController.close()
+                                              : null;
+                                        },
+                                        size: 40,
+                                        icon: Icons.format_list_bulleted,
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        iconColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      )),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: stackWidgetsPadding,
+                                  child: Align(
+                                    alignment: Alignment.topRight,
                                     child: CustomIconButtonContainer(
                                       submitFunction: () {
-                                        _scaffoldKey.currentState?.openDrawer();
-                                        _panelController.isPanelOpen
-                                            ? _panelController.close()
-                                            : null;
+                                        _centerMap();
                                       },
-                                      size: 40,
-                                      icon: Icons.format_list_bulleted,
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.primary,
+                                      size: 25,
+                                      icon: Icons.gps_fixed,
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .background,
                                       iconColor: Theme.of(context)
                                           .colorScheme
-                                          .secondary,
-                                    )),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: stackWidgetsPadding,
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: CustomIconButtonContainer(
-                                    submitFunction: () {
-                                      _centerMap();
-                                    },
-                                    size: 25,
-                                    icon: Icons.gps_fixed,
-                                    backgroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .background,
-                                    iconColor: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground,
+                                          .onBackground,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
-                    ],
+                              ],
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                CustomSlidingPanel(
-                  panelController: _panelController,
-                  scrollController: _scrollController,
-                  originAddressController: originAddressController,
-                  destinationAddressController: destinationAddressController,
-                  firstDateController: firstDateController,
-                  secondDateController: secondDateController,
-                  furnitureCheckController: furnitureCheckController,
-                  boxCheckController: boxCheckController,
-                  fragileCheckController: fragileCheckController,
-                  otherCheckController: otherCheckController,
-                  addressTextFormOnTapFunction: closePanelAndFocusSearch,
-                  originAddressFieldFocus: _originAddressFieldFocus,
-                  destinationAddressFieldFocus: _destinationAddressFieldFocus,
-                  originPlace: originPlace,
-                  destinationPlace: destinationPlace,
-                )
-              ],
-            ),
+                  CustomSlidingPanel(
+                    panelController: _panelController,
+                    scrollController: _scrollController,
+                    originAddressController: originAddressController,
+                    destinationAddressController: destinationAddressController,
+                    firstDateController: firstDateController,
+                    secondDateController: secondDateController,
+                    furnitureCheckController: furnitureCheckController,
+                    boxCheckController: boxCheckController,
+                    fragileCheckController: fragileCheckController,
+                    otherCheckController: otherCheckController,
+                    addressTextFormOnTapFunction: closePanelAndFocusSearch,
+                    originAddressFieldFocus: _originAddressFieldFocus,
+                    destinationAddressFieldFocus: _destinationAddressFieldFocus,
+                    originPlace: originPlace,
+                    destinationPlace: destinationPlace,
+                  )
+                ],
+              ),
+      ),
     );
   }
 }
