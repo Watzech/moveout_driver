@@ -194,7 +194,12 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     info["plus"] = 2;
     info["helpers"] = helperCheckValue;
     info["wrapping"] = wrappingCheckValue;
-    info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
+    info["load"] = {};
+
+    info["load"]["furniture"] = furnitureCheck;
+    info["load"]["box"] = boxCheck;
+    info["load"]["fragile"] = fragileCheck;
+    info["load"]["other"] = otherCheck;
 
     var quoteInfo =
         await getQuote(widget.originPlace, widget.destinationPlace, info);
