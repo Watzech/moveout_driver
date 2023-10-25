@@ -8,7 +8,7 @@ class Request {
   bool helpers;
   List<String> interesteds = [];
   List<dynamic> date = [];
-  List<String> load;
+  List<dynamic> load;
   final DateTime createdAt;
   final DateTime updatedAt;
   String status;
