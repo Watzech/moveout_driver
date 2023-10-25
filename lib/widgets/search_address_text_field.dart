@@ -19,7 +19,8 @@ class SearchAddressTextField extends StatelessWidget {
 
   final FocusNode addressSearchFocusNode;
   final TextEditingController _searchController;
-  final void Function(LatLng, TextEditingController?, String?) onChangedFunction;
+  final void Function(LatLng, TextEditingController?, String?)
+      onChangedFunction;
   final String hintText;
   final TextEditingController? callerController;
   final String? callerIdentifier;
@@ -50,7 +51,7 @@ class SearchAddressTextField extends StatelessWidget {
           fillColor: Theme.of(context).colorScheme.background,
         ),
       ),
-      minCharsForSuggestions: 3,
+      minCharsForSuggestions: 4,
       suggestionsBoxDecoration: SuggestionsBoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
         shadowColor: Theme.of(context).colorScheme.shadow,
@@ -58,15 +59,17 @@ class SearchAddressTextField extends StatelessWidget {
       suggestionsCallback: (value) {
         return getAddresses(value);
       },
+      noItemsFoundBuilder: (context) => Center(
+        child: Text(
+          nullAddress,
+          style: TextStyle(
+              fontSize: 16, color: Theme.of(context).colorScheme.onBackground),
+        ),
+      ),
       itemBuilder: (context, place) {
-        //Map place[3]
-        // [0] name
-        // [1] latitude
-        // [2] longitude
         return Padding(
           padding: const EdgeInsets.all(15.0),
-          child: place != null
-              ? Text(
+          child: Text(
                   place['name'],
                   style: const TextStyle(
                     fontSize: 14,
@@ -74,14 +77,6 @@ class SearchAddressTextField extends StatelessWidget {
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                )
-              : Center(
-                  child: Text(
-                    nullAddress,
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onBackground),
-                  ),
                 ),
         );
       },

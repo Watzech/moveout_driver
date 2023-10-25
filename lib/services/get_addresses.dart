@@ -36,15 +36,9 @@ Future<List<dynamic>> getAddresses(String address) async {
 
       return places;
     } else {
-      dynamic place = {};
-      place["name"] = "Verifique se o endereço está correto!";
-      places.add(place);
       return places;
     }
   } catch (e) {
-    dynamic place = {};
-    place["name"] = "Verifique se o endereço está correto!";
-    places.add(place);
     return places;
   }
 }
