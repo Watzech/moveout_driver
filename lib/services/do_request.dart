@@ -1,6 +1,5 @@
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/database/request_db.dart';
-import 'package:moveout1/services/delete_request.dart';
 import 'package:moveout1/services/device_info.dart';
 
 Future<void> doRequest(dynamic requestData) async {
