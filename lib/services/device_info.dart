@@ -42,3 +42,19 @@ Future<dynamic> getRequestsInfo() async {
   return jsonDecode(requests);
 
 }
+
+void saveRequestsInfo(dynamic newRequest) async {
+
+  var prefs = await SharedPreferences.getInstance();
+  final requestsData = prefs.getString("requestData") ?? "[]";
+
+  dynamic requests = jsonDecode(requestsData);
+
+  newRequest["createdAt"] = newRequest["createdAt"].toString();
+  newRequest["updatedAt"] = newRequest["updatedAt"].toString();
+
+  requests.add(newRequest);
+
+  await prefs.setString('requestData', json.encode(requests));
+
+}
