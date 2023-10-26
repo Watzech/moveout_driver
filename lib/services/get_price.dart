@@ -53,7 +53,7 @@ Future<Map<String, dynamic>> getPrice(dynamic info, double distance) async {
   place["valueByLoad"] = obj * plus;
   place["valueByTruck"] = truck;
   place["valueByHelper"] = helper;
-  place["wraping"] = wrap;
+  place["wrapping"] = wrap;
   place["distance"] = distance;
   place["finalPrice"] = km * 2 + (obj * plus) + truck + helper + wrap;
 

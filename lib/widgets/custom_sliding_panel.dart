@@ -1,7 +1,9 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:moveout1/services/do_request.dart';
 import 'package:moveout1/services/get_price.dart';
+import 'package:moveout1/widgets/sliding_panel_widgets/custom_loading_button_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'sliding_panel_widgets/custom_address_text_form.dart';
@@ -9,7 +11,9 @@ import 'sliding_panel_widgets/custom_checkbox_list_tile.dart';
 import 'sliding_panel_widgets/custom_confirm_button_widget.dart';
 import 'sliding_panel_widgets/custom_date_picker.dart';
 import 'sliding_panel_widgets/custom_divider.dart';
+import 'sliding_panel_widgets/custom_summary_subtext_row.dart';
 import 'sliding_panel_widgets/custom_summary_text_row.dart';
+import 'sliding_panel_widgets/custom_summary_title.dart';
 import 'sliding_panel_widgets/custom_title.dart';
 import 'sliding_panel_widgets/transport_size_segmented_button.dart';
 
@@ -64,8 +68,10 @@ class CustomSlidingPanel extends StatefulWidget {
 class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   final _formkey = GlobalKey<FormState>();
+  final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
   var summaryScreenKey = GlobalKey<NavigatorState>();
   var formScreenKey = GlobalKey<NavigatorState>();
+  bool _isLoading = false;
   Map<String, dynamic>? _quote;
   ValueNotifier<bool> isButtonEnabled = ValueNotifier(false);
 
@@ -208,6 +214,35 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     });
   }
 
+  void _showConfirmationDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            content: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Deseja confirmar esse pedido?',
+                style: TextStyle(fontSize: 17),
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _submitData();
+                  },
+                  child: const Text('Sim')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Não'))
+            ],
+          );
+        });
+  }
+
   void _submitData() async {
     // if (_formkey.currentState!.validate()) {
     //   Map<String, dynamic> info = {};
@@ -233,10 +268,13 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     //   var user = jsonDecode(userData);
 
     //   quote["cpf"] = user['cpf'];
-
-      await doRequest(_quote);
-      _cleanAndClose();
-    // }
+    setState(() {
+      _isLoading = true;
+    });
+    await doRequest(_quote);
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _cleanAndClose() {
@@ -441,12 +479,13 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                             left: 15.0, right: 15.0, top: 10.0, bottom: 0.0),
                         child: CustomDatePicker(
                             dateController: widget.firstDateController,
-                            unavailableDates: widget
-                                    .secondDateController.text.isEmpty
-                                ? <DateTime>{}
-                                : <DateTime>{
-                                    _formatDate(widget.secondDateController.text)
-                                  })),
+                            unavailableDates:
+                                widget.secondDateController.text.isEmpty
+                                    ? <DateTime>{}
+                                    : <DateTime>{
+                                        _formatDate(
+                                            widget.secondDateController.text)
+                                      })),
                   ),
                   Center(
                     child: SizedBox.fromSize(
@@ -511,136 +550,195 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   Widget _buildSummaryContent() {
     return _quote == null
         ? Container(
-          color: Colors.white,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Center(
-                child: CircularProgressIndicator(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  color: Theme.of(context).colorScheme.secondary,
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Center(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        )
+              ],
+            ),
+          )
         : Container(
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(0),
-                  children: [
-                    Stack(children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 20.0,
-                              right: 20.0,
-                              top: 20.0,
-                              bottom: 15.0),
-                          child: IconButton(
-                              onPressed: () {
-                                _navigatorKey.currentState?.pop();
-                              },
-                              icon: Icon(
-                                Icons.arrow_back_sharp,
-                                color:
-                                    Theme.of(context).colorScheme.secondary,
-                                size: 35,
-                              )),
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.all(0),
+                    children: [
+                      Stack(children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 20.0,
+                                bottom: 15.0),
+                            child: IconButton(
+                                onPressed: () {
+                                  _navigatorKey.currentState?.pop();
+                                },
+                                icon: Icon(
+                                  Icons.arrow_back_sharp,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 35,
+                                )),
+                          ),
+                        ),
+                        CustomSummaryTitle(context: context, title: 'RESUMO')
+                      ]),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                        child: Column(
+                          children: [
+                            // CustomSummaryTextRow(
+                            //     title: 'Origem: ',
+                            //     text: _quote!['origin']['address']),
+                            // CustomSummaryTextRow(
+                            //     title: 'Destino: ',
+                            //     text: _quote!['destination']['address']),
+                            const CustomSummaryTextRow(
+                                title: 'Endereços: ', text: ''),
+                            CustomSummarySubtextRow(
+                                title: 'Origem: ',
+                                text: _quote!['origin']['address']),
+                            CustomSummarySubtextRow(
+                                title: 'Destino: ',
+                                text: _quote!['destination']['address']),
+                            CustomSummarySubtextRow(
+                              title: 'Distância: ',
+                              text: _quote!['distance'].toStringAsFixed(2) +
+                                  ' Km',
+                            ),
+                            CustomSummaryTextRow(
+                              title: 'Tamanho do transporte: ',
+                              text: _getTransportSizeString(
+                                  _quote!['price']['truckSize']),
+                              textSize: 16,
+                            ),
+                            CustomSummaryTextRow(
+                              title: 'Ajudantes: ',
+                              text: _quote!['helpers'] ? 'Sim' : 'Não',
+                              textSize: 16,
+                            ),
+                            CustomSummaryTextRow(
+                              title: 'Embalagem: ',
+                              text: _quote!['price']['wrapping'] > 0
+                                  ? 'Sim'
+                                  : 'Não',
+                              textSize: 16,
+                            ),
+                            const CustomSummaryTextRow(
+                                title: 'Carga: ', text: ''),
+                            _quote!['load']['furniture'].isNotEmpty
+                                ? CustomSummarySubtextRow(
+                                    title: 'Móveis / Eletrodomésticos: ',
+                                    text: _quote!['load']['furniture'])
+                                : const SizedBox(height: 0),
+                            _quote!['load']['box'].isNotEmpty
+                                ? CustomSummarySubtextRow(
+                                    title: 'Caixas / Itens: ',
+                                    text: _quote!['load']['box'])
+                                : const SizedBox(height: 0),
+                            _quote!['load']['fragile'].isNotEmpty
+                                ? CustomSummarySubtextRow(
+                                    title: 'Vidro / Frágeis: ',
+                                    text: _quote!['load']['fragile'])
+                                : const SizedBox(height: 0),
+                            _quote!['load']['other'].isNotEmpty
+                                ? CustomSummarySubtextRow(
+                                    title: 'Outros: ',
+                                    text: _quote!['load']['other'])
+                                : const SizedBox(height: 0),
+                            CustomSummaryTextRow(
+                              title: 'Datas: ',
+                              text:
+                                  '${_quote!['date'][0]}   -   ${_quote!['date'][1]}',
+                              textSize: 16,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            )
+                          ],
                         ),
                       ),
+                      const CustomDivider(),
+                      CustomSummaryTitle(context: context, title: 'PREÇOS'),
                       Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20.0,
-                            right: 20.0,
-                            top: 20.0,
-                            bottom: 15.0),
-                        child: Center(
-                          child: Text(
-                            'RESUMO',
-                            style: TextStyle(
-                                fontFamily: 'BebasKai',
-                                fontSize: 35,
-                                color:
-                                    Theme.of(context).colorScheme.primary),
-                          ),
+                        padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                        child: Column(
+                          children: [
+                            CustomSummaryTextRow(
+                              title: 'Distância: ',
+                              text: reaisFormatter
+                                  .format(_quote!['price']['valuePerDistance'] * _quote!['price']['distance']),
+                              textSize: 16,
+                            ),
+                            CustomSummaryTextRow(
+                              title: 'Tamanho do Transporte: ',
+                              text: reaisFormatter
+                                  .format(_quote!['price']['valueByTruck']),
+                              textSize: 16,
+                            ),
+                            _quote!['price']['valueByHelper'] != 0
+                                ? CustomSummaryTextRow(
+                                    title: 'Ajudantes: ',
+                                    text: reaisFormatter.format(
+                                        _quote!['price']['valueByHelper']),
+                                    textSize: 16)
+                                : const SizedBox(height: 0),
+                            _quote!['price']['wrapping'] != 0
+                                ? CustomSummaryTextRow(
+                                    title: 'Embalagem: ',
+                                    text: reaisFormatter
+                                        .format(_quote!['price']['wrapping']),
+                                    textSize: 16)
+                                : const SizedBox(height: 0),
+                            CustomSummaryTextRow(
+                              title: 'Carga: ',
+                              text: reaisFormatter
+                                  .format(_quote!['price']['valueByLoad']),
+                              textSize: 16,
+                            ),
+                            const CustomDivider(),
+                            CustomSummaryTextRow(
+                              title: 'Valor Final: ',
+                              text: reaisFormatter
+                                  .format(_quote!['price']['finalPrice']),
+                              textSize: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(25.0),
+                          child: SizedBox(
+                              width: MediaQuery.sizeOf(context).width * 0.75,
+                              child: _isLoading
+                                  ? SlidingPanelLoadingButtonWidget()
+                                  : SlidingPanelConfirmButtonWidget(
+                                      text: 'CONFIRMAR PEDIDO',
+                                      submitFunction: _showConfirmationDialog,
+                                      isButtonEnabled: true,
+                                    )),
                         ),
                       )
-                    ]),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                      child: Column(
-                        children: [
-                          CustomSummaryTextRow(
-                              title: 'Origem: ',
-                              text: _quote!['origin']['address']),
-                          CustomSummaryTextRow(
-                              title: 'Destino: ',
-                              text: _quote!['destination']['address']),
-                          CustomSummaryTextRow(
-                            title: 'Distância: ',
-                            text: _quote!['distance'].toStringAsFixed(2) +
-                                ' Km',
-                            textSize: 16,
-                          ),
-                          CustomSummaryTextRow(
-                            title: 'Tamanho do transporte: ',
-                            text: _getTransportSizeString(
-                                _quote!['price']['truckSize']),
-                            textSize: 16,
-                          ),
-                          CustomSummaryTextRow(
-                            title: 'Ajudantes: ',
-                            text: _quote!['helpers'] ? 'Sim' : 'Não',
-                            textSize: 16,
-                          ),
-                          CustomSummaryTextRow(
-                            title: 'Embalagem: ',
-                            text: _quote!['price']['wraping'] > 0
-                                ? 'Sim'
-                                : 'Não',
-                            textSize: 16,
-                          ),
-                          CustomSummaryTextRow(
-                            title: 'Datas: ',
-                            text:
-                                '${_quote!['date'][0]}   -   ${_quote!['date'][1]}',
-                            textSize: 16,
-                          ),
-                          const CustomSummaryTextRow(
-                              title: 'Carga: ', text: ''),
-                          // CustomSummaryTextRow(title: 'Moveis: ', text: _quote!['load'][0]),
-                        ],
-                      ),
-                    ),
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(25.0),
-                        child: SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 0.75,
-                            child: ValueListenableBuilder<bool>(
-                                valueListenable: isButtonEnabled,
-                                builder: (context, value, child) {
-                                  return SlidingPanelConfirmButtonWidget(
-                                    text: 'CONFIRMAR PEDIDO',
-                                    submitFunction: _submitData,
-                                    isButtonEnabled: true,
-                                  );
-                                })),
-                      ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
+              ],
+            ),
+          );
   }
 
   @override
@@ -650,7 +748,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
       if (widget.originAddressController.text.isNotEmpty) _buttonValidate();
     });
     widget.destinationAddressController.addListener(() {
-      if (widget.destinationAddressController.text.isNotEmpty) _buttonValidate();
+      if (widget.destinationAddressController.text.isNotEmpty) {
+        _buttonValidate();
+      }
     });
     widget.firstDateController.addListener(() {
       if (widget.firstDateController.text.isNotEmpty) _buttonValidate();

@@ -27,7 +27,7 @@ class RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Intl.defaultLocale = 'pt_BR';
-    final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
+    final reaisFormatter = NumberFormat("'R\$:' #,##0.00", Intl.defaultLocale);
     
     IconData icon;
     switch (request.price.trucksize) {
