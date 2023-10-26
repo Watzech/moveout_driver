@@ -1,15 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/requests.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moveout1/services/save_info.dart';
 import 'profile_image_container.dart';
-
-Future<Map<String, dynamic>> getInfo() async {
-  var prefs = await SharedPreferences.getInstance();
-  final user = prefs.getString("userData") ?? "";
-
-  return jsonDecode(user);
-}
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
@@ -19,7 +12,7 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getInfo(),
+        future: getUserInfo(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             String? name = snapshot.data!['name'];
@@ -74,7 +67,7 @@ class CustomDrawer extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => RequestsScreen()));
+                                builder: (context) => MapScreen()));
                       },
                     ),
                     const SizedBox(height: 15),

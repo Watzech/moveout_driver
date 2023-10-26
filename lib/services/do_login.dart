@@ -35,8 +35,7 @@ Future<dynamic> doLogin(String email, String password) async {
   try {
     await ClientDb.connect();
     
-    dynamic userList = await ClientDb.getInfoByField([email], "email");
-
+    dynamic userList = await ClientDb.getInfoByField([email], "email");result["done"] = false;
     if(userList != null && userList.isNotEmpty){
 
       userList.forEach((element) async { 
