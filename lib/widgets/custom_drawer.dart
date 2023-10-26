@@ -7,7 +7,11 @@ import 'profile_image_container.dart';
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
     super.key,
+    required this.userData,
   });
+
+  final dynamic userData;
+
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +32,7 @@ class CustomDrawer extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const ImageContainer(),
+                        ImageContainer(photoString: userData['photo']),
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -36,7 +40,9 @@ class CustomDrawer extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  name ?? 'Carregando..',
+                                  userData != null 
+                                    ? userData['name']
+                                    : 'Carregando...',
                                   textAlign: TextAlign.left,
                                   maxLines: 1,
                                   style: const TextStyle(
@@ -46,7 +52,9 @@ class CustomDrawer extends StatelessWidget {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  number ?? 'Carregando..',
+                                  userData != null 
+                                    ? userData['phone']
+                                    : 'Carregando...',
                                   maxLines: 1,
                                   style: const TextStyle(
                                       fontSize: 13,
@@ -114,12 +122,6 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ),
             );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        });
   }
 }
 
