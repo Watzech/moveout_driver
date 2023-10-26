@@ -183,7 +183,8 @@ class RequestCard extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            request.load.join(', '),
+                            // request.load.join(', '),
+                            "teste",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
