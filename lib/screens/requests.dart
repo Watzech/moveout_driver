@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:moveout1/classes/request.dart';
-import 'package:moveout1/database/request_db.dart';
 import 'package:moveout1/screens/request_detail.dart';
 import 'package:moveout1/services/save_info.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_divider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/request_card.dart';
 

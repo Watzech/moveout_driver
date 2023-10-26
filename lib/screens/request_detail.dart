@@ -113,7 +113,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   _addPolyLine() {
     PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
-        polylineId: id, color: Colors.red, points: polylineCoordinates, width: 5);
+        polylineId: id, color: Colors.red, points: polylineCoordinates, width: 3);
     polylines[id] = polyline;
     setState(() {});
   }

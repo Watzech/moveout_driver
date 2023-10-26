@@ -326,7 +326,6 @@ class _MapScreenState extends State<MapScreen> {
                     destinationAddressFieldFocus: _destinationAddressFieldFocus,
                     originPlace: originPlace,
                     destinationPlace: destinationPlace,
-                    userData: _userData,
                   )
                 ],
               ),

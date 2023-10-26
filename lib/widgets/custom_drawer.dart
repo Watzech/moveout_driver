@@ -4,6 +4,44 @@ import 'package:moveout1/screens/requests.dart';
 import 'package:moveout1/services/save_info.dart';
 import 'profile_image_container.dart';
 
+class CustomListTile extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VoidCallback onTap;
+  const CustomListTile({
+    super.key,
+    required this.icon,
+    required this.text,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: InkWell(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: Theme.of(context).colorScheme.secondary,
+              size: 25,
+            ),
+            const SizedBox(width: 15),
+            Text(
+              text,
+              style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
     super.key,
@@ -12,16 +50,11 @@ class CustomDrawer extends StatelessWidget {
 
   final dynamic userData;
 
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: getUserInfo(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            String? name = snapshot.data!['name'];
-            String? number = snapshot.data!['phone'];
-
             return Drawer(
               shape: const BeveledRectangleBorder(),
               width: MediaQuery.of(context).size.width * 0.65,
@@ -122,43 +155,6 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ),
             );
-  }
-}
-
-class CustomListTile extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final VoidCallback onTap;
-  const CustomListTile({
-    super.key,
-    required this.icon,
-    required this.text,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: InkWell(
-        onTap: onTap,
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: Theme.of(context).colorScheme.secondary,
-              size: 25,
-            ),
-            const SizedBox(width: 15),
-            Text(
-              text,
-              style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
+    });
   }
 }
