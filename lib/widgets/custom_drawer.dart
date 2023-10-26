@@ -52,10 +52,7 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getUserInfo(),
-        builder: (context, snapshot) {
-            return Drawer(
+    return Drawer(
               shape: const BeveledRectangleBorder(),
               width: MediaQuery.of(context).size.width * 0.65,
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -108,7 +105,7 @@ class CustomDrawer extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => MapScreen()));
+                                builder: (context) => const MapScreen()));
                       },
                     ),
                     const SizedBox(height: 15),
@@ -144,17 +141,9 @@ class CustomDrawer extends StatelessWidget {
                                 builder: (context) => RequestsScreen()));
                       },
                     )
-                    // selected: _selectedIndex == 0,
-                    // onTap: () {
-                    //   // Update the state of the app
-                    //   _onItemTapped(0);
-                    //   // Then close the drawer
-                    //   Navigator.pop(context);
-                    // },
                   ],
                 ),
               ),
             );
-    });
   }
 }

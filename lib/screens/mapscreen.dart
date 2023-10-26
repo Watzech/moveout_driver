@@ -245,9 +245,6 @@ class _MapScreenState extends State<MapScreen> {
                                   searchController: _searchController,
                                   onChangedFunction: _addressSelected,
                                   callerIdentifier: searchIdentifier,
-                                  openSlidingPanel: (){
-                                    _panelController.isPanelOpen ? null : _panelController.open();
-                                  },
                                 ),
                               ),
                             ),
@@ -329,6 +326,7 @@ class _MapScreenState extends State<MapScreen> {
                     destinationAddressFieldFocus: _destinationAddressFieldFocus,
                     originPlace: originPlace,
                     destinationPlace: destinationPlace,
+                    userData: _userData,
                   )
                 ],
               ),

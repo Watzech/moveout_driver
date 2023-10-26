@@ -15,13 +15,11 @@ class SearchAddressTextField extends StatelessWidget {
     this.hintText = 'Pesquisar Endereço',
     this.callerController,
     this.callerIdentifier,
-    required this.openSlidingPanel,
   }) : _searchController = searchController;
 
   final FocusNode addressSearchFocusNode;
   final TextEditingController _searchController;
   final void Function(LatLng, TextEditingController?, String?) onChangedFunction;
-  final void Function() openSlidingPanel;
   final String hintText;
   final TextEditingController? callerController;
   final String? callerIdentifier;
@@ -33,12 +31,6 @@ class SearchAddressTextField extends StatelessWidget {
         controller: _searchController,
         focusNode: addressSearchFocusNode,
         enableSuggestions: true,
-        onTap: (){
-          if(hintText == "Pesquisar Endereço"){
-            FocusManager.instance.primaryFocus?.unfocus();
-            openSlidingPanel();
-          }
-        },
         decoration: InputDecoration(
           filled: true,
           hintText: hintText,

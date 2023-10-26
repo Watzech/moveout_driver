@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:moveout1/services/do_request.dart';
 import 'package:moveout1/services/get_price.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_loading_button_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'sliding_panel_widgets/custom_address_text_form.dart';
@@ -45,6 +44,7 @@ class CustomSlidingPanel extends StatefulWidget {
     required this.destinationAddressFieldFocus,
     required this.originPlace,
     required this.destinationPlace,
+    required this.userData,
   });
 
   final PanelController panelController;
@@ -63,6 +63,7 @@ class CustomSlidingPanel extends StatefulWidget {
   final FocusNode destinationAddressFieldFocus;
   final Map<String, dynamic> originPlace;
   final Map<String, dynamic> destinationPlace;
+  final dynamic userData;
 
   @override
   State<CustomSlidingPanel> createState() => _CustomSlidingPanelState();
@@ -213,11 +214,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     var quoteInfo =
         await getQuote(widget.originPlace, widget.destinationPlace, info);
 
-    var prefs = await SharedPreferences.getInstance();
-    String userData = prefs.getString("userData") ?? "";
-    var user = jsonDecode(userData);
-
-    quoteInfo["cpf"] = user['cpf'];
+    quoteInfo["cpf"] = widget.userData['cpf'];
     setState(() {
       _quote = quoteInfo;
     });
@@ -253,30 +250,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   }
 
   void _submitData() async {
-    // if (_formkey.currentState!.validate()) {
-    //   Map<String, dynamic> info = {};
-
-    //   String firstDate = widget.firstDateController.text;
-    //   String secondDate = widget.secondDateController.text;
-    //   String furnitureCheck = widget.furnitureCheckController.text;
-    //   String boxCheck = widget.boxCheckController.text;
-    //   String fragileCheck = widget.fragileCheckController.text;
-    //   String otherCheck = widget.otherCheckController.text;
-
-    //   info["date"] = [firstDate, secondDate];
-    //   info["size"] = transportSizeValue;
-    //   info["plus"] = 2;
-    //   info["helpers"] = helperCheckValue;
-    //   info["wrapping"] = wrappingCheckValue;
-    //   info["load"] = [furnitureCheck, boxCheck, fragileCheck, otherCheck];
-
-    //   dynamic quote = await getQuote(widget.originPlace, widget.destinationPlace, info);
-
-    //   var prefs = await SharedPreferences.getInstance();
-    //   String userData = prefs.getString("userData") ?? "";
-    //   var user = jsonDecode(userData);
-
-    //   quote["cpf"] = user['cpf'];
     setState(() {
       _isLoading = true;
     });
@@ -734,7 +707,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                           child: SizedBox(
                               width: MediaQuery.sizeOf(context).width * 0.75,
                               child: _isLoading
-                                  ? SlidingPanelLoadingButtonWidget()
+                                  ? const SlidingPanelLoadingButtonWidget()
                                   : SlidingPanelConfirmButtonWidget(
                                       text: 'CONFIRMAR PEDIDO',
                                       submitFunction: _showConfirmationDialog,
