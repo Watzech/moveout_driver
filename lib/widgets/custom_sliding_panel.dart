@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moveout1/services/do_request.dart';
 import 'package:moveout1/services/get_price.dart';
+import 'package:moveout1/widgets/sliding_panel_widgets/custom_loading_button_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'sliding_panel_widgets/custom_address_text_form.dart';
@@ -704,7 +705,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                           child: SizedBox(
                               width: MediaQuery.sizeOf(context).width * 0.75,
                               child: _isLoading
-                                  ? Text('CARREGANDOOOOOOOO AAAAAAAAAAAAAA')
+                                  ? const SlidingPanelLoadingButtonWidget()
                                   : SlidingPanelConfirmButtonWidget(
                                       text: 'CONFIRMAR PEDIDO',
                                       submitFunction: _showConfirmationDialog,
