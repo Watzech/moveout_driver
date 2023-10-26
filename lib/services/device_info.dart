@@ -43,17 +43,30 @@ Future<dynamic> getRequestsInfo() async {
 
 }
 
-void saveRequestsInfo(dynamic newRequest) async {
+void addRequestInfo(dynamic newRequest) async {
 
   var prefs = await SharedPreferences.getInstance();
   final requestsData = prefs.getString("requestData") ?? "[]";
 
-  dynamic requests = jsonDecode(requestsData);
+  List<dynamic> requests = jsonDecode(requestsData);
 
   newRequest["createdAt"] = newRequest["createdAt"].toString();
   newRequest["updatedAt"] = newRequest["updatedAt"].toString();
 
   requests.add(newRequest);
+
+  await prefs.setString('requestData', json.encode(requests));
+
+}
+
+void removeRequestsInfo(String createdAt) async {
+
+  var prefs = await SharedPreferences.getInstance();
+  final requestsData = prefs.getString("requestData") ?? "[]";
+
+  List<dynamic> requests = jsonDecode(requestsData);
+
+  requests.removeWhere((element) => element["createdAt"] == createdAt);
 
   await prefs.setString('requestData', json.encode(requests));
 
