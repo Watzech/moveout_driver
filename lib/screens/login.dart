@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/signup.dart';
 import 'package:moveout1/services/do_login.dart';
-import 'package:moveout1/services/save_info.dart';
+import 'package:moveout1/services/device_info.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/background_container.dart';

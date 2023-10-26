@@ -148,7 +148,7 @@ class RequestCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          'Destino: ',
+                          'Origem: ',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -157,7 +157,7 @@ class RequestCard extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            request.destination["address"],
+                            request.origin["address"],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -174,7 +174,7 @@ class RequestCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          'Carga: ',
+                          'Destino: ',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -183,8 +183,7 @@ class RequestCard extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            // request.load.join(', '),
-                            "teste",
+                            request.destination["address"],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(

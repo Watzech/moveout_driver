@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/requests.dart';
-import 'package:moveout1/services/save_info.dart';
+import 'package:moveout1/services/device_info.dart';
 import 'profile_image_container.dart';
 
 class CustomListTile extends StatelessWidget {
