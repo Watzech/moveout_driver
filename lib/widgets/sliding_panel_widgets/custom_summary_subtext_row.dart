@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-class CustomSummaryTextRow extends StatelessWidget {
-  const CustomSummaryTextRow({
+class CustomSummarySubtextRow extends StatelessWidget {
+  const CustomSummarySubtextRow({
     super.key,
     required this.title,
     required this.text,
@@ -17,19 +17,19 @@ class CustomSummaryTextRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 12, 10, 12),
+      padding: const EdgeInsets.fromLTRB(25, 5, 25, 5),
       child: Row(
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color:Colors.grey.shade700),
           ),
           Expanded(
               child: Text(
             text,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
-            style: TextStyle(fontSize: textSize.toDouble()),
+            style: TextStyle(fontSize: textSize.toDouble(), color:Colors.grey.shade500),
             textAlign: TextAlign.right,
           )),
         ],
