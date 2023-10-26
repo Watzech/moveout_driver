@@ -54,6 +54,17 @@ class RequestDb{
     }
   }
 
+  static Future<bool> removeByField(List<dynamic> values, String fieldName) async {
+    try {
+      await RequestDb.connect();
+      await requestCollection?.deleteOne(where.oneFrom(fieldName, values));
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
   static insert(Request request) async {
     await connect();
     await requestCollection?.insertAll([request.toMap()]);

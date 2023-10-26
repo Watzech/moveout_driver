@@ -19,7 +19,8 @@ Future<void> doRequest(dynamic requestData) async {
     );
     await RequestDb.connect();
     await RequestDb.insert(request);
-    saveRequestsInfo(request.toMap());
+
+    addRequestInfo(request.toMap());
   } catch (e) {
     print(e);
   }
