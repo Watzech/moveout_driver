@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../widgets/custom_drawer.dart';
@@ -44,10 +47,12 @@ class _MapScreenState extends State<MapScreen> {
   TextEditingController? searchCallerController;
   String searchHintText = 'Pesquisar Endereço';
   String searchIdentifier = '';
+  dynamic _userData;
 
   @override
   void initState() {
     super.initState();
+    getInfo();
     _getCurrentLocation();
     originAddressController.addListener(() {
       _panelController.isPanelOpen ? null : _panelController.open();
@@ -60,6 +65,15 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         searchHintText = 'Pesquisar Endereço';
       });
+    });
+  }
+
+  getInfo() async {
+    var prefs = await SharedPreferences.getInstance();
+    final user = prefs.getString("userData") ?? "";
+    var userData = jsonDecode(user);
+    setState(() {
+      _userData = userData;
     });
   }
 
@@ -155,12 +169,16 @@ class _MapScreenState extends State<MapScreen> {
         if (_panelController.isPanelOpen) {
           _panelController.close();
           FocusManager.instance.primaryFocus?.unfocus();
+        } else if (_scaffoldKey.currentState!.isDrawerOpen) {
+          _scaffoldKey.currentState!.closeDrawer();
         }
         return false;
       },
       child: Scaffold(
         key: _scaffoldKey,
-        drawer: const CustomDrawer(),
+        drawer: CustomDrawer(
+          userData: _userData,
+        ),
         resizeToAvoidBottomInset: false,
         body: _currentLocation == null
             ? Center(
@@ -308,6 +326,7 @@ class _MapScreenState extends State<MapScreen> {
                     destinationAddressFieldFocus: _destinationAddressFieldFocus,
                     originPlace: originPlace,
                     destinationPlace: destinationPlace,
+                    userData: _userData,
                   )
                 ],
               ),

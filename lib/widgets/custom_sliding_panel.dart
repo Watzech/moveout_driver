@@ -1,11 +1,8 @@
 // ignore_for_file: must_be_immutable
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moveout1/services/do_request.dart';
 import 'package:moveout1/services/get_price.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'sliding_panel_widgets/custom_address_text_form.dart';
@@ -213,6 +210,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
 
     var quoteInfo =
         await getQuote(widget.originPlace, widget.destinationPlace, info);
+    quoteInfo["cpf"] = widget.userData['cpf'];
     setState(() {
       _quote = quoteInfo;
     });
@@ -251,12 +249,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     setState(() {
       _isLoading = true;
     });
-    // var prefs = await SharedPreferences.getInstance();
-    // String userData = prefs.getString("userData") ?? "";
-    // var user = jsonDecode(userData);
-
-    _quote!['cpf'] = widget.userData['cpf'];
-
     await doRequest(_quote);
     setState(() {
       _isLoading = false;

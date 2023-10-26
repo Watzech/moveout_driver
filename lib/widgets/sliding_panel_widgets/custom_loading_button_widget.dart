@@ -17,7 +17,7 @@ class SlidingPanelLoadingButtonWidget extends StatelessWidget {
                   Theme.of(context).colorScheme.onBackground),
               fixedSize: MaterialStateProperty.all(const Size(200, 60)),
             ),
-      child: CircularProgressIndicator(),
+      child: const CircularProgressIndicator(color: Colors.white,),
     );
   }
 }

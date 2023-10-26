@@ -1,31 +1,19 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:moveout1/screens/requests.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_image_container.dart';
-
-Future<Map<String, dynamic>> getInfo() async {
-  var prefs = await SharedPreferences.getInstance();
-  final user = prefs.getString("userData") ?? "";
-
-  return jsonDecode(user);
-}
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
     super.key,
+    required this.userData,
   });
+
+  final dynamic userData;
+
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getInfo(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            String? name = snapshot.data!['name'];
-            String? number = snapshot.data!['phone'];
-
-            return Drawer(
+    return Drawer(
               shape: const BeveledRectangleBorder(),
               width: MediaQuery.of(context).size.width * 0.65,
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -35,7 +23,7 @@ class CustomDrawer extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const ImageContainer(),
+                        ImageContainer(photoString: userData['photo']),
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -43,7 +31,9 @@ class CustomDrawer extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  name ?? 'Carregando..',
+                                  userData != null 
+                                    ? userData['name']
+                                    : 'Carregando...',
                                   textAlign: TextAlign.left,
                                   maxLines: 1,
                                   style: const TextStyle(
@@ -53,7 +43,9 @@ class CustomDrawer extends StatelessWidget {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  number ?? 'Carregando..',
+                                  userData != null 
+                                    ? userData['phone']
+                                    : 'Carregando...',
                                   maxLines: 1,
                                   style: const TextStyle(
                                       fontSize: 13,
@@ -121,12 +113,6 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ),
             );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        });
   }
 }
 

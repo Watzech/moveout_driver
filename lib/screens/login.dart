@@ -36,7 +36,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       var prefs = await SharedPreferences.getInstance();
       final user = prefs.getString("userData") ?? "";
 
