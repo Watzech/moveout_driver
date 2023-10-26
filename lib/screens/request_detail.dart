@@ -34,10 +34,10 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   void initState() {
     super.initState();
 
-    _addMarker(LatLng(widget.request.origin.lat, widget.request.origin.long), "origin",
+    _addMarker(LatLng(widget.request.origin["lat"], widget.request.origin["long"]), "origin",
         BitmapDescriptor.defaultMarker);
 
-    _addMarker(LatLng(widget.request.destination.lat, widget.request.destination.long), "destination",
+    _addMarker(LatLng(widget.request.destination["lat"], widget.request.destination["long"]), "destination",
         BitmapDescriptor.defaultMarkerWithHue(90));
 
     _getPolyline();
@@ -92,8 +92,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     _controller.complete(controller);
 
     LatLngBounds bounds = LatLngBounds(
-      southwest: LatLng(widget.request.origin.lat, widget.request.origin.long),
-      northeast: LatLng(widget.request.destination.lat, widget.request.destination.long),
+      southwest: LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+      northeast: LatLng(widget.request.destination["lat"], widget.request.destination["long"]),
     );
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -121,8 +121,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   _getPolyline() async {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPiKey,
-        PointLatLng(widget.request.origin.lat, widget.request.origin.long),
-        PointLatLng(widget.request.destination.lat, widget.request.destination.long),
+        PointLatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+        PointLatLng(widget.request.destination["lat"], widget.request.destination["long"]),
         travelMode: TravelMode.driving,
         wayPoints: [PolylineWayPoint(location: "Sabo, Yaba Lagos Nigeria")]);
     if (result.points.isNotEmpty) {
@@ -135,8 +135,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
 
   CameraPosition _calculateCameraPosition() {
     LatLngBounds bounds = LatLngBounds(
-      southwest: LatLng(widget.request.origin.lat, widget.request.origin.long),
-      northeast: LatLng(widget.request.destination.lat, widget.request.destination.long),
+      southwest: LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+      northeast: LatLng(widget.request.destination["lat"], widget.request.destination["long"]),
     );
 
     LatLng center = LatLng(

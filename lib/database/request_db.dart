@@ -45,6 +45,7 @@ class RequestDb{
 
   static Future<List<Map<String, dynamic>>?> getInfoByField(List<String> values, String fieldName) async {
     try {
+      await RequestDb.connect();
       final request = await requestCollection?.find(where.oneFrom(fieldName, values)).toList();
       return request;
     } catch (e) {

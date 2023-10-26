@@ -27,13 +27,16 @@ class _RequestsScreenState extends State<RequestsScreen> {
       var prefs = await SharedPreferences.getInstance();
       final user = prefs.getString("userData") ?? "";
       final userData = json.decode(user);
+  
+      final requestsByUser = await RequestDb.getInfoByField([userData["cpf"]], "cpfClient");
 
-      await RequestDb.connect();
-      final requestsByUser = await RequestDb.getInfoByField([userData["cpf"]], "cpf");
+      // ATENÇÃO
+      print(requestsByUser);
+      // ATENÇÃO
 
       requestsByUser?.forEach((element) {
         items.add(Request(
-            cpfClient: element['cpf'],
+            cpfClient: element['cpfClient'],
             price: element['price'],
             origin: element['origin'],
             destination: element['destination'],
