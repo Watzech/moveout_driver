@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/database/request_db.dart';
 import 'package:moveout1/screens/request_detail.dart';
+import 'package:moveout1/services/save_info.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_divider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,25 +24,25 @@ class _RequestsScreenState extends State<RequestsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) async {
-      var prefs = await SharedPreferences.getInstance();
-      final user = prefs.getString("userData") ?? "";
-      final userData = json.decode(user);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+  
+      final requestsByUser = await getRequestsInfo();
 
-      await RequestDb.connect();
-      final requestsByUser = await RequestDb.getInfoByField([userData["cpf"]], "cpf");
+      // ATENÇÃO
+      // print(requestsByUser);
+      // ATENÇÃO
 
       requestsByUser?.forEach((element) {
         items.add(Request(
-            cpfClient: element['cpf'],
+            cpfClient: element['cpfClient'],
             price: element['price'],
             origin: element['origin'],
             destination: element['destination'],
             date: element['date'],
             helpers: element['helpers'],
             load: element['load'],
-            createdAt: element['createdAt'],
-            updatedAt: element['updatedAt'],
+            createdAt: DateTime.parse(element['createdAt']),
+            updatedAt: DateTime.parse(element['updatedAt']),
             status: element['status']));
       });
     });

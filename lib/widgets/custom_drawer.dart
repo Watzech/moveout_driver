@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/requests.dart';
+import 'package:moveout1/services/save_info.dart';
 import 'profile_image_container.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -13,7 +15,14 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
+    return FutureBuilder(
+        future: getUserInfo(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            String? name = snapshot.data!['name'];
+            String? number = snapshot.data!['phone'];
+
+            return Drawer(
               shape: const BeveledRectangleBorder(),
               width: MediaQuery.of(context).size.width * 0.65,
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -66,7 +75,7 @@ class CustomDrawer extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => RequestsScreen()));
+                                builder: (context) => MapScreen()));
                       },
                     ),
                     const SizedBox(height: 15),

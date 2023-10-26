@@ -1,14 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/signup.dart';
 import 'package:moveout1/services/do_login.dart';
+import 'package:moveout1/services/save_info.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/background_container.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const String emptyValidationFail = 'Este campo é obrigatório.';
 const String submitValidationFail = 'Erro de validação, verifique os campos';
@@ -37,11 +35,10 @@ class _AuthScreenState extends State<AuthScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var prefs = await SharedPreferences.getInstance();
-      final user = prefs.getString("userData") ?? "";
 
-      if (user.length > 5) {
-        print(user);
+      dynamic user = await getUserInfo();
+
+      if (user?["cpf"] != null && user["cpf"].length > 5) {
         goMap();
       } else {
         setState(() {
@@ -52,11 +49,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void saveUser(dynamic user) async {
-    user["userData"]["createdAt"] = user["userData"]["createdAt"].toString();
-    user["userData"]["updatedAt"] = user["userData"]["updatedAt"].toString();
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userData', json.encode(user["userData"]));
-
+    loginSave(user);
     goMap();
   }
 
