@@ -34,10 +34,10 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   void initState() {
     super.initState();
 
-    _addMarker(LatLng(widget.request.origin.lat, widget.request.origin.long), "origin",
+    _addMarker(LatLng(widget.request.origin["lat"], widget.request.origin["long"]), "origin",
         BitmapDescriptor.defaultMarker);
 
-    _addMarker(LatLng(widget.request.destination.lat, widget.request.destination.long), "destination",
+    _addMarker(LatLng(widget.request.destination["lat"], widget.request.destination["long"]), "destination",
         BitmapDescriptor.defaultMarkerWithHue(90));
 
     _getPolyline();
@@ -63,7 +63,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
             compassEnabled: false,
             scrollGesturesEnabled: false,
             zoomGesturesEnabled: false,
-            zoomControlsEnabled: false,
+            zoomControlsEnabled: true,
             onMapCreated: _onMapCreated,
             markers: Set<Marker>.of(markers.values),
             polylines: Set<Polyline>.of(polylines.values),
@@ -72,7 +72,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
         Container(
           color: Colors.white,
           height: MediaQuery.sizeOf(context).height *
-              0.55,
+              0.50,
           child: const Center(
             child: Text(
               'Conteúdo na parte inferior',
@@ -92,8 +92,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     _controller.complete(controller);
 
     LatLngBounds bounds = LatLngBounds(
-      southwest: LatLng(widget.request.origin.lat, widget.request.origin.long),
-      northeast: LatLng(widget.request.destination.lat, widget.request.destination.long),
+      southwest: LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+      northeast: LatLng(widget.request.destination["lat"], widget.request.destination["long"]),
     );
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -113,18 +113,23 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   _addPolyLine() {
     PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
-        polylineId: id, color: Colors.red, points: polylineCoordinates);
+        polylineId: id, color: Colors.red, points: polylineCoordinates, width: 3);
     polylines[id] = polyline;
     setState(() {});
   }
 
   _getPolyline() async {
+    List<PolylineWayPoint> polylineWayPoints = [];
+
+    polylineWayPoints.add(PolylineWayPoint(location: "${widget.request.origin["lat"].toString()}, ${widget.request.origin["long"]}", stopOver: false));
+    polylineWayPoints.add(PolylineWayPoint(location: "${widget.request.destination["lat"].toString()}, ${widget.request.destination["long"]}", stopOver: false));
+  
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPiKey,
-        PointLatLng(widget.request.origin.lat, widget.request.origin.long),
-        PointLatLng(widget.request.destination.lat, widget.request.destination.long),
+        PointLatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+        PointLatLng(widget.request.destination["lat"], widget.request.destination["long"]),
         travelMode: TravelMode.driving,
-        wayPoints: [PolylineWayPoint(location: "Sabo, Yaba Lagos Nigeria")]);
+        wayPoints: polylineWayPoints);
     if (result.points.isNotEmpty) {
       for (var point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
@@ -135,8 +140,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
 
   CameraPosition _calculateCameraPosition() {
     LatLngBounds bounds = LatLngBounds(
-      southwest: LatLng(widget.request.origin.lat, widget.request.origin.long),
-      northeast: LatLng(widget.request.destination.lat, widget.request.destination.long),
+      northeast: LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+      southwest: LatLng(widget.request.destination["lat"], widget.request.destination["long"]),
     );
 
     LatLng center = LatLng(
@@ -145,7 +150,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
 
     CameraPosition initialCameraPosition = CameraPosition(
       target: center,
-      zoom: 5,
+      zoom: 10,
     );
 
     return initialCameraPosition;

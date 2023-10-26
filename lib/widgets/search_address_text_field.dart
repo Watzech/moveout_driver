@@ -19,8 +19,7 @@ class SearchAddressTextField extends StatelessWidget {
 
   final FocusNode addressSearchFocusNode;
   final TextEditingController _searchController;
-  final void Function(LatLng, TextEditingController?, String?)
-      onChangedFunction;
+  final void Function(LatLng, TextEditingController?, String?) onChangedFunction;
   final String hintText;
   final TextEditingController? callerController;
   final String? callerIdentifier;

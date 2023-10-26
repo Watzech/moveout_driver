@@ -30,7 +30,7 @@ class RequestCard extends StatelessWidget {
     final reaisFormatter = NumberFormat("'R\$:' #,##0.00", Intl.defaultLocale);
     
     IconData icon;
-    switch (request.price.trucksize) {
+    switch (request.price["truckSize"]) {
       case 'Small':
         icon = CustomIcons.truckPickup;
         break;
@@ -121,7 +121,7 @@ class RequestCard extends StatelessWidget {
                     children: [
                       Text(
                         //'Pedido $request. ',
-                        'Pedido ??',
+                        '',
                         style: TextStyle(
                           fontFamily: 'BebasKai',
                           fontSize: 20,
@@ -148,7 +148,7 @@ class RequestCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          'Destino: ',
+                          'Origem: ',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -157,7 +157,7 @@ class RequestCard extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            request.destination.address,
+                            request.origin["address"],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -174,7 +174,7 @@ class RequestCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          'Carga: ',
+                          'Destino: ',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -183,8 +183,7 @@ class RequestCard extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            // request.load.join(', '),
-                            "teste",
+                            request.destination["address"],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -199,7 +198,7 @@ class RequestCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        reaisFormatter.format(request.price.finalPrice),
+                        reaisFormatter.format(request.price["finalPrice"]),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,

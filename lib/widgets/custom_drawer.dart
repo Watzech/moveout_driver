@@ -1,6 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/requests.dart';
+import 'package:moveout1/services/device_info.dart';
 import 'profile_image_container.dart';
+
+class CustomListTile extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VoidCallback onTap;
+  const CustomListTile({
+    super.key,
+    required this.icon,
+    required this.text,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: InkWell(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: Theme.of(context).colorScheme.secondary,
+              size: 25,
+            ),
+            const SizedBox(width: 15),
+            Text(
+              text,
+              style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
@@ -9,7 +49,6 @@ class CustomDrawer extends StatelessWidget {
   });
 
   final dynamic userData;
-
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +105,7 @@ class CustomDrawer extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => RequestsScreen()));
+                                builder: (context) => const MapScreen()));
                       },
                     ),
                     const SizedBox(height: 15),
@@ -102,54 +141,9 @@ class CustomDrawer extends StatelessWidget {
                                 builder: (context) => RequestsScreen()));
                       },
                     )
-                    // selected: _selectedIndex == 0,
-                    // onTap: () {
-                    //   // Update the state of the app
-                    //   _onItemTapped(0);
-                    //   // Then close the drawer
-                    //   Navigator.pop(context);
-                    // },
                   ],
                 ),
               ),
             );
-  }
-}
-
-class CustomListTile extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final VoidCallback onTap;
-  const CustomListTile({
-    super.key,
-    required this.icon,
-    required this.text,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: InkWell(
-        onTap: onTap,
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: Theme.of(context).colorScheme.secondary,
-              size: 25,
-            ),
-            const SizedBox(width: 15),
-            Text(
-              text,
-              style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

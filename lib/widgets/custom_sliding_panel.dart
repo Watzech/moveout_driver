@@ -1,4 +1,6 @@
 // ignore_for_file: must_be_immutable
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moveout1/services/do_request.dart';
@@ -211,6 +213,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
 
     var quoteInfo =
         await getQuote(widget.originPlace, widget.destinationPlace, info);
+
     quoteInfo["cpf"] = widget.userData['cpf'];
     setState(() {
       _quote = quoteInfo;
@@ -658,9 +661,8 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                           children: [
                             CustomSummaryTextRow(
                               title: 'Distância: ',
-                              text: reaisFormatter.format(_quote!['price']
-                                      ['valuePerDistance'] *
-                                  _quote!['price']['distance']),
+                              text: reaisFormatter
+                                  .format(_quote!['price']['valuePerDistance'] * _quote!['price']['distance']),
                               textSize: 16,
                             ),
                             CustomSummaryTextRow(

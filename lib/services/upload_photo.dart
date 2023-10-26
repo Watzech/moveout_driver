@@ -9,14 +9,14 @@ Future<dynamic> uploadPhoto(var photo) async {
       cmpressedImage = await FlutterImageCompress.compressWithFile( 
         photo.path, 
         format: CompressFormat.jpeg, 
-        quality: 70 
+        quality: 50 
       ); 
 
     } catch (e) { 
       cmpressedImage = await FlutterImageCompress.compressWithFile( 
         photo.path, 
         format: CompressFormat.heic, 
-        quality: 70 
+        quality: 50 
       );
     }
 
