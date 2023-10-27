@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:moveout1/database/request_db.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -69,5 +70,12 @@ void removeRequestsInfo(String createdAt) async {
   requests.removeWhere((element) => element["createdAt"] == createdAt);
 
   await prefs.setString('requestData', json.encode(requests));
+
+}
+
+void removeUserInfo() async {
+
+  var prefs = await SharedPreferences.getInstance();
+  prefs.setString("userData", "{}");
 
 }
