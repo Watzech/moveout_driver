@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -26,7 +27,6 @@ class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _mapController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   final PanelController _panelController = PanelController();
-  final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFieldFocus = FocusNode();
   final FocusNode _originAddressFieldFocus = FocusNode();
@@ -131,6 +131,13 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  _resetMarkersAndPosition() {
+    setState(() {
+      _markers = {};
+    });
+    _centerMap();
+  }
+
   void _moveToAndPin(LatLng newLocation) {
     if (_mapController != null && _currentLocation != null) {
       // _addMarker(newLocation, BitmapDescriptor.defaultMarkerWithHue(200));
@@ -157,6 +164,36 @@ class _MapScreenState extends State<MapScreen> {
       searchIdentifier = identifier;
     });
     _searchFieldFocus.requestFocus();
+  }
+
+  Future<dynamic> confirmationFlushBar() {
+    return Flushbar(
+      // title: "Pedido realizado com sucesso!",
+      messageText: const Padding(
+        padding: EdgeInsets.fromLTRB(45, 15, 15, 15),
+        child: Text(
+          'Pedido realizado com sucesso!',
+          style: TextStyle(
+              fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+      backgroundColor: Colors.green,
+      padding: const EdgeInsets.all(15),
+      icon: const Padding(
+        padding: EdgeInsets.fromLTRB(25, 15, 15, 15),
+        child: Icon(
+          Icons.check,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+      duration: const Duration(seconds: 3),
+    ).show(context);
+  }
+
+  void showFlushBar() {
+    confirmationFlushBar();
+    _resetMarkersAndPosition();
   }
 
   @override
@@ -312,7 +349,6 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   CustomSlidingPanel(
                     panelController: _panelController,
-                    scrollController: _scrollController,
                     originAddressController: originAddressController,
                     destinationAddressController: destinationAddressController,
                     firstDateController: firstDateController,
@@ -327,6 +363,7 @@ class _MapScreenState extends State<MapScreen> {
                     originPlace: originPlace,
                     destinationPlace: destinationPlace,
                     userData: _userData,
+                    showFlushBar: showFlushBar,
                   )
                 ],
               ),

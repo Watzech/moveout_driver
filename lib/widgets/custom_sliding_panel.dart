@@ -1,6 +1,4 @@
 // ignore_for_file: must_be_immutable
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moveout1/services/do_request.dart';
@@ -19,36 +17,27 @@ import 'sliding_panel_widgets/custom_summary_title.dart';
 import 'sliding_panel_widgets/custom_title.dart';
 import 'sliding_panel_widgets/transport_size_segmented_button.dart';
 
-const String submitValidationFail = 'Erro de validação, verifique os campos';
-
-enum PanelState {
-  panelEdit,
-  panelSummary,
-}
-
 class CustomSlidingPanel extends StatefulWidget {
-  const CustomSlidingPanel({
-    super.key,
-    required this.panelController,
-    required this.scrollController,
-    required this.originAddressController,
-    required this.destinationAddressController,
-    required this.firstDateController,
-    required this.secondDateController,
-    required this.furnitureCheckController,
-    required this.boxCheckController,
-    required this.fragileCheckController,
-    required this.otherCheckController,
-    required this.addressTextFormOnTapFunction,
-    required this.originAddressFieldFocus,
-    required this.destinationAddressFieldFocus,
-    required this.originPlace,
-    required this.destinationPlace,
-    required this.userData,
-  });
+  const CustomSlidingPanel(
+      {super.key,
+      required this.panelController,
+      required this.originAddressController,
+      required this.destinationAddressController,
+      required this.firstDateController,
+      required this.secondDateController,
+      required this.furnitureCheckController,
+      required this.boxCheckController,
+      required this.fragileCheckController,
+      required this.otherCheckController,
+      required this.addressTextFormOnTapFunction,
+      required this.originAddressFieldFocus,
+      required this.destinationAddressFieldFocus,
+      required this.originPlace,
+      required this.destinationPlace,
+      required this.userData,
+      required this.showFlushBar});
 
   final PanelController panelController;
-  final ScrollController scrollController;
   final TextEditingController originAddressController;
   final TextEditingController destinationAddressController;
   final TextEditingController firstDateController;
@@ -64,6 +53,7 @@ class CustomSlidingPanel extends StatefulWidget {
   final Map<String, dynamic> originPlace;
   final Map<String, dynamic> destinationPlace;
   final dynamic userData;
+  final VoidCallback showFlushBar;
 
   @override
   State<CustomSlidingPanel> createState() => _CustomSlidingPanelState();
@@ -73,8 +63,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   final _formkey = GlobalKey<FormState>();
   final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
-  var summaryScreenKey = GlobalKey<NavigatorState>();
-  var formScreenKey = GlobalKey<NavigatorState>();
   bool _isLoading = false;
   Map<String, dynamic>? _quote;
   ValueNotifier<bool> isButtonEnabled = ValueNotifier(false);
@@ -237,6 +225,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                   onPressed: () {
                     Navigator.of(context).pop();
                     _submitData();
+                    _navigatorKey.currentState?.pop();
+                    widget.showFlushBar();
+                    _cleanAndClose();
                   },
                   child: const Text('Sim')),
               TextButton(
@@ -261,20 +252,22 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
 
   void _cleanAndClose() {
     // initState();
-    widget.originAddressController.text = "";
-    widget.destinationAddressController.text = "";
-    widget.firstDateController.text = "";
-    widget.secondDateController.text = "";
-    widget.furnitureCheckController.text = "";
-    widget.boxCheckController.text = "";
-    widget.fragileCheckController.text = "";
-    widget.otherCheckController.text = "";
-    helperCheckValue = false;
-    wrappingCheckValue = false;
-    furnitureCheckValue = false;
-    boxCheckValue = false;
-    fragileCheckValue = false;
-    otherCheckValue = false;
+    setState(() {
+      widget.originAddressController.text = "";
+      widget.destinationAddressController.text = "";
+      widget.firstDateController.text = "";
+      widget.secondDateController.text = "";
+      widget.furnitureCheckController.text = "";
+      widget.boxCheckController.text = "";
+      widget.fragileCheckController.text = "";
+      widget.otherCheckController.text = "";
+      helperCheckValue = false;
+      wrappingCheckValue = false;
+      furnitureCheckValue = false;
+      boxCheckValue = false;
+      fragileCheckValue = false;
+      otherCheckValue = false;
+    });
     widget.panelController.isPanelOpen ? widget.panelController.close() : null;
   }
 
@@ -510,7 +503,6 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                               builder: (context, value, child) {
                                 return SlidingPanelConfirmButtonWidget(
                                   text: 'Fazer Pedido',
-                                  // submitFunction: _submitData,
                                   submitFunction: () {
                                     _navigatorKey.currentState
                                         ?.pushNamed('/summary');
@@ -661,8 +653,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                           children: [
                             CustomSummaryTextRow(
                               title: 'Distância: ',
-                              text: reaisFormatter
-                                  .format(_quote!['price']['valuePerDistance'] * _quote!['price']['distance']),
+                              text: reaisFormatter.format(_quote!['price']
+                                      ['valuePerDistance'] *
+                                  _quote!['price']['distance']),
                               textSize: 16,
                             ),
                             CustomSummaryTextRow(
@@ -810,25 +803,10 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                     },
                   );
                 }
-                // Página de edição é a rota padrão
                 return PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) {
                     return _buildFormContent();
                   },
-                  // transitionsBuilder:
-                  //     (context, animation, secondaryAnimation, child) {
-                  //   const begin = Offset(-1.0, 0.0);
-                  //   const end = Offset.zero;
-                  //   const curve = Curves.ease;
-                  //   var tween = Tween(begin: begin, end: end).chain(
-                  //     CurveTween(curve: curve),
-                  //   );
-                  //   var offsetAnimation = animation.drive(tween);
-                  //   return SlideTransition(
-                  //     position: offsetAnimation,
-                  //     child: child,
-                  //   );
-                  // },
                 );
               },
             ),
@@ -838,16 +816,16 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
     );
   }
 
-  // @override
-  // void dispose() {
-  //   widget.originAddressController.dispose();
-  //   widget.destinationAddressController.dispose();
-  //   widget.firstDateController.dispose();
-  //   widget.secondDateController.dispose();
-  //   widget.furnitureCheckController.dispose();
-  //   widget.boxCheckController.dispose();
-  //   widget.fragileCheckController.dispose();
-  //   widget.otherCheckController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    widget.originAddressController.dispose();
+    widget.destinationAddressController.dispose();
+    widget.firstDateController.dispose();
+    widget.secondDateController.dispose();
+    widget.furnitureCheckController.dispose();
+    widget.boxCheckController.dispose();
+    widget.fragileCheckController.dispose();
+    widget.otherCheckController.dispose();
+    super.dispose();
+  }
 }
