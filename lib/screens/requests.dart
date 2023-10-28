@@ -14,33 +14,53 @@ class RequestsScreen extends StatefulWidget {
 }
 
 class _RequestsScreenState extends State<RequestsScreen> {
-  List<Request> items = [];
+  List<Request> _requests = [];
 
-  late List<RequestCard> requests;
+  Route _createRoute(Request item) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => RequestDetailScreen(request: item),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-  
       final requestsByUser = await getRequestsInfo();
 
       // ATENÇÃO
       // print(requestsByUser);
       // ATENÇÃO
-
+      List<Request> req = [];
       requestsByUser?.forEach((element) {
-        items.add(Request(
+        req.add(Request(
             cpfClient: element['cpfClient'],
             price: element['price'],
             origin: element['origin'],
             destination: element['destination'],
+            distance: element['distance'],
             date: element['date'],
             helpers: element['helpers'],
             load: element['load'],
             createdAt: DateTime.parse(element['createdAt']),
             updatedAt: DateTime.parse(element['updatedAt']),
             status: element['status']));
+      });
+      setState(() {
+        _requests = req;
       });
     });
   }
@@ -53,32 +73,28 @@ class _RequestsScreenState extends State<RequestsScreen> {
         title: const Text(
           'Pedidos',
           style: TextStyle(
-              fontFamily: 'BebasKai', fontSize: 35, color: Colors.white),
+              fontFamily: 'BebasKai', fontSize: 30, color: Colors.white),
         ),
         leading: InkWell(
             onTap: () {
               Navigator.pop(context);
             },
             child: Icon(
-              Icons.arrow_back_sharp,
+              Icons.arrow_back_rounded,
               color: Theme.of(context).colorScheme.secondary,
-              size: 35,
+              size: 30,
             )),
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(0),
-        itemCount: items.length,
+        itemCount: _requests.length,
         itemBuilder: (context, index) {
-          final item = items[index];
+          final item = _requests[index];
           return Column(
             children: [
               InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                RequestDetailScreen(request: item)));
+                    Navigator.of(context).push(_createRoute(item));
                   },
                   child: RequestCard(request: item)),
               const CustomDivider(),

@@ -8,6 +8,7 @@ Future<void> doRequest(dynamic requestData) async {
     Request request = Request(
       origin: requestData["origin"],
       destination: requestData["destination"],
+      distance: requestData["distance"],
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       cpfClient: requestData["cpf"],
@@ -15,7 +16,7 @@ Future<void> doRequest(dynamic requestData) async {
       helpers: requestData["helpers"],
       load: requestData["load"],
       date: requestData["date"],
-      status: "AG"
+      status: "EA"
     );
     await RequestDb.connect();
     await RequestDb.insert(request);

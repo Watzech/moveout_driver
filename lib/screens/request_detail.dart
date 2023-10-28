@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/constants/main.dart' as constants;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:moveout1/widgets/sliding_panel_widgets/custom_summary_subtext_row.dart';
+import 'package:moveout1/widgets/sliding_panel_widgets/custom_summary_text_row.dart';
 
 class RequestDetailScreen extends StatefulWidget {
   final Request request;
@@ -20,87 +23,46 @@ class RequestDetailScreen extends StatefulWidget {
 class _RequestDetailScreenState extends State<RequestDetailScreen> {
   final Completer<GoogleMapController> _controller = Completer();
   late GoogleMapController mapController;
-  // double _originLatitude = 6.5212402, _originLongitude = 3.3679965;
-  // double _destLatitude = 6.849660, _destLongitude = 3.648190;
-  // double _originLatitude = 26.48424, _originLongitude = 50.04551;
-  // double _destLatitude = 26.46423, _destLongitude = 50.06358;
   Map<MarkerId, Marker> markers = {};
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = constants.API_KEY;
+  final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
 
   @override
   void initState() {
     super.initState();
 
-    _addMarker(LatLng(widget.request.origin["lat"], widget.request.origin["long"]), "origin",
+    _addMarker(
+        LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+        "origin",
         BitmapDescriptor.defaultMarker);
 
-    _addMarker(LatLng(widget.request.destination["lat"], widget.request.destination["long"]), "destination",
-        BitmapDescriptor.defaultMarkerWithHue(90));
+    _addMarker(
+        LatLng(widget.request.destination["lat"],
+            widget.request.destination["long"]),
+        "destination",
+        BitmapDescriptor.defaultMarker);
 
     _getPolyline();
-  }
-
-  @override
-  void deactivate(){
-    super.deactivate();
-  
-    
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      children: [
-        Expanded(
-          child: GoogleMap(
-            initialCameraPosition: _calculateCameraPosition(),
-            myLocationEnabled: false,
-            tiltGesturesEnabled: false,
-            compassEnabled: false,
-            scrollGesturesEnabled: false,
-            zoomGesturesEnabled: false,
-            zoomControlsEnabled: true,
-            onMapCreated: _onMapCreated,
-            markers: Set<Marker>.of(markers.values),
-            polylines: Set<Polyline>.of(polylines.values),
-          ),
-        ),
-        Container(
-          color: Colors.white,
-          height: MediaQuery.sizeOf(context).height *
-              0.50,
-          child: const Center(
-            child: Text(
-              'Conteúdo na parte inferior',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      ],
-    ));
   }
 
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
     _controller.complete(controller);
 
-    LatLngBounds bounds = LatLngBounds(
-      southwest: LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
-      northeast: LatLng(widget.request.destination["lat"], widget.request.destination["long"]),
-    );
+    List<LatLng> list = [
+      LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+      LatLng(
+          widget.request.destination["lat"], widget.request.destination["long"])
+    ];
+    LatLngBounds bounds = _boundsFromLatLngList(list);
 
     Future.delayed(const Duration(milliseconds: 500), () {
       CameraUpdate zoomToFit = CameraUpdate.newLatLngBounds(bounds, 70);
       mapController.animateCamera(zoomToFit);
     });
-    
   }
 
   _addMarker(LatLng position, String id, BitmapDescriptor descriptor) {
@@ -113,7 +75,10 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   _addPolyLine() {
     PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
-        polylineId: id, color: Colors.red, points: polylineCoordinates, width: 3);
+        polylineId: id,
+        color: Colors.red,
+        points: polylineCoordinates,
+        width: 3);
     polylines[id] = polyline;
     setState(() {});
   }
@@ -121,13 +86,21 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   _getPolyline() async {
     List<PolylineWayPoint> polylineWayPoints = [];
 
-    polylineWayPoints.add(PolylineWayPoint(location: "${widget.request.origin["lat"].toString()}, ${widget.request.origin["long"]}", stopOver: false));
-    polylineWayPoints.add(PolylineWayPoint(location: "${widget.request.destination["lat"].toString()}, ${widget.request.destination["long"]}", stopOver: false));
-  
+    polylineWayPoints.add(PolylineWayPoint(
+        location:
+            "${widget.request.origin["lat"].toString()}, ${widget.request.origin["long"]}",
+        stopOver: false));
+    polylineWayPoints.add(PolylineWayPoint(
+        location:
+            "${widget.request.destination["lat"].toString()}, ${widget.request.destination["long"]}",
+        stopOver: false));
+
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         googleAPiKey,
-        PointLatLng(widget.request.origin["lat"], widget.request.origin["long"]),
-        PointLatLng(widget.request.destination["lat"], widget.request.destination["long"]),
+        PointLatLng(
+            widget.request.origin["lat"], widget.request.origin["long"]),
+        PointLatLng(widget.request.destination["lat"],
+            widget.request.destination["long"]),
         travelMode: TravelMode.driving,
         wayPoints: polylineWayPoints);
     if (result.points.isNotEmpty) {
@@ -138,11 +111,40 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     _addPolyLine();
   }
 
+  LatLngBounds _boundsFromLatLngList(List<LatLng> list) {
+    double? x0, x1, y0, y1;
+    for (LatLng latLng in list) {
+      if (x0 == null || x1 == null || y0 == null || y1 == null) {
+        x0 = x1 = latLng.latitude;
+        y0 = y1 = latLng.longitude;
+      } else {
+        if (latLng.latitude > x1) x1 = latLng.latitude;
+        if (latLng.latitude < x0) x0 = latLng.latitude;
+        if (latLng.longitude > y1) y1 = latLng.longitude;
+        if (latLng.longitude < y0) y0 = latLng.longitude;
+      }
+    }
+
+    LatLng northeast = LatLng(x1!, y1!);
+    LatLng southwest = LatLng(x0!, y0!);
+
+    if (southwest.latitude > northeast.latitude) {
+      LatLng aux;
+      aux = southwest;
+      southwest = northeast;
+      northeast = aux;
+    }
+
+    return LatLngBounds(northeast: northeast, southwest: southwest);
+  }
+
   CameraPosition _calculateCameraPosition() {
-    LatLngBounds bounds = LatLngBounds(
-      northeast: LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
-      southwest: LatLng(widget.request.destination["lat"], widget.request.destination["long"]),
-    );
+    List<LatLng> list = [
+      LatLng(widget.request.origin["lat"], widget.request.origin["long"]),
+      LatLng(
+          widget.request.destination["lat"], widget.request.destination["long"])
+    ];
+    LatLngBounds bounds = _boundsFromLatLngList(list);
 
     LatLng center = LatLng(
         (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
@@ -154,5 +156,251 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     );
 
     return initialCameraPosition;
+  }
+
+  String _getTransportSizeString(String transportSize) {
+    switch (transportSize) {
+      case 'Small':
+        return 'Pequeno';
+      case 'Medium':
+        return 'Médio';
+      case 'Large':
+        return 'Grande';
+      default:
+        return 'Tamanho Inválido';
+    }
+  }
+
+  void _showConfirmationDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            content: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Deseja cancelar esse pedido?',
+                style: TextStyle(fontSize: 17),
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    //UPDATE PARA SITUACAO CANCELADO AQUI
+                  },
+                  child: const Text('Sim')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Não'))
+            ],
+          );
+        });
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Color statusColor;
+    String statusText;
+    switch (widget.request.status) {
+      case 'CO': //Concluído
+        statusColor = Colors.green;
+        statusText = 'Concluído';
+        break;
+      case 'CA': //Cancelado
+        statusColor = Colors.grey;
+        statusText = 'Cancelado';
+        break;
+      case 'EA': //Em Aberto
+        statusColor = Theme.of(context).colorScheme.secondary;
+        statusText = 'Em Aberto';
+        break;
+      case 'AG': //Agendado
+        statusColor = Colors.blue;
+        statusText = 'Agendado';
+        break;
+      default:
+        statusColor = Colors.red;
+        statusText = 'ERRO';
+        break;
+    }
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          leading: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                Icons.close,
+                color: Theme.of(context).colorScheme.secondary,
+                size: 30,
+              )),
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Divider(
+                height: 2,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              Expanded(
+                child: GoogleMap(
+                  initialCameraPosition: _calculateCameraPosition(),
+                  myLocationEnabled: false,
+                  tiltGesturesEnabled: false,
+                  compassEnabled: false,
+                  scrollGesturesEnabled: false,
+                  zoomGesturesEnabled: false,
+                  zoomControlsEnabled: false,
+                  onMapCreated: _onMapCreated,
+                  markers: Set<Marker>.of(markers.values),
+                  polylines: Set<Polyline>.of(polylines.values),
+                ),
+              ),
+              Divider(
+                height: 2,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              Container(
+                color: Colors.white,
+                height: MediaQuery.sizeOf(context).height * 0.50,
+                child: ListView(
+                  padding: const EdgeInsets.all(0),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+                      child: Column(
+                        children: [
+                          Text(
+                            'PEDIDO $statusText',
+                            style: TextStyle(
+                                fontFamily: 'BebasKai',
+                                fontSize: 35,
+                                color: statusColor),
+                          ),
+                          const CustomSummaryTextRow(
+                              title: 'Endereços: ', text: ''),
+                          CustomSummarySubtextRow(
+                              title: 'Origem: ',
+                              text: widget.request.origin['address']),
+                          CustomSummarySubtextRow(
+                              title: 'Destino: ',
+                              text: widget.request.destination['address']),
+                          CustomSummarySubtextRow(
+                            title: 'Distância: ',
+                            text: widget.request.distance.toStringAsFixed(2) +
+                                ' Km',
+                          ),
+                          CustomSummaryTextRow(
+                            title: 'Tamanho do transporte: ',
+                            text: _getTransportSizeString(
+                                widget.request.price['truckSize']),
+                            textSize: 16,
+                          ),
+                          CustomSummaryTextRow(
+                            title: 'Ajudantes: ',
+                            text: widget.request.helpers ? 'Sim' : 'Não',
+                            textSize: 16,
+                          ),
+                          CustomSummaryTextRow(
+                            title: 'Embalagem: ',
+                            text: widget.request.price['wrapping'] > 0
+                                ? 'Sim'
+                                : 'Não',
+                            textSize: 16,
+                          ),
+                          const CustomSummaryTextRow(
+                              title: 'Carga: ', text: ''),
+                          widget.request.load['furniture'].isNotEmpty
+                              ? CustomSummarySubtextRow(
+                                  title: 'Móveis / Eletrodomésticos: ',
+                                  text: widget.request.load['furniture'])
+                              : const SizedBox(height: 0),
+                          widget.request.load['box'].isNotEmpty
+                              ? CustomSummarySubtextRow(
+                                  title: 'Caixas / Itens: ',
+                                  text: widget.request.load['box'])
+                              : const SizedBox(height: 0),
+                          widget.request.load['fragile'].isNotEmpty
+                              ? CustomSummarySubtextRow(
+                                  title: 'Vidro / Frágeis: ',
+                                  text: widget.request.load['fragile'])
+                              : const SizedBox(height: 0),
+                          widget.request.load['other'].isNotEmpty
+                              ? CustomSummarySubtextRow(
+                                  title: 'Outros: ',
+                                  text: widget.request.load['other'])
+                              : const SizedBox(height: 0),
+                          CustomSummaryTextRow(
+                            title: 'Datas: ',
+                            text:
+                                '${widget.request.date[0]}   -   ${widget.request.date[1]}',
+                            textSize: 16,
+                          ),
+                          CustomSummaryTextRow(
+                            title: 'Valor: ',
+                            text: reaisFormatter
+                                .format(widget.request.price['finalPrice']),
+                            textSize: 20,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                            child: ElevatedButton(
+                              onPressed: widget.request.status != 'CA' &&
+                                      widget.request.status != 'CO'
+                                  ? _showConfirmationDialog
+                                  : null,
+                              style: widget.request.status != 'CA' &&
+                                      widget.request.status != 'CO'
+                                  ? ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(statusColor),
+                                      fixedSize: MaterialStateProperty.all(
+                                          Size(MediaQuery.of(context).size.width * 0.8, 60))
+                                    )
+                                  : ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground),
+                                      fixedSize: MaterialStateProperty.all(
+                                          Size(MediaQuery.of(context).size.width * 0.5, 100)),
+                                    ),
+                              child: const Text(
+                                'CANCELAR PEDIDO',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontFamily: 'BebasKai'),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
+  }
+
+  @override
+  void dispose() {
+    mapController.dispose();
+    super.dispose();
   }
 }

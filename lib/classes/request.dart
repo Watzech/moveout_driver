@@ -1,10 +1,10 @@
-
 class Request {
   String? id;
   final String cpfClient;
   dynamic price;
   dynamic origin;
   dynamic destination;
+  dynamic distance;
   bool helpers;
   List<String> interesteds = [];
   List<dynamic> date = [];
@@ -13,19 +13,19 @@ class Request {
   final DateTime updatedAt;
   String status;
 
-  Request({
-    required this.cpfClient,
-    required this.price,
-    required this.origin,
-    required this.destination,
-    required this.date,
-    required this.helpers,
-    required this.load,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.status,
-    this.id
-  });
+  Request(
+      {required this.cpfClient,
+      required this.price,
+      required this.origin,
+      required this.destination,
+      required this.distance,
+      required this.date,
+      required this.helpers,
+      required this.load,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.status,
+      this.id});
 
   Map<String, dynamic> toMap() {
     return {
@@ -33,6 +33,7 @@ class Request {
       'price': price,
       'origin': origin,
       'destination': destination,
+      'distance': distance,
       'interesteds': interesteds,
       'date': date,
       'helpers': helpers,
@@ -43,17 +44,18 @@ class Request {
     };
   }
 
-  Request.fromMap(Map<String, dynamic> map) :
-    id = map['id'],
-    cpfClient = map['cpfClient'],
-    price = map['price'],
-    origin = map['origin'],
-    destination = map['destination'],
-    helpers = map['helpers'],
-    interesteds = map['interesteds'],
-    date = map['date'],
-    load = map['load'],
-    createdAt = map['createdAt'],
-    status = map['status'],
-    updatedAt = map['updatedAt'];
+  Request.fromMap(Map<String, dynamic> map)
+      : id = map['id'],
+        cpfClient = map['cpfClient'],
+        price = map['price'],
+        origin = map['origin'],
+        destination = map['destination'],
+        distance = map['distance'],
+        helpers = map['helpers'],
+        interesteds = map['interesteds'],
+        date = map['date'],
+        load = map['load'],
+        createdAt = map['createdAt'],
+        status = map['status'],
+        updatedAt = map['updatedAt'];
 }
