@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:moveout1/database/request_db.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Save
 Future<void> loginSave(userInfo) async {
 
   try {
@@ -24,7 +25,9 @@ Future<void> loginSave(userInfo) async {
   }
 
 }
+// Save
 
+// Get
 Future<dynamic> getUserInfo() async {
 
   var prefs = await SharedPreferences.getInstance();
@@ -42,7 +45,9 @@ Future<dynamic> getRequestsInfo() async {
   return jsonDecode(requests);
 
 }
+// Get
 
+// Add
 void addRequestInfo(dynamic newRequest) async {
 
   var prefs = await SharedPreferences.getInstance();
@@ -58,8 +63,27 @@ void addRequestInfo(dynamic newRequest) async {
   await prefs.setString('requestData', json.encode(requests));
 
 }
+// Add
 
-void removeRequestsInfo(String createdAt) async {
+// Edit
+Future<void> changeRequestSituation(String createdAt, String situation) async {
+  var prefs = await SharedPreferences.getInstance();
+  final requestsData = prefs.getString("requestData") ?? "[]";
+
+  List<dynamic> requests = jsonDecode(requestsData);
+
+  for(var element in requests){
+    if(element["createdAt"] == createdAt){
+      element["status"] = situation.toUpperCase();
+    }
+  }
+
+  await prefs.setString('requestData', json.encode(requests));
+}
+// Edit
+
+// Remove
+Future<void> removeRequestsInfo(String createdAt) async {
 
   var prefs = await SharedPreferences.getInstance();
   final requestsData = prefs.getString("requestData") ?? "[]";
@@ -72,9 +96,10 @@ void removeRequestsInfo(String createdAt) async {
 
 }
 
-void removeUserInfo() async {
+Future<void> removeUserInfo() async {
 
   var prefs = await SharedPreferences.getInstance();
   prefs.setString("userData", "{}");
 
 }
+// Remove
