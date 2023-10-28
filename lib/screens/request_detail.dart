@@ -365,7 +365,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                                       widget.request.status != 'CO'
                                   ? ButtonStyle(
                                       backgroundColor:
-                                          MaterialStateProperty.all(statusColor),
+                                          MaterialStateProperty.all(Colors.red),
                                       fixedSize: MaterialStateProperty.all(
                                           Size(MediaQuery.of(context).size.width * 0.8, 60))
                                     )
