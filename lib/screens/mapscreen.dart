@@ -215,6 +215,7 @@ class _MapScreenState extends State<MapScreen> {
         key: _scaffoldKey,
         drawer: CustomDrawer(
           userData: _userData,
+          context: context,
         ),
         resizeToAvoidBottomInset: false,
         body: _currentLocation == null
