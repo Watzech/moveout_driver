@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:moveout1/database/request_db.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,7 +49,7 @@ Future<dynamic> getRequestsInfo() async {
 // Get
 
 // Add
-void addRequestInfo(dynamic newRequest) async {
+Future<void> addRequestInfo(dynamic newRequest) async {
 
   var prefs = await SharedPreferences.getInstance();
   final requestsData = prefs.getString("requestData") ?? "[]";
@@ -66,15 +67,16 @@ void addRequestInfo(dynamic newRequest) async {
 // Add
 
 // Edit
-Future<void> changeRequestSituation(String createdAt, String situation) async {
+Future<void> changeRequestSituation(ObjectId id, String situation) async {
   var prefs = await SharedPreferences.getInstance();
   final requestsData = prefs.getString("requestData") ?? "[]";
 
   List<dynamic> requests = jsonDecode(requestsData);
 
   for(var element in requests){
-    if(element["createdAt"] == createdAt){
+    if(ObjectId.parse(element["_id"]) == id){
       element["status"] = situation.toUpperCase();
+      element["updatedAt"] = DateTime.now().toString();
     }
   }
 

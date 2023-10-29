@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mongo_dart/mongo_dart.dart' show ObjectId;
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/screens/request_detail.dart';
 import 'package:moveout1/services/device_info.dart';
@@ -43,6 +44,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
       List<Request> req = [];
       requestsByUser?.forEach((element) {
         req.add(Request(
+            id: ObjectId.parse(element['_id']),
             cpfClient: element['cpfClient'],
             price: element['price'],
             origin: element['origin'],
