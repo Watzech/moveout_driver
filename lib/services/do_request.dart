@@ -1,3 +1,4 @@
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/database/request_db.dart';
 import 'package:moveout1/services/device_info.dart';
@@ -6,6 +7,7 @@ Future<void> doRequest(dynamic requestData) async {
   
   try {
     Request request = Request(
+      id: ObjectId(),
       origin: requestData["origin"],
       destination: requestData["destination"],
       distance: requestData["distance"],
@@ -21,7 +23,7 @@ Future<void> doRequest(dynamic requestData) async {
     await RequestDb.connect();
     await RequestDb.insert(request);
 
-    addRequestInfo(request.toMap());
+    await addRequestInfo(request.toMap());
   } catch (e) {
     print(e);
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:moveout1/screens/login.dart';
 import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/requests.dart';
+import 'package:moveout1/services/device_info.dart';
 import 'profile_image_container.dart';
 
 class CustomListTile extends StatelessWidget {
@@ -65,9 +67,13 @@ class CustomDrawer extends StatelessWidget {
             ),
             actions: [
               TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    //FUNÇÃO PARA SAIR AQUI
+                  onPressed: () async {
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context){
+                      return const AuthScreen();
+                    }), (r){
+                      return false;
+                    });
+                    await removeUserInfo();
                   },
                   child: const Text('Sim')),
               TextButton(
