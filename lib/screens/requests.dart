@@ -18,7 +18,8 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   Route _createRoute(Request item) {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => RequestDetailScreen(request: item),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          RequestDetailScreen(request: item),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
@@ -85,23 +86,38 @@ class _RequestsScreenState extends State<RequestsScreen> {
               size: 30,
             )),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(0),
-        itemCount: _requests.length,
-        itemBuilder: (context, index) {
-          final item = _requests[index];
-          return Column(
-            children: [
-              InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(_createRoute(item));
-                  },
-                  child: RequestCard(request: item)),
-              const CustomDivider(),
-            ],
-          );
-        },
-      ),
+      body: _requests.isEmpty
+          ? const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Text(
+                    'Nenhum pedido encontrado!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.grey
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(0),
+              itemCount: _requests.length,
+              itemBuilder: (context, index) {
+                final item = _requests[index];
+                return Column(
+                  children: [
+                    InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(_createRoute(item));
+                        },
+                        child: RequestCard(request: item)),
+                    const CustomDivider(),
+                  ],
+                );
+              },
+            ),
     );
   }
 }
