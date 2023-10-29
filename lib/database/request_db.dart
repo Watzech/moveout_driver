@@ -71,19 +71,24 @@ class RequestDb{
   }
 
   static update(Request request) async {
-    var u = await requestCollection?.findOne({"id": request.id});
+    try {
+      await RequestDb.connect();
+      var u = await requestCollection?.findOne({"_id": request.id});
 
-    u?["cpfClient"] = request.cpfClient;
-    u?["price"] = request.price;
-    u?["origin"] = request.origin;
-    u?["destination"] = request.destination;
-    u?["helpers"] = request.helpers;
-    u?["load"] = request.load;
-    u?["interesteds"] = request.interesteds;
-    u?["updatedAt"] = request.updatedAt;
-    u?["status"] = request.status;
+      u?["cpfClient"] = request.cpfClient;
+      u?["price"] = request.price;
+      u?["origin"] = request.origin;
+      u?["destination"] = request.destination;
+      u?["helpers"] = request.helpers;
+      u?["load"] = request.load;
+      u?["interesteds"] = request.interesteds;
+      u?["updatedAt"] = DateTime.now();
+      u?["status"] = request.status;
 
-    await requestCollection?.replaceOne({"id": request.id}, u!);
+      await requestCollection?.replaceOne({"_id": request.id}, u!);
+    } catch (e) {
+      print(e);
+    }
   }
 
   static Future<List<Map<String, dynamic>>?> getFilteredInfo(String state, String search, bool ascending) async {

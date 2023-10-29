@@ -222,9 +222,9 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
             ),
             actions: [
               TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.of(context).pop();
-                    _submitData();
+                    await _submitData();
                     _navigatorKey.currentState?.pop();
                     widget.showFlushBar();
                     _cleanAndClose();
@@ -240,7 +240,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
         });
   }
 
-  void _submitData() async {
+  Future<void> _submitData() async {
     setState(() {
       _isLoading = true;
     });

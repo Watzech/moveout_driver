@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mongo_dart/mongo_dart.dart' show ObjectId;
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/screens/request_detail.dart';
 import 'package:moveout1/services/device_info.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_divider.dart';
-
-import '../widgets/request_card.dart';
+import 'package:moveout1/widgets/request_card.dart';
 
 class RequestsScreen extends StatefulWidget {
   RequestsScreen({super.key});
@@ -40,14 +40,12 @@ class _RequestsScreenState extends State<RequestsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final requestsByUser = await getRequestsInfo();
+      var requestsByUser = await getRequestsInfo();
 
-      // ATENÇÃO
-      // print(requestsByUser);
-      // ATENÇÃO
       List<Request> req = [];
       requestsByUser?.forEach((element) {
         req.add(Request(
+            id: ObjectId.parse(element['_id']),
             cpfClient: element['cpfClient'],
             price: element['price'],
             origin: element['origin'],

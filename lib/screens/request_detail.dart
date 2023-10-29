@@ -9,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:moveout1/services/delete_request.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_summary_subtext_row.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_summary_text_row.dart';
 
@@ -171,6 +172,11 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     }
   }
 
+  @override
+  void deactivate() {
+    super.deactivate();
+  }
+
   void _showConfirmationDialog() {
     showDialog(
         context: context,
@@ -185,9 +191,16 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
             ),
             actions: [
               TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.of(context).pop();
-                    //UPDATE PARA SITUACAO CANCELADO AQUI
+                    widget.request.status = "CA";
+                    
+                    // LOADING NO BOTÃO SETANDO TRUE ANTES DO AWAIT
+
+                    // NÃO RETIRAR AWAIT
+                    await cancelRequest(widget.request);
+
+                    // LOADING NO BOTÃO SETANDO FALSE, FINALIZADO, APÓS O AWAIT
                   },
                   child: const Text('Sim')),
               TextButton(
@@ -198,11 +211,6 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
             ],
           );
         });
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
   }
 
   @override

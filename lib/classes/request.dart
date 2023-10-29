@@ -1,5 +1,7 @@
+import 'package:mongo_dart/mongo_dart.dart';
+
 class Request {
-  String? id;
+  ObjectId id;
   final String cpfClient;
   dynamic price;
   dynamic origin;
@@ -13,8 +15,9 @@ class Request {
   final DateTime updatedAt;
   String status;
 
-  Request(
-      {required this.cpfClient,
+  Request({
+      required this.id,
+      required this.cpfClient,
       required this.price,
       required this.origin,
       required this.destination,
@@ -25,10 +28,11 @@ class Request {
       required this.createdAt,
       required this.updatedAt,
       required this.status,
-      this.id});
+      });
 
   Map<String, dynamic> toMap() {
     return {
+      '_id': id,
       'cpfClient': cpfClient,
       'price': price,
       'origin': origin,
@@ -45,7 +49,7 @@ class Request {
   }
 
   Request.fromMap(Map<String, dynamic> map)
-      : id = map['id'],
+      : id = map['_id'],
         cpfClient = map['cpfClient'],
         price = map['price'],
         origin = map['origin'],

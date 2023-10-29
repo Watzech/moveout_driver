@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:moveout1/services/device_info.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../widgets/custom_drawer.dart';
@@ -69,9 +67,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   getInfo() async {
-    var prefs = await SharedPreferences.getInstance();
-    final user = prefs.getString("userData") ?? "";
-    var userData = jsonDecode(user);
+    var userData = await getUserInfo();
     setState(() {
       _userData = userData;
     });

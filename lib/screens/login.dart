@@ -49,7 +49,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void saveUser(dynamic user) async {
-    loginSave(user);
+    await loginSave(user);
     goMap();
   }
 
