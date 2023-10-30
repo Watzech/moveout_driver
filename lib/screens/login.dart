@@ -35,7 +35,6 @@ class _AuthScreenState extends State<AuthScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-
       dynamic user = await getUserInfo();
 
       if (user?["cpf"] != null && user["cpf"].length > 5) {
@@ -61,14 +60,16 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> submitData() async {
-    String email = _emailOrCpfFormFieldController.text;
-    String password = _passwordFormFieldController.text;
-    dynamic login = await doLogin(email, password);
+    if (_formkey.currentState!.validate()) {
+      String email = _emailOrCpfFormFieldController.text;
+      String password = _passwordFormFieldController.text;
+      dynamic login = await doLogin(email, password);
 
-    if (login["done"]) {
-      saveUser(login);
-    } else {
-      print("Não deu");
+      if (login["done"]) {
+        saveUser(login);
+      } else {
+        print("Não deu");
+      }
     }
   }
 
@@ -90,74 +91,94 @@ class _AuthScreenState extends State<AuthScreen> {
               )
             : SingleChildScrollView(
                 physics: const NeverScrollableScrollPhysics(),
-                child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth: MediaQuery.of(context).size.width,
-                      minHeight: MediaQuery.of(context).size.height,
-                    ),
-                    child: IntrinsicHeight(
+                child: IntrinsicHeight(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    BackgroundContainer(
+                      src: 'assets/images/backgrounds/mbl_bg_3.png',
+                      child: SafeArea(
+                        minimum: const EdgeInsets.all(15.0),
                         child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        BackgroundContainer(
-                          src: 'assets/images/backgrounds/mbl_bg_3.png',
-                          child: SafeArea(
-                            minimum: const EdgeInsets.all(15.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
-                                  child: Image(
-                                    alignment: Alignment.center,
-                                    image: AssetImage(
-                                        'assets/images/logos/logo1.png'),
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                                child: Image(
+                                  alignment: Alignment.center,
+                                  image: const AssetImage(
+                                      'assets/images/logos/logo1.png'),
+                                  fit: BoxFit.fitWidth,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.1,
                                 ),
-                                const SizedBox(height: 50),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      maxWidth:
-                                          MediaQuery.sizeOf(context).width,
-                                      minHeight:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.35,
-                                    ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(15)),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 25.0,
-                                            right: 25.0,
-                                            top: 25.0,
-                                            bottom: 10.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Form(
-                                              key: _formkey,
-                                              child: ListView(
-                                                scrollDirection: Axis.vertical,
-                                                shrinkWrap: true,
+                              ),
+                            ),
+                            SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.015),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: MediaQuery.sizeOf(context).width,
+                                  minHeight:
+                                      MediaQuery.sizeOf(context).height * 0.35,
+                                ),
+                                child: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.65,
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(15)),
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 25.0,
+                                        right: 25.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Form(
+                                          key: _formkey,
+                                          child: ListView(
+                                            scrollDirection: Axis.vertical,
+                                            shrinkWrap: true,
+                                            children: [
+                                              LoginTextFormField(
+                                                lbl: 'E-mail:',
+                                                controller:
+                                                    _emailOrCpfFormFieldController,
+                                                validatorFunction: (value) {
+                                                  if (value == null ||
+                                                      value.isEmpty) {
+                                                    return emptyValidationFail;
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
+                                              SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.015),
+                                              Column(
                                                 children: [
-                                                  LoginTextFormField(
-                                                    lbl: 'E-mail:',
+                                                  LoginPasswordFormField(
+                                                    lbl: 'Senha:',
                                                     controller:
-                                                        _emailOrCpfFormFieldController,
+                                                        _passwordFormFieldController,
                                                     validatorFunction: (value) {
                                                       if (value == null ||
                                                           value.isEmpty) {
@@ -166,77 +187,66 @@ class _AuthScreenState extends State<AuthScreen> {
                                                       return null;
                                                     },
                                                   ),
-                                                  const SizedBox(height: 40),
-                                                  Column(
-                                                    children: [
-                                                      LoginPasswordFormField(
-                                                        lbl: 'Senha:',
-                                                        controller:
-                                                            _passwordFormFieldController,
-                                                        validatorFunction:
-                                                            (value) {
-                                                          if (value == null ||
-                                                              value.isEmpty) {
-                                                            return emptyValidationFail;
-                                                          }
-                                                          return null;
-                                                        },
-                                                      ),
-                                                      const NavigatorTextButton(
-                                                          txt:
-                                                              'Esqueci a Senha',
-                                                          destinationWidget:
-                                                              SignupScreen()),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 40),
-                                                  Center(
-                                                    child: ConfirmButtonWidget(
-                                                        lbl: 'Entrar',
-                                                        fontSize: 25,
-                                                        fontFamily: 'BebasKai',
-                                                        submitFunction:
-                                                            submitData),
-                                                  ),
-                                                  const SizedBox(height: 20),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      const Text(
-                                                        "Ainda não possui uma conta?",
-                                                        textDirection:
-                                                            TextDirection.ltr,
-                                                        style: TextStyle(
-                                                          fontSize: 11,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                      NavigatorTextButton(
-                                                        txt: 'Cadastre-se',
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary,
-                                                        destinationWidget:
-                                                            const SignupScreen(),
-                                                      ),
-                                                    ],
-                                                  )
+                                                  const NavigatorTextButton(
+                                                      txt: 'Esqueci a Senha',
+                                                      destinationWidget:
+                                                          SignupScreen()),
                                                 ],
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
+                                              SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.015),
+                                              Center(
+                                                child: ConfirmButtonWidget(
+                                                    lbl: 'Entrar',
+                                                    fontSize: 25,
+                                                    fontFamily: 'BebasKai',
+                                                    submitFunction: submitData),
+                                              ),
+                                              SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.015),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  const Text(
+                                                    "Ainda não possui uma conta?",
+                                                    textDirection:
+                                                        TextDirection.ltr,
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  NavigatorTextButton(
+                                                    txt: 'Cadastre-se',
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                    destinationWidget:
+                                                        const SignupScreen(),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    )))));
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ))));
   }
 }

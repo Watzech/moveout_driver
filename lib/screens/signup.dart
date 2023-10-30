@@ -301,7 +301,7 @@ class _SingupTabBarState extends State<SingupTabBar> {
                         Padding(
                           padding: const EdgeInsets.all(25.0),
                           child: ConfirmButtonWidget(
-                              lbl: 'Cadastrar', submitFunction: submitData),
+                              lbl: 'Cadastrar', submitFunction: submitData, fontFamily: 'BebasKai', fontSize: MediaQuery.of(context).size.height * 0.04,),
                         ),
                       ],
                     ),

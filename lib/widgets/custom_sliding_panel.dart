@@ -770,7 +770,7 @@ class _CustomSlidingPanelState extends State<CustomSlidingPanel> {
                   child: Icon(
                     Icons.drag_handle,
                     color: Theme.of(context).colorScheme.onBackground,
-                    size: 35,
+                    size:  MediaQuery.of(context).size.height * 0.045,
                   ),
                 ),
               ),

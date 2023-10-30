@@ -45,28 +45,33 @@ class _TransportSizeSegmentedButtonState
 
   @override
   Widget build(BuildContext context) {
+    double iconSize = MediaQuery.of(context).size.height * 0.025;
+    double textSize = MediaQuery.of(context).size.height * 0.020;
     return SegmentedButton<String>(
       segments: <ButtonSegment<String>>[
         ButtonSegment<String>(
             value: 'S',
-            label: Text(' Pequeno', style: TextStyle(color: sColor)),
+            label: Text(' Pequeno', style: TextStyle(color: sColor, fontSize: textSize)),
             icon: Icon(
               CustomIcons.truckPickup,
               color: sColor,
+              size: iconSize,
             )),
         ButtonSegment<String>(
             value: 'M',
-            label: Text(' Médio', style: TextStyle(color: mColor)),
+            label: Text(' Médio', style: TextStyle(color: mColor, fontSize: textSize)),
             icon: Icon(
               CustomIcons.truck,
               color: mColor,
+              size: iconSize,
             )),
         ButtonSegment<String>(
             value: 'L',
-            label: Text(' Grande', style: TextStyle(color: lColor)),
+            label: Text(' Grande', style: TextStyle(color: lColor, fontSize: textSize)),
             icon: Icon(
               CustomIcons.truckMoving,
               color: lColor,
+              size: iconSize,
             )),
       ],
       showSelectedIcon: false,

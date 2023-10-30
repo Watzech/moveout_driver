@@ -23,24 +23,26 @@ class _SlidingPanelConfirmButtonWidgetState
     extends State<SlidingPanelConfirmButtonWidget> {
   @override
   Widget build(BuildContext context) {
+    double iconHeight = MediaQuery.sizeOf(context).height * 0.1;
+    double textSize = MediaQuery.sizeOf(context).height * 0.035;
     return ElevatedButton(
       onPressed: widget.isButtonEnabled ? widget.submitFunction : null,
       style: widget.isButtonEnabled
           ? ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
                   Theme.of(context).colorScheme.secondary),
-              fixedSize: MaterialStateProperty.all(const Size(200, 60)),
+              fixedSize: MaterialStateProperty.all(Size(200, iconHeight)),
             )
           : ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
                   Theme.of(context).colorScheme.onBackground),
-              fixedSize: MaterialStateProperty.all(const Size(200, 60)),
+              fixedSize: MaterialStateProperty.all(Size(200, iconHeight)),
             ),
       child: Text(
         widget.text,
         textDirection: TextDirection.ltr,
-        style: const TextStyle(
-            color: Colors.white, fontSize: 25, fontFamily: 'BebasKai'),
+        style: TextStyle(
+            color: Colors.white, fontSize: textSize, fontFamily: 'BebasKai'),
       ),
     );
   }

@@ -384,7 +384,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                                                   .colorScheme
                                                   .onBackground),
                                       fixedSize: MaterialStateProperty.all(
-                                          Size(MediaQuery.of(context).size.width * 0.5, 100)),
+                                          Size(MediaQuery.of(context).size.width * 0.8, 60)),
                                     ),
                               child: const Text(
                                 'CANCELAR PEDIDO',
