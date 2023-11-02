@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/constants/main.dart' as constants;
@@ -10,6 +11,7 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:moveout1/services/delete_request.dart';
+import 'package:moveout1/widgets/default_button.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_summary_subtext_row.dart';
 import 'package:moveout1/widgets/sliding_panel_widgets/custom_summary_text_row.dart';
 
@@ -23,13 +25,14 @@ class RequestDetailScreen extends StatefulWidget {
 
 class _RequestDetailScreenState extends State<RequestDetailScreen> {
   final Completer<GoogleMapController> _controller = Completer();
+  final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
   late GoogleMapController mapController;
   Map<MarkerId, Marker> markers = {};
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = constants.API_KEY;
-  final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -153,7 +156,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
 
     CameraPosition initialCameraPosition = CameraPosition(
       target: center,
-      zoom: 10,
+      zoom: 8,
     );
 
     return initialCameraPosition;
@@ -172,9 +175,28 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     }
   }
 
-  @override
-  void deactivate() {
-    super.deactivate();
+  Future<dynamic> cancelationSuccessfulFLushBar() {
+    return Flushbar(
+      messageText: const Padding(
+        padding: EdgeInsets.fromLTRB(45, 15, 15, 15),
+        child: Text(
+          'Pedido cancelado com sucesso!',
+          style: TextStyle(
+              fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+      backgroundColor: Colors.green,
+      padding: const EdgeInsets.all(15),
+      icon: const Padding(
+        padding: EdgeInsets.fromLTRB(25, 15, 15, 15),
+        child: Icon(
+          Icons.check,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+      duration: const Duration(seconds: 3),
+    ).show(context);
   }
 
   void _showConfirmationDialog() {
@@ -194,13 +216,14 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                   onPressed: () async {
                     Navigator.of(context).pop();
                     widget.request.status = "CA";
-                    
-                    // LOADING NO BOTÃO SETANDO TRUE ANTES DO AWAIT
-
-                    // NÃO RETIRAR AWAIT
+                    setState(() {
+                      _isLoading = true;
+                    });
                     await cancelRequest(widget.request);
-
-                    // LOADING NO BOTÃO SETANDO FALSE, FINALIZADO, APÓS O AWAIT
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    cancelationSuccessfulFLushBar();
                   },
                   child: const Text('Sim')),
               TextButton(
@@ -251,15 +274,19 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                 color: Theme.of(context).colorScheme.secondary,
                 size: 30,
               )),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(4.0),
+            child: Container(
+              color: Theme.of(context).colorScheme.secondary,
+              height: 2.0,
+            ),
+          ),
         ),
         body: SafeArea(
-          child: Column(
+          child: ListView(
             children: [
-              Divider(
-                height: 2,
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-              Expanded(
+              SizedBox(
+                height: MediaQuery.sizeOf(context).height * 0.4,
                 child: GoogleMap(
                   initialCameraPosition: _calculateCameraPosition(),
                   myLocationEnabled: false,
@@ -274,118 +301,118 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                 ),
               ),
               Divider(
-                height: 2,
+                thickness: 2,
+                height: 0,
                 color: Theme.of(context).colorScheme.secondary,
               ),
-              Container(
-                color: Colors.white,
-                height: MediaQuery.sizeOf(context).height * 0.50,
-                child: ListView(
-                  padding: const EdgeInsets.all(0),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+                child: Column(
                   children: [
+                    Text(
+                      'PEDIDO $statusText',
+                      style: TextStyle(
+                          fontFamily: 'BebasKai',
+                          fontSize: 35,
+                          color: statusColor),
+                    ),
+                    const CustomSummaryTextRow(title: 'Endereços: ', text: ''),
+                    CustomSummarySubtextRow(
+                        title: 'Origem: ',
+                        text: widget.request.origin['address']),
+                    CustomSummarySubtextRow(
+                        title: 'Destino: ',
+                        text: widget.request.destination['address']),
+                    CustomSummarySubtextRow(
+                      title: 'Distância: ',
+                      text: widget.request.distance.toStringAsFixed(2) + ' Km',
+                    ),
+                    CustomSummaryTextRow(
+                      title: 'Tamanho do transporte: ',
+                      text: _getTransportSizeString(
+                          widget.request.price['truckSize']),
+                      textSize: 16,
+                    ),
+                    CustomSummaryTextRow(
+                      title: 'Ajudantes: ',
+                      text: widget.request.helpers ? 'Sim' : 'Não',
+                      textSize: 16,
+                    ),
+                    CustomSummaryTextRow(
+                      title: 'Embalagem: ',
+                      text:
+                          widget.request.price['wrapping'] > 0 ? 'Sim' : 'Não',
+                      textSize: 16,
+                    ),
+                    const CustomSummaryTextRow(title: 'Carga: ', text: ''),
+                    widget.request.load['furniture'].isNotEmpty
+                        ? CustomSummarySubtextRow(
+                            title: 'Móveis / Eletrodomésticos: ',
+                            text: widget.request.load['furniture'])
+                        : const SizedBox(height: 0),
+                    widget.request.load['box'].isNotEmpty
+                        ? CustomSummarySubtextRow(
+                            title: 'Caixas / Itens: ',
+                            text: widget.request.load['box'])
+                        : const SizedBox(height: 0),
+                    widget.request.load['fragile'].isNotEmpty
+                        ? CustomSummarySubtextRow(
+                            title: 'Vidro / Frágeis: ',
+                            text: widget.request.load['fragile'])
+                        : const SizedBox(height: 0),
+                    widget.request.load['other'].isNotEmpty
+                        ? CustomSummarySubtextRow(
+                            title: 'Outros: ',
+                            text: widget.request.load['other'])
+                        : const SizedBox(height: 0),
+                    CustomSummaryTextRow(
+                      title: 'Datas: ',
+                      text:
+                          '${widget.request.date[0]}   -   ${widget.request.date[1]}',
+                      textSize: 16,
+                    ),
+                    Divider(
+                      height: 0.25,
+                      color: Colors.grey[200],
+                    ),
+                    CustomSummaryTextRow(
+                      title: 'Valor: ',
+                      text: reaisFormatter
+                          .format(widget.request.price['finalPrice']),
+                      textSize: 20,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
-                      child: Column(
-                        children: [
-                          Text(
-                            'PEDIDO $statusText',
-                            style: TextStyle(
-                                fontFamily: 'BebasKai',
-                                fontSize: 35,
-                                color: statusColor),
-                          ),
-                          const CustomSummaryTextRow(
-                              title: 'Endereços: ', text: ''),
-                          CustomSummarySubtextRow(
-                              title: 'Origem: ',
-                              text: widget.request.origin['address']),
-                          CustomSummarySubtextRow(
-                              title: 'Destino: ',
-                              text: widget.request.destination['address']),
-                          CustomSummarySubtextRow(
-                            title: 'Distância: ',
-                            text: widget.request.distance.toStringAsFixed(2) +
-                                ' Km',
-                          ),
-                          CustomSummaryTextRow(
-                            title: 'Tamanho do transporte: ',
-                            text: _getTransportSizeString(
-                                widget.request.price['truckSize']),
-                            textSize: 16,
-                          ),
-                          CustomSummaryTextRow(
-                            title: 'Ajudantes: ',
-                            text: widget.request.helpers ? 'Sim' : 'Não',
-                            textSize: 16,
-                          ),
-                          CustomSummaryTextRow(
-                            title: 'Embalagem: ',
-                            text: widget.request.price['wrapping'] > 0
-                                ? 'Sim'
-                                : 'Não',
-                            textSize: 16,
-                          ),
-                          const CustomSummaryTextRow(
-                              title: 'Carga: ', text: ''),
-                          widget.request.load['furniture'].isNotEmpty
-                              ? CustomSummarySubtextRow(
-                                  title: 'Móveis / Eletrodomésticos: ',
-                                  text: widget.request.load['furniture'])
-                              : const SizedBox(height: 0),
-                          widget.request.load['box'].isNotEmpty
-                              ? CustomSummarySubtextRow(
-                                  title: 'Caixas / Itens: ',
-                                  text: widget.request.load['box'])
-                              : const SizedBox(height: 0),
-                          widget.request.load['fragile'].isNotEmpty
-                              ? CustomSummarySubtextRow(
-                                  title: 'Vidro / Frágeis: ',
-                                  text: widget.request.load['fragile'])
-                              : const SizedBox(height: 0),
-                          widget.request.load['other'].isNotEmpty
-                              ? CustomSummarySubtextRow(
-                                  title: 'Outros: ',
-                                  text: widget.request.load['other'])
-                              : const SizedBox(height: 0),
-                          CustomSummaryTextRow(
-                            title: 'Datas: ',
-                            text:
-                                '${widget.request.date[0]}   -   ${widget.request.date[1]}',
-                            textSize: 16,
-                          ),
-                          CustomSummaryTextRow(
-                            title: 'Valor: ',
-                            text: reaisFormatter
-                                .format(widget.request.price['finalPrice']),
-                            textSize: 20,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                            child: ElevatedButton(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                      child: _isLoading
+                          ? DefaultButton(
+                              text: 'CANCELAR PEDIDO',
+                              onPressedFunction: () {},
+                              isLoading: true)
+                          : ElevatedButton(
                               onPressed: widget.request.status != 'CA' &&
                                       widget.request.status != 'CO'
                                   ? _showConfirmationDialog
                                   : null,
-                              style: widget.request.status != 'CA' &&
-                                      widget.request.status != 'CO'
+                              style: widget.request.status != 'CA' && widget.request.status != 'CO'
                                   ? ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all(Colors.red),
-                                      fixedSize: MaterialStateProperty.all(
-                                          Size(MediaQuery.of(context).size.width * 0.8, 60))
-                                    )
+                                      fixedSize: MaterialStateProperty.all(Size(
+                                          MediaQuery.of(context).size.width *
+                                              0.6,
+                                          MediaQuery.of(context).size.height *
+                                              0.075)))
                                   : ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Theme.of(context)
-                                                  .colorScheme
-                                                  .onBackground),
-                                      fixedSize: MaterialStateProperty.all(
-                                          Size(MediaQuery.of(context).size.width * 0.8, 60)),
-                                    ),
+                                      backgroundColor: MaterialStateProperty.all<Color>(
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onBackground),
+                                      fixedSize: MaterialStateProperty.all(Size(
+                                          MediaQuery.of(context).size.width * 0.6,
+                                          MediaQuery.of(context).size.height * 0.075))),
                               child: const Text(
                                 'CANCELAR PEDIDO',
                                 style: TextStyle(
@@ -394,9 +421,6 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                                     fontFamily: 'BebasKai'),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),
