@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moveout1/screens/mapscreen.dart';
@@ -5,7 +6,6 @@ import 'package:moveout1/screens/signup.dart';
 import 'package:moveout1/services/do_login.dart';
 import 'package:moveout1/services/device_info.dart';
 import 'package:moveout1/widgets/login_fields.dart';
-import 'package:moveout1/widgets/confirm_button.dart';
 import 'package:moveout1/widgets/background_container.dart';
 
 const String emptyValidationFail = 'Este campo é obrigatório.';
@@ -29,7 +29,8 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _passwordFormFieldController =
       TextEditingController();
   // String? _loggedUser;
-  bool _isLoading = true;
+  bool _isScreenLoading = true;
+  bool _isButtonLoading = false;
 
   @override
   void initState() {
@@ -41,7 +42,7 @@ class _AuthScreenState extends State<AuthScreen> {
         goMap();
       } else {
         setState(() {
-          _isLoading = false;
+          _isScreenLoading = false;
         });
       }
     });
@@ -63,14 +64,46 @@ class _AuthScreenState extends State<AuthScreen> {
     if (_formkey.currentState!.validate()) {
       String email = _emailOrCpfFormFieldController.text;
       String password = _passwordFormFieldController.text;
+
+      setState(() {
+        _isButtonLoading = true;
+      });
+
       dynamic login = await doLogin(email, password);
 
       if (login["done"]) {
         saveUser(login);
       } else {
-        print("Não deu");
+        setState(() {
+          _isButtonLoading = false;
+        });
+        loginErrorFlushBar();
       }
     }
+  }
+
+  Future<dynamic> loginErrorFlushBar() {
+    return Flushbar(
+      messageText: const Padding(
+        padding: EdgeInsets.fromLTRB(45, 15, 15, 15),
+        child: Text(
+          'Login incorreto, tente novamente.',
+          style: TextStyle(
+              fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+      backgroundColor: Colors.red,
+      padding: const EdgeInsets.all(15),
+      icon: const Padding(
+        padding: EdgeInsets.fromLTRB(25, 15, 15, 15),
+        child: Icon(
+          Icons.error_outline,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+      duration: const Duration(seconds: 3),
+    ).show(context);
   }
 
   @override
@@ -81,8 +114,10 @@ class _AuthScreenState extends State<AuthScreen> {
         systemNavigationBarContrastEnforced: true,
       ),
     );
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-        body: _isLoading
+        body: _isScreenLoading
             ? Center(
                 child: CircularProgressIndicator(
                   backgroundColor: Theme.of(context).colorScheme.primary,
@@ -106,135 +141,130 @@ class _AuthScreenState extends State<AuthScreen> {
                             Center(
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                                    const EdgeInsets.fromLTRB(30, 10, 30, 40),
                                 child: Image(
                                   alignment: Alignment.center,
                                   image: const AssetImage(
                                       'assets/images/logos/logo1.png'),
                                   fit: BoxFit.fitWidth,
                                   height:
-                                      MediaQuery.of(context).size.height * 0.1,
+                                      screenHeight * 0.1,
                                 ),
                               ),
                             ),
-                            SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.015),
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: MediaQuery.sizeOf(context).width,
-                                  minHeight:
-                                      MediaQuery.sizeOf(context).height * 0.35,
+                              padding: const EdgeInsets.all(20.0),
+                              child: Container(
+                                height:
+                                    screenHeight * 0.55,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(15)),
+                                  color:
+                                      Theme.of(context).colorScheme.primary,
                                 ),
-                                child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.65,
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(15)),
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                  alignment: Alignment.center,
+                                // alignment: Alignment.center,
+                                child: Form(
+                                  key: _formkey,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 25.0,
-                                        right: 25.0,
-                                        top: 10.0,
-                                        bottom: 10.0),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        35, 15, 35, 15),
                                     child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      // scrollDirection: Axis.vertical,
+                                      // shrinkWrap: true,
                                       children: [
-                                        Form(
-                                          key: _formkey,
-                                          child: ListView(
-                                            scrollDirection: Axis.vertical,
-                                            shrinkWrap: true,
-                                            children: [
-                                              LoginTextFormField(
-                                                lbl: 'E-mail:',
-                                                controller:
-                                                    _emailOrCpfFormFieldController,
-                                                validatorFunction: (value) {
-                                                  if (value == null ||
-                                                      value.isEmpty) {
-                                                    return emptyValidationFail;
-                                                  }
-                                                  return null;
-                                                },
-                                              ),
-                                              SizedBox(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.015),
-                                              Column(
-                                                children: [
-                                                  LoginPasswordFormField(
-                                                    lbl: 'Senha:',
-                                                    controller:
-                                                        _passwordFormFieldController,
-                                                    validatorFunction: (value) {
-                                                      if (value == null ||
-                                                          value.isEmpty) {
-                                                        return emptyValidationFail;
-                                                      }
-                                                      return null;
-                                                    },
+                                        LoginTextFormField(
+                                          lbl: 'E-mail:',
+                                          controller:
+                                              _emailOrCpfFormFieldController,
+                                          validatorFunction: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return emptyValidationFail;
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        Column(
+                                          children: [
+                                            LoginPasswordFormField(
+                                              lbl: 'Senha:',
+                                              controller:
+                                                  _passwordFormFieldController,
+                                              validatorFunction: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return emptyValidationFail;
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            NavigatorTextButton(
+                                                txt: 'Esqueci a Senha',
+                                                fontSize: screenWidth * 0.03,
+                                                destinationWidget:
+                                                    const SignupScreen()),
+                                          ],
+                                        ),
+                                        Center(
+                                          child: _isButtonLoading
+                                              ? ElevatedButton(
+                                                  onPressed: null,
+                                                  style: ButtonStyle(
+                                                    backgroundColor:
+                                                        MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.onBackground),
+                                                    fixedSize: MaterialStatePropertyAll(Size(screenWidth * 0.55, screenHeight *0.075)),
                                                   ),
-                                                  const NavigatorTextButton(
-                                                      txt: 'Esqueci a Senha',
-                                                      destinationWidget:
-                                                          SignupScreen()),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.015),
-                                              Center(
-                                                child: ConfirmButtonWidget(
-                                                    lbl: 'Entrar',
-                                                    fontSize: 25,
-                                                    fontFamily: 'BebasKai',
-                                                    submitFunction: submitData),
-                                              ),
-                                              SizedBox(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.015),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  const Text(
-                                                    "Ainda não possui uma conta?",
-                                                    textDirection:
-                                                        TextDirection.ltr,
+                                                  child:
+                                                      const CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                  ),
+                                                )
+                                              : ElevatedButton(
+                                                  onPressed: submitData,
+                                                  style: ButtonStyle(
+                                                    backgroundColor:
+                                                        MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.secondary),
+                                                    fixedSize: MaterialStatePropertyAll(Size(screenWidth * 0.55, screenHeight *0.075)),
+                                                  ),
+                                                  child: const Text(
+                                                    'Entrar',
+                                                    textDirection:TextDirection.ltr,
                                                     style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors.white,
-                                                    ),
+                                                        color: Colors.white,
+                                                        fontSize: 25,
+                                                        fontFamily:
+                                                            'BebasKai'),
                                                   ),
-                                                  NavigatorTextButton(
-                                                    txt: 'Cadastre-se',
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                    destinationWidget:
-                                                        const SignupScreen(),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
-                                          ),
+                                                ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "Ainda não possui uma conta?",
+                                              textDirection:
+                                                  TextDirection.ltr,
+                                              style: TextStyle(
+                                                fontSize: screenWidth * 0.03,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            NavigatorTextButton(
+                                              fontSize: screenWidth * 0.03,
+                                              txt: 'Cadastre-se',
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                              destinationWidget:
+                                                  const SignupScreen(),
+                                            ),
+                                          ],
                                         )
                                       ],
                                     ),

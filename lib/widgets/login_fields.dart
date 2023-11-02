@@ -13,14 +13,17 @@ const cBorder = UnderlineInputBorder(
 const helperEmpty = ' ';
 
 class NavigatorTextButton extends StatelessWidget {
-  final String txt;
-  final Color color;
-  final Widget destinationWidget;
   const NavigatorTextButton(
       {super.key,
       required this.txt,
       this.color = Colors.white,
+      this.fontSize = 12,
       required this.destinationWidget});
+
+  final String txt;
+  final Color color;
+  final double fontSize;
+  final Widget destinationWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class NavigatorTextButton extends StatelessWidget {
             txt,
             textDirection: TextDirection.ltr,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: fontSize,
               color: color,
               decoration: TextDecoration.underline,
               decorationColor: color,
@@ -168,11 +171,12 @@ class _MaskedLoginTextFormFieldState extends State<MaskedLoginTextFormField> {
 }
 
 class LoginPhotoField extends StatefulWidget {
-  const LoginPhotoField(this.type, {
+  const LoginPhotoField(
+    this.type, {
     super.key,
     required this.callback,
   });
-  
+
   final type;
   final ValueChanged<XFile> callback;
 
@@ -296,9 +300,7 @@ class _AddressPickerFormFieldState extends State<AddressPickerFormField> {
           ),
           onPressed: () {
             //aqui, abrir o mapa para selecionar o endereço
-            setState(() {
-
-            });
+            setState(() {});
           },
         ),
       ),
