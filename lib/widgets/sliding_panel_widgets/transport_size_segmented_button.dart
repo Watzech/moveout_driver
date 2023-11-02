@@ -45,8 +45,8 @@ class _TransportSizeSegmentedButtonState
 
   @override
   Widget build(BuildContext context) {
-    double iconSize = MediaQuery.of(context).size.height * 0.025;
-    double textSize = MediaQuery.of(context).size.height * 0.020;
+    double iconSize = MediaQuery.of(context).size.height * 0.022;
+    double textSize = MediaQuery.of(context).size.height * 0.018;
     return SegmentedButton<String>(
       segments: <ButtonSegment<String>>[
         ButtonSegment<String>(

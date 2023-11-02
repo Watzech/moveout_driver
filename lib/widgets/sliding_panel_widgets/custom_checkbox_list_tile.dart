@@ -1,28 +1,33 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 
 class CustomCheckboxTextListTile extends StatefulWidget {
-  const CustomCheckboxTextListTile({
+  CustomCheckboxTextListTile({
     Key? key,
     required this.label,
+    required this.checkboxValue,
     required this.callback,
     required this.onChangedFunction,
     required this.textController,
   }) : super(key: key);
 
   final String label;
+  bool checkboxValue;
   final ValueChanged<bool> callback;
   final VoidCallback onChangedFunction;
   final TextEditingController textController;
 
   @override
-  State<CustomCheckboxTextListTile> createState() => _CustomCheckboxTextListTileState();
+  State<CustomCheckboxTextListTile> createState() =>
+      _CustomCheckboxTextListTileState();
 }
 
 class _CustomCheckboxTextListTileState extends State<CustomCheckboxTextListTile>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  bool checkboxValue = false;
+  // bool checkboxValue = false;
 
   void _sendDataToParent(bool value) {
     widget.callback(value);
@@ -50,15 +55,15 @@ class _CustomCheckboxTextListTileState extends State<CustomCheckboxTextListTile>
           side: BorderSide(color: Theme.of(context).colorScheme.primary),
           dense: true,
           checkColor: Theme.of(context).colorScheme.secondary,
-          value: checkboxValue,
+          value: widget.checkboxValue,
           onChanged: (bool? value) {
             setState(() {
-              checkboxValue = value ?? false;
-              if (!checkboxValue) {
+              widget.checkboxValue = value ?? false;
+              if (!widget.checkboxValue) {
                 widget.textController.clear();
               }
             });
-            _sendDataToParent(checkboxValue);
+            _sendDataToParent(widget.checkboxValue);
             widget.onChangedFunction();
           },
         ),
@@ -66,7 +71,7 @@ class _CustomCheckboxTextListTileState extends State<CustomCheckboxTextListTile>
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
           child: Visibility(
-            visible: checkboxValue,
+            visible: widget.checkboxValue,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(15, 0, 35, 15),
               child: Row(
@@ -83,16 +88,18 @@ class _CustomCheckboxTextListTileState extends State<CustomCheckboxTextListTile>
                           fontSize: 13,
                         ),
                         controller: widget.textController,
-                        onChanged: (String value){
+                        onChanged: (String value) {
                           widget.onChangedFunction();
                         },
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.primary)),
+                                  color:
+                                      Theme.of(context).colorScheme.primary)),
                           focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.primary)),
+                                  color:
+                                      Theme.of(context).colorScheme.primary)),
                           contentPadding: const EdgeInsets.all(1),
                           hintText: 'Descreva seus itens...',
                         ),
@@ -109,16 +116,17 @@ class _CustomCheckboxTextListTileState extends State<CustomCheckboxTextListTile>
   }
 }
 
-
 class CustomCheckboxListTile extends StatefulWidget {
-  const CustomCheckboxListTile({
+  CustomCheckboxListTile({
     super.key,
     required this.label,
+    required this.checkboxValue,
     required this.callback,
     required this.onChangedFunction,
   });
 
   final String label;
+  bool checkboxValue;
   final ValueChanged<bool> callback;
   final void Function() onChangedFunction;
 
@@ -130,7 +138,6 @@ class _CustomCheckboxListTileState extends State<CustomCheckboxListTile>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  bool checkboxValue = false;
 
   void _sendDataToParent(bool value) {
     widget.callback(value);
@@ -149,11 +156,11 @@ class _CustomCheckboxListTileState extends State<CustomCheckboxListTile>
       side: BorderSide(color: Theme.of(context).colorScheme.primary),
       dense: true,
       checkColor: Theme.of(context).colorScheme.secondary,
-      value: checkboxValue,
+      value: widget.checkboxValue,
       onChanged: (bool? value) {
         setState(() {
-          checkboxValue = value!;
-          _sendDataToParent(checkboxValue);
+          widget.checkboxValue = value!;
+          _sendDataToParent(widget.checkboxValue);
         });
         widget.onChangedFunction();
       },

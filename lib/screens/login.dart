@@ -8,6 +8,8 @@ import 'package:moveout1/services/device_info.dart';
 import 'package:moveout1/widgets/login_fields.dart';
 import 'package:moveout1/widgets/background_container.dart';
 
+import '../widgets/default_button.dart';
+
 const String emptyValidationFail = 'Este campo é obrigatório.';
 const String submitValidationFail = 'Erro de validação, verifique os campos';
 void main() {
@@ -147,21 +149,18 @@ class _AuthScreenState extends State<AuthScreen> {
                                   image: const AssetImage(
                                       'assets/images/logos/logo1.png'),
                                   fit: BoxFit.fitWidth,
-                                  height:
-                                      screenHeight * 0.1,
+                                  height: screenHeight * 0.1,
                                 ),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(20.0),
                               child: Container(
-                                height:
-                                    screenHeight * 0.55,
+                                height: screenHeight * 0.55,
                                 decoration: BoxDecoration(
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(15)),
-                                  color:
-                                      Theme.of(context).colorScheme.primary,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                                 // alignment: Alignment.center,
                                 child: Form(
@@ -211,36 +210,11 @@ class _AuthScreenState extends State<AuthScreen> {
                                           ],
                                         ),
                                         Center(
-                                          child: _isButtonLoading
-                                              ? ElevatedButton(
-                                                  onPressed: null,
-                                                  style: ButtonStyle(
-                                                    backgroundColor:
-                                                        MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.onBackground),
-                                                    fixedSize: MaterialStatePropertyAll(Size(screenWidth * 0.55, screenHeight *0.075)),
-                                                  ),
-                                                  child:
-                                                      const CircularProgressIndicator(
-                                                    color: Colors.white,
-                                                  ),
-                                                )
-                                              : ElevatedButton(
-                                                  onPressed: submitData,
-                                                  style: ButtonStyle(
-                                                    backgroundColor:
-                                                        MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.secondary),
-                                                    fixedSize: MaterialStatePropertyAll(Size(screenWidth * 0.55, screenHeight *0.075)),
-                                                  ),
-                                                  child: const Text(
-                                                    'Entrar',
-                                                    textDirection:TextDirection.ltr,
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 25,
-                                                        fontFamily:
-                                                            'BebasKai'),
-                                                  ),
-                                                ),
+                                          child: DefaultButton(
+                                            text: 'Entrar',
+                                            onPressedFunction: submitData,
+                                            isLoading: _isButtonLoading,
+                                          ),
                                         ),
                                         Row(
                                           mainAxisAlignment:
@@ -248,8 +222,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                           children: [
                                             Text(
                                               "Ainda não possui uma conta?",
-                                              textDirection:
-                                                  TextDirection.ltr,
+                                              textDirection: TextDirection.ltr,
                                               style: TextStyle(
                                                 fontSize: screenWidth * 0.03,
                                                 color: Colors.white,

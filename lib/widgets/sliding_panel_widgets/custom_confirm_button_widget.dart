@@ -2,47 +2,40 @@
 
 import 'package:flutter/material.dart';
 
-class SlidingPanelConfirmButtonWidget extends StatefulWidget {
+class SlidingPanelConfirmButtonWidget extends StatelessWidget {
   final String text;
-  final VoidCallback submitFunction;
-  final bool isButtonEnabled;
+  final VoidCallback onPressedFunction;
+  final bool isEnabled;
 
   const SlidingPanelConfirmButtonWidget({
     super.key,
     required this.text,
-    required this.submitFunction,
-    required this.isButtonEnabled,
+    required this.onPressedFunction,
+    required this.isEnabled,
   });
 
   @override
-  State<SlidingPanelConfirmButtonWidget> createState() =>
-      _SlidingPanelConfirmButtonWidgetState();
-}
-
-class _SlidingPanelConfirmButtonWidgetState
-    extends State<SlidingPanelConfirmButtonWidget> {
-  @override
   Widget build(BuildContext context) {
-    double iconHeight = MediaQuery.sizeOf(context).height * 0.1;
-    double textSize = MediaQuery.sizeOf(context).height * 0.035;
+    double screenHeight = MediaQuery.sizeOf(context).height;
+    double screenWidth = MediaQuery.sizeOf(context).width;
     return ElevatedButton(
-      onPressed: widget.isButtonEnabled ? widget.submitFunction : null,
-      style: widget.isButtonEnabled
+      onPressed: isEnabled ? onPressedFunction : null,
+      style: isEnabled
           ? ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
                   Theme.of(context).colorScheme.secondary),
-              fixedSize: MaterialStateProperty.all(Size(200, iconHeight)),
+              fixedSize: MaterialStateProperty.all(Size(screenWidth * 0.55, screenHeight * 0.075)),
             )
           : ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(
                   Theme.of(context).colorScheme.onBackground),
-              fixedSize: MaterialStateProperty.all(Size(200, iconHeight)),
+              fixedSize: MaterialStateProperty.all(Size(screenWidth * 0.55, screenHeight * 0.075)),
             ),
       child: Text(
-        widget.text,
+        text,
         textDirection: TextDirection.ltr,
-        style: TextStyle(
-            color: Colors.white, fontSize: textSize, fontFamily: 'BebasKai'),
+        style: const TextStyle(
+            color: Colors.white, fontSize: 25, fontFamily: 'BebasKai'),
       ),
     );
   }
