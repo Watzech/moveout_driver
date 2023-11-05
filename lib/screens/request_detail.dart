@@ -12,8 +12,8 @@ import 'package:intl/intl.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:moveout1/services/delete_request.dart';
 import 'package:moveout1/widgets/default_button.dart';
-import 'package:moveout1/widgets/sliding_panel_widgets/custom_summary_subtext_row.dart';
-import 'package:moveout1/widgets/sliding_panel_widgets/custom_summary_text_row.dart';
+import 'package:moveout1/widgets/custom_summary_subtext_row.dart';
+import 'package:moveout1/widgets/custom_summary_text_row.dart';
 
 class RequestDetailScreen extends StatefulWidget {
   final Request request;

@@ -6,7 +6,7 @@ class Driver {
   final String email;
   final String password;
   final String photo;
-  final dynamic cnh;
+  final String cnh;
   final String address;
   final DateTime createdAt;
   final DateTime updatedAt;

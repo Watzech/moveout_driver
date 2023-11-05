@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:moveout1/services/device_info.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../widgets/custom_drawer.dart';
 import '../widgets/custom_icon_button_container.dart';
-import '../widgets/custom_sliding_panel.dart';
 import '../widgets/search_address_text_field.dart';
 
 const String cloudMapId = 'f49afda8074367d0';
@@ -24,7 +22,6 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _mapController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  final PanelController _panelController = PanelController();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFieldFocus = FocusNode();
   final FocusNode _originAddressFieldFocus = FocusNode();
@@ -52,18 +49,6 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     getInfo();
     _getCurrentLocation();
-    originAddressController.addListener(() {
-      _panelController.isPanelOpen ? null : _panelController.open();
-      setState(() {
-        searchHintText = 'Pesquisar Endereço';
-      });
-    });
-    destinationAddressController.addListener(() {
-      _panelController.isPanelOpen ? null : _panelController.open();
-      setState(() {
-        searchHintText = 'Pesquisar Endereço';
-      });
-    });
   }
 
   getInfo() async {
@@ -152,7 +137,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void closePanelAndFocusSearch(
       TextEditingController? caller, String newHintText, String identifier) {
-    _panelController.close();
     _searchController.text = '';
     setState(() {
       searchCallerController = caller;
@@ -162,36 +146,6 @@ class _MapScreenState extends State<MapScreen> {
     _searchFieldFocus.requestFocus();
   }
 
-  Future<dynamic> confirmationFlushBar() {
-    return Flushbar(
-      // title: "Pedido realizado com sucesso!",
-      messageText: const Padding(
-        padding: EdgeInsets.fromLTRB(45, 15, 15, 15),
-        child: Text(
-          'Pedido realizado com sucesso!',
-          style: TextStyle(
-              fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
-      backgroundColor: Colors.green,
-      padding: const EdgeInsets.all(15),
-      icon: const Padding(
-        padding: EdgeInsets.fromLTRB(25, 15, 15, 15),
-        child: Icon(
-          Icons.check,
-          color: Colors.white,
-          size: 30,
-        ),
-      ),
-      duration: const Duration(seconds: 3),
-    ).show(context);
-  }
-
-  void showFlushBar() {
-    confirmationFlushBar();
-    _resetMarkersAndPosition();
-  }
-
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
@@ -199,12 +153,6 @@ class _MapScreenState extends State<MapScreen> {
 
     return WillPopScope(
       onWillPop: () async {
-        if (_panelController.isPanelOpen) {
-          _panelController.close();
-          FocusManager.instance.primaryFocus?.unfocus();
-        } else if (_scaffoldKey.currentState!.isDrawerOpen) {
-          _scaffoldKey.currentState!.closeDrawer();
-        }
         return false;
       },
       child: Scaffold(
@@ -264,22 +212,13 @@ class _MapScreenState extends State<MapScreen> {
                                     spreadRadius: 2.0,
                                     color: Theme.of(context).colorScheme.shadow)
                               ]),
-                              child: Focus(
-                                onFocusChange: (hasFocus) {
-                                  if (hasFocus) {
-                                    _panelController.isPanelOpen
-                                        ? _panelController.close()
-                                        : null;
-                                  }
-                                },
-                                child: SearchAddressTextField(
-                                  hintText: searchHintText,
-                                  callerController: searchCallerController,
-                                  addressSearchFocusNode: _searchFieldFocus,
-                                  searchController: _searchController,
-                                  onChangedFunction: _addressSelected,
-                                  callerIdentifier: searchIdentifier,
-                                ),
+                              child: SearchAddressTextField(
+                                hintText: searchHintText,
+                                callerController: searchCallerController,
+                                addressSearchFocusNode: _searchFieldFocus,
+                                searchController: _searchController,
+                                onChangedFunction: _addressSelected,
+                                callerIdentifier: searchIdentifier,
                               ),
                             ),
                           ),
@@ -295,13 +234,7 @@ class _MapScreenState extends State<MapScreen> {
                                   child: Align(
                                       alignment: Alignment.topLeft,
                                       child: CustomIconButtonContainer(
-                                        submitFunction: () {
-                                          _scaffoldKey.currentState
-                                              ?.openDrawer();
-                                          _panelController.isPanelOpen
-                                              ? _panelController.close()
-                                              : null;
-                                        },
+                                        submitFunction: () {},
                                         size: 40,
                                         icon: Icons.format_list_bulleted,
                                         backgroundColor: Theme.of(context)
@@ -344,24 +277,6 @@ class _MapScreenState extends State<MapScreen> {
                       ],
                     ),
                   ),
-                  CustomSlidingPanel(
-                    panelController: _panelController,
-                    originAddressController: originAddressController,
-                    destinationAddressController: destinationAddressController,
-                    firstDateController: firstDateController,
-                    secondDateController: secondDateController,
-                    furnitureCheckController: furnitureCheckController,
-                    boxCheckController: boxCheckController,
-                    fragileCheckController: fragileCheckController,
-                    otherCheckController: otherCheckController,
-                    addressTextFormOnTapFunction: closePanelAndFocusSearch,
-                    originAddressFieldFocus: _originAddressFieldFocus,
-                    destinationAddressFieldFocus: _destinationAddressFieldFocus,
-                    originPlace: originPlace,
-                    destinationPlace: destinationPlace,
-                    userData: _userData,
-                    showFlushBar: showFlushBar,
-                  )
                 ],
               ),
       ),

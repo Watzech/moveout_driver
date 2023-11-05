@@ -133,7 +133,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     BackgroundContainer(
-                      src: 'assets/images/backgrounds/mbl_bg_3.png',
+                      src: 'assets/images/backgrounds/mbl_bg_4.png',
                       child: SafeArea(
                         minimum: const EdgeInsets.all(15.0),
                         child: Column(
@@ -149,7 +149,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   image: const AssetImage(
                                       'assets/images/logos/logo1.png'),
                                   fit: BoxFit.fitWidth,
-                                  height: screenHeight * 0.1,
+                                  height: screenHeight * 0.12,
                                 ),
                               ),
                             ),

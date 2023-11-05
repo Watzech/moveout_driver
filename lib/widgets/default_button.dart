@@ -5,12 +5,14 @@ class DefaultButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressedFunction,
+    this.fontSize = 25,
     this.isLoading = false,
   });
 
   final String text;
   final VoidCallback onPressedFunction;
   final bool isLoading;
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +42,8 @@ class DefaultButton extends StatelessWidget {
             child: Text(
               text,
               textDirection: TextDirection.ltr,
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 25, fontFamily: 'BebasKai'),
+              style: TextStyle(
+                  color: Colors.white, fontSize: fontSize, fontFamily: 'BebasKai'),
             ),
           );
   }

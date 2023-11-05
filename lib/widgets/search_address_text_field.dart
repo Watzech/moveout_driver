@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:moveout1/services/get_addresses.dart';
-import 'package:moveout1/widgets/sliding_panel_widgets/custom_divider.dart';
 
 const String nullAddress = 'Nenhum endereço encontrado';
 
@@ -80,7 +79,10 @@ class SearchAddressTextField extends StatelessWidget {
         );
       },
       itemSeparatorBuilder: (context, index) {
-        return const CustomDivider();
+        return Divider(
+          height: 0.25,
+          color: Colors.grey[200],
+        );
       },
       onSuggestionSelected: (suggestion) {
         LatLng placeLatLng =
