@@ -57,6 +57,7 @@ class _SingupTabBarState extends State<SingupTabBar>
   final _vehicleFormkey = GlobalKey<FormState>();
   late Driver driverFields;
   late Vehicle vehicleFields;
+  bool _isLoading = false;
 
   final TextEditingController _nameFormFieldController =
       TextEditingController();
@@ -108,6 +109,7 @@ class _SingupTabBarState extends State<SingupTabBar>
 
   void verifySignupFields() async {
     if (_signupFormkey.currentState!.validate()) {
+
       var compressedImage = await FlutterImageCompress.compressWithFile(
           photo!.path,
           format: CompressFormat.jpeg,
@@ -128,6 +130,7 @@ class _SingupTabBarState extends State<SingupTabBar>
         );
         _tabController.index = 1;
       });
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text(submitValidationFail),
@@ -137,16 +140,38 @@ class _SingupTabBarState extends State<SingupTabBar>
   }
 
   void submitData() async {
-    if (_vehicleFormkey.currentState!.validate()) {
-      //SIGNUP DE MOTORISTA - Variável _driverFields possui os campos
+    if (_vehicleFormkey.currentState!.validate() &&
+        _plateFormFieldController.text.length == 7) {
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      vehicleFields = Vehicle(
+          cnhDriver: driverFields.cnh,
+          crlv: _crlvFormFieldController.text,
+          plate: _plateFormFieldController.text,
+          model: _modelFormFieldController.text,
+          brand: _brandFormFieldController.text,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now());
+
+      //SIGNUP DE MOTORISTA - Variável driverFields possui os campos
+
       // bool signup = await doSignup(name, cpf, phone, email, password,
       //     base64Encode(compressedImage!), address, createdAt, updatedAt);
 
+      //SIGNUP DE VEÍCULO - Variável vehicleFields possui os campos
+
       // if (signup) {
+      // setState(() {
+      // _isLoading = false;
+      // });
       //   goMap();
       // } else {
       //   // Verifique suas informações e tente novamente
       // }
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text(submitValidationFail),
@@ -158,7 +183,7 @@ class _SingupTabBarState extends State<SingupTabBar>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 1);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
   }
 
   @override
@@ -393,27 +418,51 @@ class _SingupTabBarState extends State<SingupTabBar>
                 scrollDirection: Axis.vertical,
                 shrinkWrap: false,
                 children: [
+                  const Padding(
+                    padding: EdgeInsets.only(
+                        left: 25.0, right: 25.0, top: 15.0, bottom: 0.0),
+                    child: Text(
+                      'Placa:',
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 25.0, right: 25.0, top: 15.0, bottom: 15.0),
+                        left: 25.0, right: 25.0, top: 10.0, bottom: 10.0),
                     child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary,
                           border: Border.all(color: Colors.white, width: 2),
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                         child: PinCodeTextField(
                           length: 7,
                           obscureText: false,
-                          animationType: AnimationType.fade,
+                          animationType: AnimationType.none,
+                          textStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: 28),
+                          validator: (value) {
+                            if (value!.length < 7) {
+                              return emptyValidationFail;
+                            } else {
+                              return null;
+                            }
+                          },
+                          errorTextSpace: 35,
+                          errorTextMargin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                           pinTheme: PinTheme(
-                            shape: PinCodeFieldShape.box,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          animationDuration: const Duration(milliseconds: 300),
+                              shape: PinCodeFieldShape.underline,
+                              inactiveColor: Colors.white,
+                              selectedFillColor: Colors.transparent,
+                              activeFillColor: Colors.transparent,
+                              selectedColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              inactiveFillColor: Colors.transparent,
+                              activeColor: Colors.white),
                           enableActiveFill: true,
-                          controller: _plateFormFieldController, 
+                          controller: _plateFormFieldController,
                           appContext: context,
                         )),
                   ),
@@ -460,7 +509,7 @@ class _SingupTabBarState extends State<SingupTabBar>
                         left: 25.0, right: 25.0, top: 15.0, bottom: 15.0),
                     child: LoginTextFormField(
                         lbl: 'Marca:',
-                        controller: _modelFormFieldController,
+                        controller: _brandFormFieldController,
                         validatorFunction: (value) {
                           if (value == null || value.isEmpty) {
                             return emptyValidationFail;
@@ -476,7 +525,8 @@ class _SingupTabBarState extends State<SingupTabBar>
                     padding: const EdgeInsets.all(25.0),
                     child: DefaultButton(
                       text: 'CADASTRAR',
-                      onPressedFunction: () {},
+                      onPressedFunction: submitData,
+                      isLoading: _isLoading,
                       fontSize: 28,
                     ),
                   ),
