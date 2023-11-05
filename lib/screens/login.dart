@@ -149,7 +149,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   image: const AssetImage(
                                       'assets/images/logos/logo1.png'),
                                   fit: BoxFit.fitWidth,
-                                  height: screenHeight * 0.12,
+                                  width: screenWidth * 0.6,
                                 ),
                               ),
                             ),
