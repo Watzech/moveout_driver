@@ -5,12 +5,15 @@ class ImageContainer extends StatelessWidget {
   const ImageContainer({
     super.key,
     required this.photoString,
+    this.imageSize = 0,
   });
 
   final String photoString;
+  final double imageSize;
 
   @override
   Widget build(BuildContext context) {
+    double size = imageSize == 0 ? MediaQuery.sizeOf(context).height * 0.1 : imageSize;
     ImageProvider provider;
     provider = MemoryImage(base64Decode(photoString));
 
@@ -23,8 +26,8 @@ class ImageContainer extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(200),
         ),
-        width: 75,
-        height: 75,
+        width: size,
+        height: size,
         child: ClipOval(
           child: SizedBox.fromSize(
             size: const Size.fromRadius(50),
