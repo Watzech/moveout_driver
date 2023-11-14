@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:moveout1/screens/login.dart';
+import 'package:moveout1/screens/profile.dart';
 
 void main() {
   runApp(const MyApp());

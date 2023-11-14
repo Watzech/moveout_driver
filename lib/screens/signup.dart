@@ -156,21 +156,17 @@ class _SingupTabBarState extends State<SingupTabBar>
           createdAt: DateTime.now(),
           updatedAt: DateTime.now());
 
-      //SIGNUP DE MOTORISTA - Variável driverFields possui os campos
+      bool driverSignup = await doSignup(driverFields.name, driverFields.cpf, driverFields.phone, driverFields.cnh, driverFields.email, 
+      driverFields.password, driverFields.photo, driverFields.address, driverFields.createdAt, driverFields.updatedAt);
 
-      // bool signup = await doSignup(name, cpf, phone, email, password,
-      //     base64Encode(compressedImage!), address, createdAt, updatedAt);
-
-      //SIGNUP DE VEÍCULO - Variável vehicleFields possui os campos
-
-      // if (signup) {
-      // setState(() {
-      // _isLoading = false;
-      // });
-      //   goMap();
-      // } else {
-      //   // Verifique suas informações e tente novamente
-      // }
+      if (driverSignup) {
+      setState(() {
+      _isLoading = false;
+      });
+        goMap();
+      } else {
+        // Verifique suas informações e tente novamente
+      }
 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -451,7 +447,7 @@ class _SingupTabBarState extends State<SingupTabBar>
                             }
                           },
                           errorTextSpace: 35,
-                          errorTextMargin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          errorTextMargin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                           pinTheme: PinTheme(
                               shape: PinCodeFieldShape.underline,
                               inactiveColor: Colors.white,
