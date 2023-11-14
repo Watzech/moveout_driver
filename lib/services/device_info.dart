@@ -21,6 +21,23 @@ Future<void> loginSave(userInfo) async {
 
 }
 
+Future<void> saveVehicle(vehicle) async {
+  try {
+
+    vehicle?.forEach((element) {
+      element["createdAt"] = element["createdAt"].toString();
+      element["updatedAt"] = element["updatedAt"].toString();
+    });
+
+    var prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('vehicleData', json.encode(vehicle));
+
+  } catch (e) {
+    print(e);
+  }
+}
+
 Future<List<Map<String, dynamic>>?> saveTempRequest(String state, String search, bool ascending, ObjectId id, int limit, int offset) async {
   
   var prefs = await SharedPreferences.getInstance();
@@ -62,6 +79,15 @@ Future<dynamic> getUserInfo() async {
   final user = prefs.getString("userData") ?? "{}";
 
   return jsonDecode(user);
+
+}
+
+Future<dynamic> getVehicleInfo() async {
+
+  var prefs = await SharedPreferences.getInstance();
+  final vehicle = prefs.getString("vehicleData") ?? "{}";
+
+  return jsonDecode(vehicle);
 
 }
 
@@ -112,21 +138,6 @@ Future<void> changeRequestSituation(ObjectId id, String situation) async {
 // Edit
 
 // Remove
-Future<void> removeRequestsInfo(Request request) async {
-
-  var prefs = await SharedPreferences.getInstance();
-  final requestsData = prefs.getString("requestData") ?? "[]";
-
-  dynamic user = await getUserInfo();
-
-  List<dynamic> requests = jsonDecode(requestsData);
-
-  requests.singleWhere((element) => ObjectId.tryParse(element["_id"]) == request.id)["interesteds"].add(user["_id"]);
-
-  await prefs.setString('requestData', json.encode(requests));
-
-}
-
 Future<void> removeUserInfo() async {
 
   var prefs = await SharedPreferences.getInstance();
