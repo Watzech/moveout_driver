@@ -1,3 +1,4 @@
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/database/request_db.dart';
 import 'package:moveout1/services/device_info.dart';
@@ -18,4 +19,20 @@ Future<bool> applyRequest(Request request) async {
   bool done = await RequestDb.update(request);
 
   return done;
+}
+
+Future<double> getRequestsIncome(List<ObjectId> ids) async {
+
+  List<Map<String, dynamic>>? requestList = await RequestDb.getInfoByField(ids, "_id");
+
+  double income = 0;
+
+  if(requestList!.isNotEmpty){
+    for(var request in requestList){
+      income += request["price"]["finalPrice"];
+    }
+  }
+
+  return income;
+
 }
