@@ -1,29 +1,21 @@
 
-import 'package:moveout1/classes/client.dart';
-import 'package:moveout1/classes/driver.dart';
-import 'package:moveout1/classes/request.dart';
-import 'package:moveout1/classes/vehicle.dart';
-
-enum Situation {
-  running,
-  completed,
-  pending,
-  canceled
-}
+import 'package:mongo_dart/mongo_dart.dart';
 
 class Transport {
-  final Request request;
-  final Vehicle vehicle;
-  final Driver driver;
-  final Client client;
-  Situation situation;
+  final ObjectId id;
+  final ObjectId request;
+  final ObjectId driver;
+  final ObjectId client;
+  final ObjectId vehicle;
+  String situation;
   int rating = 0;
   DateTime scheduledAt;
   DateTime finishedAt;
   final DateTime createdAt;
-  final DateTime updatedAt;
+  DateTime updatedAt;
 
   Transport({
+    required this.id,
     required this.request,
     required this.vehicle,
     required this.driver,
@@ -38,6 +30,7 @@ class Transport {
 
   Map<String, dynamic> toMap() {
     return {
+      '_id': id,
       'request': request,
       'vehicle': vehicle,
       'driver': driver,
@@ -52,6 +45,7 @@ class Transport {
   }
 
   Transport.fromMap(Map<String, dynamic> map) :
+    id = map['_id'],
     request = map['request'],
     vehicle = map['vehicle'],
     driver = map['driver'],

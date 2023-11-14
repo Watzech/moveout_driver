@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/database/request_db.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,20 +12,46 @@ Future<void> loginSave(userInfo) async {
     userInfo["userData"]["createdAt"] = userInfo["userData"]["createdAt"].toString();
     userInfo["userData"]["updatedAt"] = userInfo["userData"]["updatedAt"].toString();
     var prefs = await SharedPreferences.getInstance();
-    var requests = await RequestDb.getInfoByField([userInfo["userData"]["cpf"]], "cpfClient");
-
-    requests?.forEach((element) {
-      element["createdAt"] = element["createdAt"].toString();
-      element["updatedAt"] = element["updatedAt"].toString();
-    });
 
     await prefs.setString('userData', json.encode(userInfo["userData"]));
-    await prefs.setString('requestData', json.encode(requests));
 
   } catch (e) {
     print(e);
   }
 
+}
+
+Future<List<Map<String, dynamic>>?> saveTempRequest(String state, String search, bool ascending, ObjectId id, int limit, int offset) async {
+  
+  var prefs = await SharedPreferences.getInstance();
+  dynamic expiration = prefs.containsKey("requestExpiration");
+  dynamic requests = prefs.containsKey("requestData");
+
+  if(expiration){
+    expiration = prefs.getString("requestExpiration");
+    expiration = DateTime.now().difference(DateTime.parse(expiration)).inMinutes >= 0;
+  }
+  else{
+    expiration = true;
+  }
+  
+  if(expiration || offset != 0){
+    requests = await RequestDb.getFilteredInfo(state, search, ascending, id, limit, offset);
+    expiration = DateTime.now().add(const Duration(minutes: 5)).toIso8601String();
+  
+    requests?.forEach((element) {
+      element["createdAt"] = element["createdAt"].toString();
+      element["updatedAt"] = element["updatedAt"].toString();
+    });
+
+    await prefs.setString('requestData', json.encode(requests));
+    await prefs.setString('requestExpiration', expiration);
+  }else{
+    requests = prefs.getString("requestData");
+    requests = json.decode(requests);
+  }
+
+  return requests;
 }
 // Save
 
@@ -85,14 +112,16 @@ Future<void> changeRequestSituation(ObjectId id, String situation) async {
 // Edit
 
 // Remove
-Future<void> removeRequestsInfo(String createdAt) async {
+Future<void> removeRequestsInfo(Request request) async {
 
   var prefs = await SharedPreferences.getInstance();
   final requestsData = prefs.getString("requestData") ?? "[]";
 
+  dynamic user = await getUserInfo();
+
   List<dynamic> requests = jsonDecode(requestsData);
 
-  requests.removeWhere((element) => element["createdAt"] == createdAt);
+  requests.singleWhere((element) => ObjectId.tryParse(element["_id"]) == request.id)["interesteds"].add(user["_id"]);
 
   await prefs.setString('requestData', json.encode(requests));
 
@@ -102,6 +131,7 @@ Future<void> removeUserInfo() async {
 
   var prefs = await SharedPreferences.getInstance();
   prefs.setString("userData", "{}");
+  prefs.remove("requestData");
 
 }
 // Remove
