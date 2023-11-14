@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/database/request_db.dart';
+import 'package:moveout1/services/transport.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Save
@@ -14,6 +14,7 @@ Future<void> loginSave(userInfo) async {
     var prefs = await SharedPreferences.getInstance();
 
     await prefs.setString('userData', json.encode(userInfo["userData"]));
+    await getTransports();
 
   } catch (e) {
     print(e);
@@ -22,6 +23,7 @@ Future<void> loginSave(userInfo) async {
 }
 
 Future<void> saveVehicle(vehicle) async {
+
   try {
 
     vehicle?.forEach((element) {
@@ -36,6 +38,28 @@ Future<void> saveVehicle(vehicle) async {
   } catch (e) {
     print(e);
   }
+
+}
+
+Future<void> saveTransports(transports) async {
+
+  try {
+
+    transports?.forEach((element) {
+      element["createdAt"] = element["createdAt"].toString();
+      element["updatedAt"] = element["updatedAt"].toString();
+      element["scheduledAt"] = element["scheduledAt"].toString();
+      element["finishedAt"] = element["finishedAt"]?.toString();
+    });
+
+    var prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('transportsData', json.encode(transports));
+
+  } catch (e) {
+    print(e);
+  }
+
 }
 
 Future<List<Map<String, dynamic>>?> saveTempRequest(String state, String search, bool ascending, ObjectId id, int limit, int offset) async {
@@ -85,57 +109,21 @@ Future<dynamic> getUserInfo() async {
 Future<dynamic> getVehicleInfo() async {
 
   var prefs = await SharedPreferences.getInstance();
-  final vehicle = prefs.getString("vehicleData") ?? "{}";
+  final vehicle = prefs.getString("vehicleData") ?? "[]";
 
   return jsonDecode(vehicle);
 
 }
 
-Future<dynamic> getRequestsInfo() async {
+Future<List<Map<String,dynamic>>> getTransportsInfo() async {
 
   var prefs = await SharedPreferences.getInstance();
-  final requests = prefs.getString("requestData") ?? "{}";
+  final transports = prefs.getString("transportsData") ?? "[]";
 
-  return jsonDecode(requests);
+  return jsonDecode(transports);
 
 }
 // Get
-
-// Add
-Future<void> addRequestInfo(dynamic newRequest) async {
-
-  var prefs = await SharedPreferences.getInstance();
-  final requestsData = prefs.getString("requestData") ?? "[]";
-
-  List<dynamic> requests = jsonDecode(requestsData);
-
-  newRequest["createdAt"] = newRequest["createdAt"].toString();
-  newRequest["updatedAt"] = newRequest["updatedAt"].toString();
-
-  requests.add(newRequest);
-
-  await prefs.setString('requestData', json.encode(requests));
-
-}
-// Add
-
-// Edit
-Future<void> changeRequestSituation(ObjectId id, String situation) async {
-  var prefs = await SharedPreferences.getInstance();
-  final requestsData = prefs.getString("requestData") ?? "[]";
-
-  List<dynamic> requests = jsonDecode(requestsData);
-
-  for(var element in requests){
-    if(ObjectId.parse(element["_id"]) == id){
-      element["status"] = situation.toUpperCase();
-      element["updatedAt"] = DateTime.now().toString();
-    }
-  }
-
-  await prefs.setString('requestData', json.encode(requests));
-}
-// Edit
 
 // Remove
 Future<void> removeUserInfo() async {

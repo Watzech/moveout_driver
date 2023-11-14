@@ -10,7 +10,7 @@ class Transport {
   String situation;
   int rating = 0;
   DateTime scheduledAt;
-  DateTime finishedAt;
+  DateTime? finishedAt;
   final DateTime createdAt;
   DateTime updatedAt;
 
@@ -23,7 +23,6 @@ class Transport {
     required this.situation,
     required this.rating,
     required this.scheduledAt,
-    required this.finishedAt,
     required this.createdAt,
     required this.updatedAt,
   });
