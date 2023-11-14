@@ -1,10 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:moveout1/services/notification_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:moveout1/screens/login.dart';
 import 'package:moveout1/screens/profile.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -49,6 +50,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  
+  @override
+  void initState() { 
+    super.initState();
+    getNotification();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AuthScreen();

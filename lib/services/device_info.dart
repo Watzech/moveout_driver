@@ -5,6 +5,20 @@ import 'package:moveout1/services/transport.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Save
+Future<void> saveNotificationToken(String? token) async{
+  
+  try {
+
+    if(token != null){
+      var prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+    }
+
+  } catch (e) {
+    print(e);
+  }
+}
+
 Future<void> loginSave(userInfo) async {
 
   try {
@@ -97,6 +111,20 @@ Future<List<Map<String, dynamic>>?> saveTempRequest(String state, String search,
 // Save
 
 // Get
+Future<String?> getNotificationToken() async{
+  
+  try {
+
+    var prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+
+  } catch (e) {
+    print(e);
+    return null;
+  }
+
+}
+
 Future<dynamic> getUserInfo() async {
 
   var prefs = await SharedPreferences.getInstance();

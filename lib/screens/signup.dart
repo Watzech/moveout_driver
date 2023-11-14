@@ -5,6 +5,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:moveout1/classes/driver.dart';
 import 'package:moveout1/classes/vehicle.dart';
 import 'package:moveout1/screens/login.dart';
+import 'package:moveout1/services/device_info.dart';
 import 'package:moveout1/services/do_login.dart';
 import 'package:moveout1/services/upload_file.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -110,6 +111,10 @@ class _SingupTabBarState extends State<SingupTabBar>
 
       dynamic compressedImage = await uploadPhoto(photo);
 
+      String? tokenValue = await getNotificationToken();
+
+      var token = tokenValue != null ? [tokenValue] : null;
+
       setState(() {
         driverFields = Driver(
           name: _nameFormFieldController.text,
@@ -122,6 +127,7 @@ class _SingupTabBarState extends State<SingupTabBar>
           photo: compressedImage,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
+          token: token
         );
         _tabController.index = 1;
       });
