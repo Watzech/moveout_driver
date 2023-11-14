@@ -43,6 +43,17 @@ class VehicleDb{
     }
   }
 
+  static Future<List<Map<String, dynamic>>?> getInfoByField(List<String> values, String fieldName) async {
+    try {
+      await connect();
+      final itemList = await vehicleCollection?.find(where.oneFrom(fieldName, values)).toList();
+      return itemList;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
   static insert(Vehicle vehicle) async {
     await connect();
     await vehicleCollection?.insertAll([vehicle.toMap()]);

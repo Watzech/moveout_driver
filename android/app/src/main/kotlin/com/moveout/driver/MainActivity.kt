@@ -1,4 +1,4 @@
-package com.example.moveout1
+package com.moveout.driver
 
 import io.flutter.embedding.android.FlutterActivity
 

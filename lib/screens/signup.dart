@@ -1,14 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:moveout1/classes/driver.dart';
 import 'package:moveout1/classes/vehicle.dart';
 import 'package:moveout1/screens/login.dart';
 import 'package:moveout1/services/do_login.dart';
+import 'package:moveout1/services/upload_file.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:moveout1/widgets/default_button.dart';
 import 'package:validation_pro/validate.dart';
@@ -93,8 +91,8 @@ class _SingupTabBarState extends State<SingupTabBar>
   final TextEditingController _brandFormFieldController =
       TextEditingController();
 
-  XFile? photo;
-  void _handlePhoto(XFile data) {
+  dynamic photo;
+  void _handlePhoto(dynamic data) {
     setState(() {
       photo = data;
     });
@@ -110,10 +108,7 @@ class _SingupTabBarState extends State<SingupTabBar>
   void verifySignupFields() async {
     if (_signupFormkey.currentState!.validate()) {
 
-      var compressedImage = await FlutterImageCompress.compressWithFile(
-          photo!.path,
-          format: CompressFormat.jpeg,
-          quality: 90);
+      dynamic compressedImage = await uploadPhoto(photo);
 
       setState(() {
         driverFields = Driver(
@@ -124,7 +119,7 @@ class _SingupTabBarState extends State<SingupTabBar>
           email: _emailFormFieldController.text,
           password: _passwordFormFieldController.text,
           address: _addressFormFieldController.text,
-          photo: base64Encode(compressedImage!),
+          photo: compressedImage,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
@@ -147,25 +142,32 @@ class _SingupTabBarState extends State<SingupTabBar>
         _isLoading = true;
       });
 
-      vehicleFields = Vehicle(
+      dynamic crlvPdf = uploadPdf("-- pdf File Here --");
+
+      if(crlvPdf != false){
+        vehicleFields = Vehicle(
           cnhDriver: driverFields.cnh,
-          crlv: _crlvFormFieldController.text,
+          crlv: crlvPdf,
           plate: _plateFormFieldController.text,
           model: _modelFormFieldController.text,
           brand: _brandFormFieldController.text,
           createdAt: DateTime.now(),
-          updatedAt: DateTime.now());
+          updatedAt: DateTime.now()
+        );
 
-      bool driverSignup = await doSignup(driverFields.name, driverFields.cpf, driverFields.phone, driverFields.cnh, driverFields.email, 
-      driverFields.password, driverFields.photo, driverFields.address, driverFields.createdAt, driverFields.updatedAt);
+        bool signup = await doSignup(driverFields, vehicleFields);
 
-      if (driverSignup) {
-      setState(() {
-      _isLoading = false;
-      });
-        goMap();
-      } else {
-        // Verifique suas informações e tente novamente
+        if (signup) {
+          setState(() {
+          _isLoading = false;
+          });
+          goMap();
+        } else {
+          
+          // -- TOAST --
+
+        }
+
       }
 
     } else {

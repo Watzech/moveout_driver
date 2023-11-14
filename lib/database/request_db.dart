@@ -1,5 +1,4 @@
 import 'package:moveout1/classes/request.dart';
-
 import 'package:moveout1/constants/main.dart' as constants;
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -43,7 +42,7 @@ class RequestDb{
     }
   }
 
-  static Future<List<Map<String, dynamic>>?> getInfoByField(List<String> values, String fieldName) async {
+  static Future<List<Map<String, dynamic>>?> getInfoByField(List<dynamic> values, String fieldName) async {
     try {
       await RequestDb.connect();
       final request = await requestCollection?.find(where.oneFrom(fieldName, values)).toList();
@@ -70,7 +69,7 @@ class RequestDb{
     await requestCollection?.insertAll([request.toMap()]);
   }
 
-  static update(Request request) async {
+  static Future<bool> update(Request request) async {
     try {
       await RequestDb.connect();
       var u = await requestCollection?.findOne({"_id": request.id});
@@ -86,14 +85,17 @@ class RequestDb{
       u?["status"] = request.status;
 
       await requestCollection?.replaceOne({"_id": request.id}, u!);
+
+      return true;
     } catch (e) {
       print(e);
+      return false;
     }
   }
 
-  static Future<List<Map<String, dynamic>>?> getFilteredInfo(String state, String search, bool ascending) async {
+  static Future<List<Map<String, dynamic>>?> getFilteredInfo(String state, String search, bool ascending, ObjectId id, int limit, int offset) async {
     try {
-      // final filteredResults = await RequestDb.getFilteredInfo("SP", "Vila Santista", true);
+      await RequestDb.connect();
       final request = await requestCollection?.find(
         where.match("location.origin.address", state).and(
           (
@@ -101,7 +103,9 @@ class RequestDb{
           ).or(
             where.match("location.destination.address", search)
           )
-        ).sortBy("price.finalPrice", descending: !ascending )
+        ).and(
+          where.nin("interesteds", [id.toString()])
+        ).sortBy("price.finalPrice", descending: !ascending ).skip(offset).limit(limit)
       ).toList();
       return request;
     } catch (e) {
