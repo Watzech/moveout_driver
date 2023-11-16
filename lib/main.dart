@@ -3,7 +3,7 @@
 import 'package:moveout1/services/notification_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:moveout1/screens/login.dart';
-import 'package:moveout1/screens/profile.dart';
+import 'package:moveout1/screens/dashboard.dart';
 
 void main() async {
   runApp(const MyApp());
