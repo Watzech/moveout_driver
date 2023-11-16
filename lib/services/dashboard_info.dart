@@ -36,7 +36,7 @@ Future<int> getTotalTransports() async {
   return transportList.length;
 }
 
-Future<Map<dynamic, String>> getCurrentSubscribe() async {
+Future<Map<dynamic, String>> getCurrentSubscription() async {
 
   return {"name": "Bronze", "color": "#B5A642"};
   return {"name": "Prata", "color": "#C0C0C0"};

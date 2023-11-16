@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:moveout1/classes/request.dart';
+import 'package:moveout1/services/dashboard_info.dart';
+import 'package:moveout1/widgets/custom_drawer.dart';
 import 'package:moveout1/widgets/profile_image_container.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:moveout1/widgets/request_card.dart';
+import 'package:realm/realm.dart';
 
 import '../widgets/profile_screen_widgets/driver_summary_container.dart';
 import '../widgets/profile_screen_widgets/driver_summary_element.dart';
@@ -14,7 +17,9 @@ import '../widgets/profile_screen_widgets/driver_summary_element.dart';
 const String emptyValidationFail = 'Este campo é obrigatório.';
 const String submitValidationFail = 'Erro de validação, verifique os campos';
 void main() {
-  runApp(const ProfileScreen(userData: null,));
+  runApp(const ProfileScreen(
+    userData: null,
+  ));
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -26,34 +31,20 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  var subscriptionInfo;
+
+  // Future<void> getDashboardInfo() async {
+  //   final String patientPhone = await
+
+  //   setState(() => _patientPhone = patientPhone);
+  // }
 
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   var requestsByUser = await getRequestsInfo();
-
-    //   List<Request> req = [];
-    //   requestsByUser?.forEach((element) {
-    //     req.add(Request(
-    //         id: ObjectId.parse(element['_id']),
-    //         cpfClient: element['cpfClient'],
-    //         price: element['price'],
-    //         origin: element['origin'],
-    //         destination: element['destination'],
-    //         distance: element['distance'],
-    //         date: element['date'],
-    //         helpers: element['helpers'],
-    //         load: element['load'],
-    //         createdAt: DateTime.parse(element['createdAt']),
-    //         updatedAt: DateTime.parse(element['updatedAt']),
-    //         status: element['status']));
-    //   });
-    //   setState(() {
-    //     _rawRequests = req;
-    //     _filteredRequests = req;
-    //   });
-    // });
+    setState(() {
+      subscriptionInfo = getCurrentSubscription();
+    });
   }
 
   @override
@@ -68,6 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final reaisFormatter = NumberFormat("'R\$:' #,##0.00", Intl.defaultLocale);
     final containerWidth = screenWidth * 0.85;
+    final GlobalKey<ScaffoldState> key = GlobalKey();
 
     return Stack(children: [
       Image.asset(
@@ -77,14 +69,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
         fit: BoxFit.cover,
       ),
       Scaffold(
+        key: key,
+        drawer: CustomDrawer(
+          userData: widget.userData,
+          context: context,
+        ),
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           leading: InkWell(
+              // onTap: () {
+              //   Navigator.pop(context);
+              // },
+              // child: Icon(
+              //   Icons.arrow_back_rounded,
+              //   color: Theme.of(context).colorScheme.secondary,
+              //   size: 30,
+              // )),
               onTap: () {
-                Navigator.pop(context);
+                key.currentState!.openDrawer();
               },
               child: Icon(
-                Icons.arrow_back_rounded,
+                Icons.format_list_bulleted,
                 color: Theme.of(context).colorScheme.secondary,
                 size: 30,
               )),
@@ -100,7 +105,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 Expanded(
                   child: Container(
-                    // height: screenHeight*0.2,
                     width: screenWidth,
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.vertical(
@@ -131,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Text(
                               widget.userData != null
                                   ? widget.userData['name']
-                                  : 'Carregando...', //erro de overflow caso o texto seja grande
+                                  : 'Carregando...',
                               textAlign: TextAlign.left,
                               maxLines: 1,
                               style: const TextStyle(
@@ -165,76 +169,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 DriverSummaryContainer(
                     containerWidth: containerWidth,
-                    containerHeight: screenHeight * 0.16,
-                    childrenWidgets: [
-                      IntrinsicHeight(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: DriverSummaryElement(
-                                  title: 'Lucro Mensal',
-                                  content: reaisFormatter.format(1200)),
-                            ),
-                            const VerticalDivider(
-                              width: 10,
-                              thickness: 1,
-                              indent: 15,
-                              endIndent: 0,
-                              color: Colors.grey,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: DriverSummaryElement(
-                                  title: 'Assinatura',
-                                  content: reaisFormatter.format(1200)),
-                            )
-                          ],
-                        ),
-                      ),
-                      Row(
+                    containerHeight: screenHeight * 0.2,
+                    childrenWidgets:
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
+                          IntrinsicHeight(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                DriverSummaryElement(
-                                    title: 'Lucro Total',
-                                    titleSize: screenHeight * 0.013,
-                                    content: reaisFormatter.format(3300),
-                                    contentSize: screenHeight * 0.016),
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: DriverSummaryElement(
+                                      title: 'Lucro Mensal',
+                                      // content: getMonthlyIncome(),
+                                      content: reaisFormatter.format(1200)),
+                                ),
+                                const VerticalDivider(
+                                  width: 10,
+                                  thickness: 1,
+                                  indent: 15,
+                                  endIndent: 0,
+                                  color: Colors.grey,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: DriverSummaryElement(
+                                      title: 'Assinatura',
+                                      content: subscriptionInfo != null ? subscriptionInfo['name'] : 'Carregando'),
+                                )
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
-                              children: [
-                                DriverSummaryElement(
-                                    title: 'Transportes Feitos',
-                                    titleSize: screenHeight * 0.013,
-                                    content: 12.toString(),
-                                    contentSize: screenHeight * 0.016),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
-                              children: [
-                                DriverSummaryElement(
-                                    title: 'Lucro Total',
-                                    titleSize: screenHeight * 0.013,
-                                    content: reaisFormatter.format(3300),
-                                    contentSize: screenHeight * 0.016),
-                              ],
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    DriverSummaryElement(
+                                        title: 'Lucro Total',
+                                        titleSize: screenHeight * 0.013,
+                                        content: reaisFormatter.format(3300),
+                                        contentSize: screenHeight * 0.016),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    DriverSummaryElement(
+                                        title: 'Transportes Feitos',
+                                        titleSize: screenHeight * 0.013,
+                                        content: 12.toString(),
+                                        contentSize: screenHeight * 0.016),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    DriverSummaryElement(
+                                        title: 'Créditos Restantes',
+                                        titleSize: screenHeight * 0.013,
+                                        content: '7',
+                                        contentSize: screenHeight * 0.016),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ]),
+                      )
+                    ),
                 const Spacer(
                   flex: 1,
                 ),
@@ -248,8 +259,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 DriverSummaryContainer(
                     containerWidth: containerWidth,
-                    containerHeight: screenHeight * 0.25,
-                    childrenWidgets: [
+                    containerHeight: screenHeight * 0.45,
+                    childrenWidgets:
+                    Column()
                       // Expanded(
                       //   child: ListView.builder(
                       //     padding: const EdgeInsets.all(0),
@@ -273,21 +285,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       //     },
                       //   ),
                       // ),
-                    ]),
+                    ),
                 const Spacer(
                   flex: 1,
                 ),
-                // DriverSummaryContainer(
-                //     containerWidth: containerWidth,
-                //     containerHeight: screenHeight * 0.25,
-                //     childrenWidgets: [
-                //       const Row(
-                //         children: [],
-                //       )
-                //     ]),
-                // const Spacer(
-                //   flex: 1,
-                // ),
               ],
             ),
           ]),

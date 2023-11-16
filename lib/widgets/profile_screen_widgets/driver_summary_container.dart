@@ -13,7 +13,7 @@ class DriverSummaryContainer extends StatelessWidget {
 
   final double containerWidth;
   final double containerHeight;
-  List<Widget> childrenWidgets;
+  Widget childrenWidgets;
   final reaisFormatter = NumberFormat("'R\$:' #,##0.00");
 
   @override
@@ -34,9 +34,7 @@ class DriverSummaryContainer extends StatelessWidget {
                 color: Theme.of(context).colorScheme.primary, width: 2),
             borderRadius: BorderRadius.circular(15),
           ),
-          child: Column(
-            children: childrenWidgets,
-          )),
+          child: childrenWidgets),
     );
   }
 }

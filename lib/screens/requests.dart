@@ -252,8 +252,8 @@ class _RequestsScreenState extends State<RequestsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var requestsByUser = await getRequestsInfo();
-
+      // var requestsByUser = await getRequestsInfo();
+      var requestsByUser;
       List<Request> req = [];
       requestsByUser?.forEach((element) {
         req.add(Request(

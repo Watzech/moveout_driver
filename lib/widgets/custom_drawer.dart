@@ -146,10 +146,10 @@ class CustomDrawer extends StatelessWidget {
                 icon: Icons.home,
                 text: 'Início',
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MapScreen()));
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const MapScreen()));
                 },
               ),
               const SizedBox(height: 15),

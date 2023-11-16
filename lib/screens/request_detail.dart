@@ -10,7 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:moveout1/services/delete_request.dart';
+// import 'package:moveout1/services/delete_request.dart';
 import 'package:moveout1/widgets/default_button.dart';
 import 'package:moveout1/widgets/custom_summary_subtext_row.dart';
 import 'package:moveout1/widgets/custom_summary_text_row.dart';
@@ -219,7 +219,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                     setState(() {
                       _isLoading = true;
                     });
-                    await cancelRequest(widget.request);
+                    // await cancelRequest(widget.request);
                     setState(() {
                       _isLoading = false;
                     });

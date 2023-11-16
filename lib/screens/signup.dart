@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:moveout1/classes/driver.dart';
 import 'package:moveout1/classes/vehicle.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:moveout1/screens/login.dart';
 import 'package:moveout1/services/device_info.dart';
 import 'package:moveout1/services/do_login.dart';
@@ -56,6 +59,7 @@ class _SingupTabBarState extends State<SingupTabBar>
   final _vehicleFormkey = GlobalKey<FormState>();
   late Driver driverFields;
   late Vehicle vehicleFields;
+  FilePickerResult? _filePickerResult;
   bool _isLoading = false;
 
   final TextEditingController _nameFormFieldController =
@@ -99,6 +103,18 @@ class _SingupTabBarState extends State<SingupTabBar>
     });
   }
 
+  void getPdfFile(context) async {
+    _filePickerResult = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf'],  allowMultiple: false);
+    
+    if (_filePickerResult != null) {
+      setState(() {
+        
+      });
+    } else {
+
+    }
+  }
+
   void goMap() {
     Navigator.push(
       context,
@@ -108,7 +124,6 @@ class _SingupTabBarState extends State<SingupTabBar>
 
   void verifySignupFields() async {
     if (_signupFormkey.currentState!.validate()) {
-
       dynamic compressedImage = await uploadPhoto(photo);
 
       String? tokenValue = await getNotificationToken();
@@ -117,21 +132,19 @@ class _SingupTabBarState extends State<SingupTabBar>
 
       setState(() {
         driverFields = Driver(
-          name: _nameFormFieldController.text,
-          cpf: _cpfFormFieldController.text,
-          cnh: _cnhFormFieldController.text,
-          phone: _phoneFormFieldController.text,
-          email: _emailFormFieldController.text,
-          password: _passwordFormFieldController.text,
-          address: _addressFormFieldController.text,
-          photo: compressedImage,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          token: token
-        );
+            name: _nameFormFieldController.text,
+            cpf: _cpfFormFieldController.text,
+            cnh: _cnhFormFieldController.text,
+            phone: _phoneFormFieldController.text,
+            email: _emailFormFieldController.text,
+            password: _passwordFormFieldController.text,
+            address: _addressFormFieldController.text,
+            photo: compressedImage,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            token: token);
         _tabController.index = 1;
       });
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text(submitValidationFail),
@@ -142,40 +155,34 @@ class _SingupTabBarState extends State<SingupTabBar>
 
   void submitData() async {
     if (_vehicleFormkey.currentState!.validate() &&
-        _plateFormFieldController.text.length == 7) {
-
+        _plateFormFieldController.text.length == 7 && _filePickerResult != null) {
       setState(() {
         _isLoading = true;
       });
 
-      dynamic crlvPdf = uploadPdf("-- pdf File Here --");
+      dynamic crlvPdf = uploadPdf(_filePickerResult);
 
-      if(crlvPdf != false){
+      if (crlvPdf != false) {
         vehicleFields = Vehicle(
-          cnhDriver: driverFields.cnh,
-          crlv: crlvPdf,
-          plate: _plateFormFieldController.text,
-          model: _modelFormFieldController.text,
-          brand: _brandFormFieldController.text,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now()
-        );
+            cnhDriver: driverFields.cnh,
+            crlv: crlvPdf,
+            plate: _plateFormFieldController.text,
+            model: _modelFormFieldController.text,
+            brand: _brandFormFieldController.text,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now());
 
         bool signup = await doSignup(driverFields, vehicleFields);
 
         if (signup) {
           setState(() {
-          _isLoading = false;
+            _isLoading = false;
           });
           goMap();
         } else {
-          
           // -- TOAST --
-
         }
-
       }
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text(submitValidationFail),
@@ -432,7 +439,7 @@ class _SingupTabBarState extends State<SingupTabBar>
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 25.0, right: 25.0, top: 10.0, bottom: 10.0),
+                        left: 25.0, right: 25.0, top: 10.0, bottom: 15.0),
                     child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary,
@@ -455,7 +462,8 @@ class _SingupTabBarState extends State<SingupTabBar>
                             }
                           },
                           errorTextSpace: 35,
-                          errorTextMargin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          errorTextMargin:
+                              const EdgeInsets.fromLTRB(0, 0, 0, 10),
                           pinTheme: PinTheme(
                               shape: PinCodeFieldShape.underline,
                               inactiveColor: Colors.white,
@@ -470,27 +478,42 @@ class _SingupTabBarState extends State<SingupTabBar>
                           appContext: context,
                         )),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 25.0, right: 25.0, top: 15.0, bottom: 15.0),
-                    child: MaskedLoginTextFormField(
-                        lbl: 'CRLV:',
-                        controller: _crlvFormFieldController,
-                        maskFormatter: MaskTextInputFormatter(
-                            mask: '###.###.###-##',
-                            filter: {"#": RegExp(r'[0-9]')},
-                            type: MaskAutoCompletionType.lazy),
-                        validatorFunction: (value) {
-                          if (value == null || value.isEmpty) {
-                            return emptyValidationFail;
-                          }
-                          //vamos inserir isso depois de conseguirmos implementar a validação de CPF.
-                          // else if(Validate.isEmail(email)){
-                          //   return 'Insira um CPF válido.';
-                          // }
-                          return null;
-                        }),
+                  const Padding(
+                    padding: EdgeInsets.only(
+                        left: 25.0, right: 25.0, top: 15.0, bottom: 0.0),
+                    child: Text(
+                      'CRLV:',
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
                   ),
+                  Padding(
+                      padding: const EdgeInsets.only(
+                          left: 25.0, right: 25.0, top: 15.0, bottom: 15.0),
+                      child: Column(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 20),
+                            child: Icon(
+                              Icons.file_download,
+                              size: 30,
+                              color: Colors.white,
+                            ),
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                getPdfFile(context);
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<
+                                        Color>(
+                                    Theme.of(context).colorScheme.secondary),
+                                fixedSize: MaterialStatePropertyAll(Size(
+                                    MediaQuery.sizeOf(context).width * 0.5,
+                                    MediaQuery.sizeOf(context).height * 0.055)),
+                              ),
+                              child: const Text('Selecionar Arquivo .PDF')),
+                        ],
+                      )),
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 25.0, right: 25.0, top: 15.0, bottom: 15.0),

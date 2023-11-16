@@ -2,6 +2,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moveout1/screens/mapscreen.dart';
+import 'package:moveout1/screens/profile.dart';
 import 'package:moveout1/screens/signup.dart';
 import 'package:moveout1/services/do_login.dart';
 import 'package:moveout1/services/device_info.dart';
@@ -30,6 +31,7 @@ class _AuthScreenState extends State<AuthScreen> {
       TextEditingController();
   final TextEditingController _passwordFormFieldController =
       TextEditingController();
+  dynamic userData;
   // String? _loggedUser;
   bool _isScreenLoading = true;
   bool _isButtonLoading = false;
@@ -38,9 +40,9 @@ class _AuthScreenState extends State<AuthScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      dynamic user = await getUserInfo();
+      userData = await getUserInfo();
 
-      if (user?["cpf"] != null && user["cpf"].length > 5) {
+      if (userData?["cpf"] != null && userData["cpf"].length > 5) {
         goMap();
       } else {
         setState(() {
@@ -58,7 +60,8 @@ class _AuthScreenState extends State<AuthScreen> {
   void goMap() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const MapScreen()),
+      // MaterialPageRoute(builder: (context) => const MapScreen()),
+      MaterialPageRoute(builder: (context) => ProfileScreen(userData: userData)),
     );
   }
 

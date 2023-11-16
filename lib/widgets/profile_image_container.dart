@@ -14,12 +14,11 @@ class ImageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double size = imageSize == 0 ? MediaQuery.sizeOf(context).height * 0.1 : imageSize;
-    ImageProvider provider;
-    provider = MemoryImage(base64Decode(photoString));
+    ImageProvider provider = MemoryImage(base64Decode(photoString));
 
     return Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          // color: Theme.of(context).colorScheme.background,
           border: Border.all(
             width: 3,
             color: Theme.of(context).colorScheme.secondary,
