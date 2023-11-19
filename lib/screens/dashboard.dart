@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:mongo_dart/mongo_dart.dart' show ObjectId;
 import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/screens/request_detail.dart';
 import 'package:moveout1/services/dashboard_info.dart';
@@ -11,7 +12,6 @@ import 'package:moveout1/widgets/custom_drawer.dart';
 import 'package:moveout1/widgets/profile_image_container.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:moveout1/widgets/request_card.dart';
-import 'package:realm/realm.dart';
 
 import '../widgets/profile_screen_widgets/driver_summary_container.dart';
 import '../widgets/profile_screen_widgets/driver_summary_element.dart';
@@ -35,6 +35,8 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   var subscriptionInfo;
   double rating = 0;
+  double monthlyIncome = 0;
+  double totalIncome = 0;
   List<Request> transports = [];
 
   // Future<void> getDashboardInfo() async {
@@ -66,28 +68,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   double ratingHelper = await getCurrentRating();
-    //   var requestsByUser = await getTransportsInfo();
-    //   requestsByUser?.forEach((element) {
-    //   transports.add(Request(
-    //       id: ObjectId.parse(element['_id']),
-    //       cpfClient: element['cpfClient'],
-    //       price: element['price'],
-    //       origin: element['origin'],
-    //       destination: element['destination'],
-    //       distance: element['distance'],
-    //       date: element['date'],
-    //       helpers: element['helpers'],
-    //       load: element['load'],
-    //       createdAt: DateTime.parse(element['createdAt']),
-    //       updatedAt: DateTime.parse(element['updatedAt']),
-    //       status: element['status']));
-    // });
-    //   setState(() {
-    //     rating = ratingHelper;
-    //   });
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      double ratingHelper = await getCurrentRating();
+      var requestsByUser = await getTransportsInfo();
+      var subscribe = await getCurrentSubscription();
+      var monthlyIncomeValue = await getIncome(true);
+      var totalIncomeValue = await getIncome(false);
+      for (var element in requestsByUser) {
+        transports.add(Request(
+          id: ObjectId.parse(element['_id']),
+          cpfClient: element['cpfClient'],
+          price: element['price'],
+          origin: element['origin'],
+          destination: element['destination'],
+          distance: element['distance'],
+          date: element['date'],
+          helpers: element['helpers'],
+          load: element['load'],
+          createdAt: DateTime.parse(element['createdAt']),
+          updatedAt: DateTime.parse(element['updatedAt']),
+          status: element['status'])
+        );
+      }
+
+      setState(() {
+        rating = ratingHelper;
+        subscriptionInfo = subscribe;
+        monthlyIncome = monthlyIncomeValue;
+        totalIncome = totalIncomeValue;
+      });
+    });
   }
 
   @override
@@ -191,7 +201,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                             RatingBar.builder(
                               // initialRating: rating,
-                              initialRating: 2.5,
+                              initialRating: rating,
                               allowHalfRating: true,
                               minRating: 0,
                               direction: Axis.horizontal,
@@ -229,7 +239,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 child: DriverSummaryElement(
                                     title: 'Lucro Mensal',
                                     // content: getMonthlyIncome(),
-                                    content: reaisFormatter.format(1200)),
+                                    content: reaisFormatter.format(monthlyIncome)),
                               ),
                               const VerticalDivider(
                                 width: 10,
@@ -241,9 +251,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Padding(
                                 padding: const EdgeInsets.all(12.0),
                                 child: DriverSummaryElement(
-                                    title: 'Assinatura',
-                                    // content: subscriptionInfo != null ? subscriptionInfo['name'] : 'Carregando'),
-                                    content: 'Carregando'),
+                                  title: 'Assinatura',
+                                  content: subscriptionInfo ?? 'Carregando'
+                                ),
                               )
                             ],
                           ),
@@ -258,7 +268,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   DriverSummaryElement(
                                       title: 'Lucro Total',
                                       titleSize: summaryTitleSize,
-                                      content: reaisFormatter.format(3300),
+                                      content: reaisFormatter.format(totalIncome),
                                       contentSize: summaryContentSize),
                                 ],
                               ),
@@ -270,8 +280,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   DriverSummaryElement(
                                       title: 'Transportes Feitos',
                                       titleSize: summaryTitleSize,
-                                      // content: getTotalTransports();
-                                      content: 12.toString(),
+                                      content: transports.length.toString(),
                                       contentSize: summaryContentSize),
                                 ],
                               ),
@@ -309,7 +318,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   childrenWidgets: Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.all(0),
-                      itemCount: 10,
+                      itemCount: transports.length,
                       itemBuilder: (context, index) {
                         final item = transports[index];
                         return Column(

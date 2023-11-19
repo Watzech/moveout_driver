@@ -23,13 +23,15 @@ Future<bool> applyRequest(Request request) async {
 
 Future<double> getRequestsIncome(List<ObjectId> ids) async {
 
-  List<Map<String, dynamic>>? requestList = await RequestDb.getInfoByField(ids, "_id");
-
   double income = 0;
+  
+  if(ids.isNotEmpty){
+    List<Map<String, dynamic>>? requestList = await RequestDb.getInfoByField(ids, "_id");
 
-  if(requestList!.isNotEmpty){
-    for(var request in requestList){
-      income += request["price"]["finalPrice"];
+    if(requestList!.isNotEmpty){
+      for(var request in requestList){
+        income += request["price"]["finalPrice"];
+      }
     }
   }
 

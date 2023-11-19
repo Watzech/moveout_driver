@@ -2,6 +2,18 @@
 
 import 'package:flutter/material.dart';
 
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+}
+
 class DriverSummaryElement extends StatelessWidget {
   DriverSummaryElement({
     super.key,
@@ -12,7 +24,7 @@ class DriverSummaryElement extends StatelessWidget {
   });
 
   String title;
-  final String content;
+  dynamic content;
   double titleSize;
   double contentSize;
 
@@ -22,6 +34,14 @@ class DriverSummaryElement extends StatelessWidget {
 
     titleSize = titleSize == 0 ? screenHeight * 0.016 : titleSize;
     contentSize = contentSize == 0 ? screenHeight * 0.020 : contentSize;
+
+    var subscription;
+    var color;
+
+    try {
+      subscription = content["name"];
+      color = content["color"];
+    } catch (e) {}
 
     return Column(
       children: [
@@ -33,10 +53,10 @@ class DriverSummaryElement extends StatelessWidget {
               fontWeight: FontWeight.bold),
         ),
         Text(
-          content,
+          subscription ?? content,
           style: TextStyle(
               fontSize: contentSize,
-              color: Theme.of(context).colorScheme.primary,
+              color: color != null ? HexColor(color) : Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold),
         )
       ],

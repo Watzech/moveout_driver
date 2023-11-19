@@ -7,21 +7,25 @@ Future<double> getCurrentRating() async {
   double rating = 0;
   var transportList = await getTransportsInfo();
 
+  if(transportList.isEmpty){
+    return 0.0;
+  }
+
   for(var transport in transportList){
-    rating += transport["rating"];
+    rating += transport?["rating"];
   }
   
   return (rating / transportList.length);
 }
 
-Future<double> getMonthlyIncome() async {
+Future<double> getIncome(bool monthly) async {
 
   var transportList = await getTransportsInfo();
   late double income;
   List<ObjectId> requestIds = [];
 
   for(var transport in transportList){
-    requestIds.add(transport["request"]);
+    requestIds.add(transport?["request"]);
   }
 
   income = await getRequestsIncome(requestIds);
@@ -39,7 +43,7 @@ Future<int> getTotalTransports() async {
 Future<Map<dynamic, String>> getCurrentSubscription() async {
 
   return {"name": "Bronze", "color": "#B5A642"};
-  return {"name": "Prata", "color": "#C0C0C0"};
-  return {"name": "Ouro", "color": "#FFD700"};
-  return {"name": "Diamante", "color": "#0ABAB5"};
+  // return {"name": "Prata", "color": "#AAAAAA"};
+  // return {"name": "Ouro", "color": "#FFD700"};
+  // return {"name": "Diamante", "color": "#0ABAB5"};
 }

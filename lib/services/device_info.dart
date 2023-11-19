@@ -29,9 +29,20 @@ Future<void> loginSave(userInfo) async {
 
     await prefs.setString('userData', json.encode(userInfo["userData"]));
     await getTransports();
+    await uploadToken(userInfo["userData"]);
 
   } catch (e) {
     print(e);
+  }
+
+}
+
+Future<void> uploadToken(Map<String, dynamic> userInfo) async {
+
+  try {
+    
+  } catch (e) {
+    
   }
 
 }
@@ -143,7 +154,7 @@ Future<dynamic> getVehicleInfo() async {
 
 }
 
-Future<List<Map<String,dynamic>>> getTransportsInfo() async {
+Future<List<dynamic>> getTransportsInfo() async {
 
   var prefs = await SharedPreferences.getInstance();
   final transports = prefs.getString("transportsData") ?? "[]";
