@@ -58,7 +58,10 @@ void getNotification() async {
   token = FirebaseMessaging.instance;
   token.getToken().then((value) async {
     print(value);
-    await saveNotificationToken(value);
+    var currentToken = await getNotificationToken();
+    if(currentToken != value){
+      await saveNotificationToken(value);
+    }
   });
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;

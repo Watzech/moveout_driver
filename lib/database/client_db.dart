@@ -58,6 +58,7 @@ class ClientDb{
   }
 
   static update(Client client) async {
+    await connect();
     var u = await clientCollection?.findOne({"cpf": client.cpf});
 
     u?["name"] = client.name;
