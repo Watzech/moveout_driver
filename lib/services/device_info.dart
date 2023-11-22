@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:moveout1/database/request_db.dart';
 import 'package:moveout1/services/transport.dart';
+import 'package:moveout1/services/vehicle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Save
@@ -29,6 +30,7 @@ Future<void> loginSave(userInfo) async {
 
     await prefs.setString('userData', json.encode(userInfo["userData"]));
     await getTransports();
+    await getVehicleList();
     await uploadToken(userInfo["userData"]);
 
   } catch (e) {

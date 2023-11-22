@@ -1,7 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:moveout1/screens/mapscreen.dart';
+// import 'package:moveout1/screens/mapscreen.dart';
 import 'package:moveout1/screens/dashboard.dart';
 import 'package:moveout1/screens/signup.dart';
 import 'package:moveout1/services/do_login.dart';

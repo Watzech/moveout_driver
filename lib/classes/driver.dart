@@ -10,7 +10,7 @@ class Driver {
   String address;
   final DateTime createdAt;
   DateTime updatedAt;
-  List<String?>? token;
+  List<String?>? token = [];
 
   Driver({
     required this.name,

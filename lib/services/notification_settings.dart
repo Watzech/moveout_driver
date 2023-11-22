@@ -59,7 +59,7 @@ void getNotification() async {
   token.getToken().then((value) async {
     print(value);
     var currentToken = await getNotificationToken();
-    if(currentToken != value){
+    if(currentToken != value && value != null){
       await saveNotificationToken(value);
     }
   });
