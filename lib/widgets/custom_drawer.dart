@@ -160,31 +160,9 @@ class CustomDrawer extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RequestsScreen()));
+                          builder: (context) => const RequestsScreen()));
                 },
               ),
-              const SizedBox(height: 15),
-              CustomListTile(
-                icon: Icons.calendar_month,
-                text: 'Agenda',
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => RequestsScreen()));
-                },
-              ),
-              const SizedBox(height: 15),
-              // CustomListTile(
-              //   icon: Icons.settings,
-              //   text: 'Configurações',
-              //   onTap: () {
-              //     Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //             builder: (context) => RequestsScreen()));
-              //   },
-              // )
             ],
           ),
         ),
@@ -202,7 +180,7 @@ class CustomDrawer extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    side: MaterialStatePropertyAll(BorderSide(color: Colors.red)),
+                    side: const MaterialStatePropertyAll(BorderSide(color: Colors.red)),
                     fixedSize: MaterialStateProperty.all(
                         Size(MediaQuery.of(context).size.width * 0.60, 50)),
                   ),
