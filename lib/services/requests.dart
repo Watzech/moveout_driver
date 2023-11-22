@@ -6,7 +6,7 @@ import 'package:moveout1/services/device_info.dart';
 Future<List<Map<String, dynamic>>?> getRequests(String state, String search, bool ascending, int limit, int offset) async {
 
   dynamic user = await getUserInfo();
-  List<Map<String, dynamic>>? requestList = await saveTempRequest(state, search, ascending, user["_id"], limit, offset);
+  List<Map<String, dynamic>>? requestList = await saveTempRequest(state, search, ascending, ObjectId.parse(user["_id"]), limit, offset);
 
   return requestList;
 
