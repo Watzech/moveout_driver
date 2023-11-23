@@ -13,7 +13,7 @@ Future<List<dynamic>?> getRequests(String state, String search, bool ascending, 
 
 Future<bool> applyRequest(Request request) async {
   dynamic user = await getUserInfo();
-  request.interesteds.add(user["_id"]);
+  request.interesteds.add(user['cnh']);
 
   bool done = await RequestDb.update(request);
 

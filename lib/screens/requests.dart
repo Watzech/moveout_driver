@@ -6,7 +6,9 @@ import 'package:moveout1/widgets/custom_divider.dart';
 import 'package:moveout1/widgets/request_card.dart';
 
 class RequestsScreen extends StatefulWidget {
-  const RequestsScreen({super.key});
+  final dynamic userData;
+
+  const RequestsScreen({super.key, required this.userData});
 
   @override
   State<RequestsScreen> createState() => _RequestsScreenState();
@@ -46,7 +48,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
   Route _createRoute(Request item) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
-          RequestDetailScreen(request: item),
+          RequestDetailScreen(request: item, userData: widget.userData),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;

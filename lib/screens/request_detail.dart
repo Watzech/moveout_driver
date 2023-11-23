@@ -10,14 +10,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-// import 'package:moveout1/services/delete_request.dart';
+import 'package:moveout1/services/device_info.dart';
+import 'package:moveout1/services/requests.dart';
 import 'package:moveout1/widgets/default_button.dart';
 import 'package:moveout1/widgets/custom_summary_subtext_row.dart';
 import 'package:moveout1/widgets/custom_summary_text_row.dart';
 
 class RequestDetailScreen extends StatefulWidget {
   final Request request;
-  const RequestDetailScreen({super.key, required this.request});
+  final dynamic userData;
+  const RequestDetailScreen(
+      {super.key, required this.request, required this.userData});
 
   @override
   _RequestDetailScreenState createState() => _RequestDetailScreenState();
@@ -35,7 +38,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
   bool _isLoading = false;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
 
     _addMarker(
@@ -175,12 +178,12 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     }
   }
 
-  Future<dynamic> cancelationSuccessfulFLushBar() {
+  Future<dynamic> applySuccessfulFLushBar() {
     return Flushbar(
       messageText: const Padding(
         padding: EdgeInsets.fromLTRB(45, 15, 15, 15),
         child: Text(
-          'Pedido cancelado com sucesso!',
+          'Interesse enviado com sucesso!',
           style: TextStyle(
               fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -207,23 +210,23 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
             content: const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                'Deseja cancelar esse pedido?',
+                'Deseja demonstrar interesse em realizar esse pedido?',
                 style: TextStyle(fontSize: 17),
+                textAlign: TextAlign.justify,
               ),
             ),
             actions: [
               TextButton(
                   onPressed: () async {
                     Navigator.of(context).pop();
-                    widget.request.status = "CA";
                     setState(() {
                       _isLoading = true;
                     });
-                    // await cancelRequest(widget.request);
+                    await applyRequest(widget.request);
                     setState(() {
                       _isLoading = false;
                     });
-                    cancelationSuccessfulFLushBar();
+                    applySuccessfulFLushBar();
                   },
                   child: const Text('Sim')),
               TextButton(
@@ -388,33 +391,35 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                       padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                       child: _isLoading
                           ? DefaultButton(
-                              text: 'CANCELAR PEDIDO',
+                              text: 'ESTOU INTERESSADO',
                               onPressedFunction: () {},
                               isLoading: true)
                           : ElevatedButton(
-                              onPressed: widget.request.status != 'CA' &&
-                                      widget.request.status != 'CO'
+                              onPressed: !widget.request.interesteds
+                                      .contains(widget.userData['cnh'])
                                   ? _showConfirmationDialog
                                   : null,
-                              style: widget.request.status != 'CA' && widget.request.status != 'CO'
+                              style: !widget.request.interesteds
+                                      .contains(widget.userData['cnh'])
                                   ? ButtonStyle(
                                       backgroundColor:
-                                          MaterialStateProperty.all(Colors.red),
+                                          MaterialStateProperty.all(
+                                              Colors.green),
                                       fixedSize: MaterialStateProperty.all(Size(
                                           MediaQuery.of(context).size.width *
                                               0.6,
                                           MediaQuery.of(context).size.height *
                                               0.075)))
                                   : ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all<Color>(
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .onBackground),
-                                      fixedSize: MaterialStateProperty.all(Size(
-                                          MediaQuery.of(context).size.width * 0.6,
-                                          MediaQuery.of(context).size.height * 0.075))),
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onBackground),
+                                      fixedSize: MaterialStateProperty.all(
+                                          Size(MediaQuery.of(context).size.width * 0.6, MediaQuery.of(context).size.height * 0.075))),
                               child: const Text(
-                                'CANCELAR PEDIDO',
+                                'ESTOU INTERESSADO',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 25,
