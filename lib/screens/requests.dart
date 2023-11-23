@@ -447,6 +447,10 @@ class _RequestsScreenState extends State<RequestsScreen> {
         req.add(Request.fromMap(element));
       });
 
+      req = req.where((request) {
+        return (request.status == 'EA');
+      }).toList();
+
       setState(() {
         _rawRequests = req;
         _filteredRequests = req;
