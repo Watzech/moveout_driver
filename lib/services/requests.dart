@@ -6,7 +6,7 @@ import 'package:moveout1/services/device_info.dart';
 Future<List<dynamic>?> getRequests(String state, String search, bool ascending, int limit, int offset) async {
 
   dynamic user = await getUserInfo();
-  List<dynamic>? requestList = await saveTempRequest(state, search, ascending, ObjectId.parse(user["_id"]), limit, offset);
+  List<dynamic>? requestList = await saveTempRequest(state, search, ascending, user["cnh"], limit, offset);
   return requestList;
 
 }
@@ -29,11 +29,12 @@ Future<double> getRequestsIncome(List<ObjectId> ids) async {
 
     if(requestList!.isNotEmpty){
       for(var request in requestList){
-        income += request["price"]["finalPrice"];
+        if(request["status"] == "CO"){
+          income += request["price"]["finalPrice"];
+        }
       }
     }
   }
 
   return income;
-
 }

@@ -9,10 +9,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> saveNotificationToken(String? token) async{
   
   try {
+    var prefs = await SharedPreferences.getInstance();
+    var currentToken = await getNotificationToken();
 
-    if(token != null){
-      var prefs = await SharedPreferences.getInstance();
+    if(token != null && token != currentToken){
       await prefs.setString('token', token);
+      await removeUserInfo();
     }
 
   } catch (e) {
@@ -22,30 +24,13 @@ Future<void> saveNotificationToken(String? token) async{
 
 Future<void> loginSave(userInfo) async {
 
-  try {
+  userInfo["userData"]["createdAt"] = userInfo["userData"]["createdAt"].toString();
+  userInfo["userData"]["updatedAt"] = userInfo["userData"]["updatedAt"].toString();
+  var prefs = await SharedPreferences.getInstance();
 
-    userInfo["userData"]["createdAt"] = userInfo["userData"]["createdAt"].toString();
-    userInfo["userData"]["updatedAt"] = userInfo["userData"]["updatedAt"].toString();
-    var prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString('userData', json.encode(userInfo["userData"]));
-    await getTransports();
-    await getVehicleList();
-    await uploadToken(userInfo["userData"]);
-
-  } catch (e) {
-    print(e);
-  }
-
-}
-
-Future<void> uploadToken(Map<String, dynamic> userInfo) async {
-
-  try {
-    
-  } catch (e) {
-    
-  }
+  await prefs.setString('userData', json.encode(userInfo["userData"]));
+  await getTransports();
+  await getVehicleList();
 
 }
 
@@ -89,14 +74,13 @@ Future<void> saveTransports(transports) async {
 
 }
 
-Future<dynamic> saveTempRequest(String state, String search, bool ascending, ObjectId id, int limit, int offset) async {
+Future<dynamic> saveTempRequest(String state, String search, bool ascending, String cnh, int limit, int offset) async {
   
   var prefs = await SharedPreferences.getInstance();
   dynamic expiration = prefs.containsKey("requestExpiration");
   dynamic requests = prefs.containsKey("requestData");
 
-  // expiration
-  if(false){
+  if(expiration){
     expiration = prefs.getString("requestExpiration");
     expiration = DateTime.now().difference(DateTime.parse(expiration)).inMinutes >= 0;
   }
@@ -105,8 +89,8 @@ Future<dynamic> saveTempRequest(String state, String search, bool ascending, Obj
   }
   
   if(expiration || offset != 0){
-    requests = await RequestDb.getFilteredInfo(state, search, ascending, id, limit, offset);
-    expiration = DateTime.now().add(const Duration(minutes: 5)).toIso8601String();
+    requests = await RequestDb.getFilteredInfo(state, search, ascending, cnh, limit, offset);
+    expiration = DateTime.now().add(const Duration(minutes: 2)).toIso8601String();
   
     requests?.forEach((element) {
       element["createdAt"] = element["createdAt"].toString();
@@ -163,7 +147,12 @@ Future<List<dynamic>> getTransportsInfo() async {
   final transports = prefs.getString("transportsData") ?? "[]";
 
   return jsonDecode(transports);
+}
 
+Future<dynamic> getRequest(ObjectId id) async {
+  List<dynamic>? requestList = await RequestDb.getInfoByField([id], "_id");
+
+  return requestList![0];
 }
 // Get
 

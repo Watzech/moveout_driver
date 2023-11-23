@@ -43,7 +43,7 @@ class _AuthScreenState extends State<AuthScreen> {
       userData = await getUserInfo();
 
       if (userData?["cpf"] != null && userData["cpf"].length > 5) {
-        goMap();
+        goMap(userData);
       } else {
         setState(() {
           _isScreenLoading = false;
@@ -54,14 +54,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
   void saveUser(dynamic user) async {
     await loginSave(user);
-    goMap();
+    goMap(user);
   }
 
-  void goMap() {
+  void goMap(user) {
     Navigator.push(
       context,
-      // MaterialPageRoute(builder: (context) => const MapScreen()),
-      MaterialPageRoute(builder: (context) => DashboardScreen(userData: userData)),
+      MaterialPageRoute(builder: (context) => DashboardScreen(userData: user)),
     );
   }
 

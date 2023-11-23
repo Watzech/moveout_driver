@@ -42,8 +42,9 @@ class ClientDb{
     }
   }
 
-  static Future<List<Map<String, dynamic>>?> getInfoByField(List<String> values, String fieldName) async {
+  static Future<List<Map<String, dynamic>>?> getInfoByField(List<dynamic> values, String fieldName) async {
     try {
+      await connect();
       final users = await clientCollection?.find(where.oneFrom(fieldName, values)).toList();
       return users;
     } catch (e) {

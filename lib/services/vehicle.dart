@@ -37,6 +37,7 @@ Future<List<Map<String, dynamic>>?> getVehicleList() async {
     return vehicleList;
 
   } catch (e) {
+    print("getVehicleList");
     print(e);
     return null;
   }

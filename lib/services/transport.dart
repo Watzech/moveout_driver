@@ -14,6 +14,7 @@ Future<List<Map<String, dynamic>>?> getTransports() async {
     return transportList;
 
   } catch (e) {
+    print("getTransports");
     print(e);
     return null;
   }

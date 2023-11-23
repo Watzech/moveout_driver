@@ -77,7 +77,7 @@ class RequestCard extends StatelessWidget {
             children: [
               Expanded(
                 child: SizedBox(
-                  width: 8,
+                  width: 0,
                   child: ColoredBox(color: statusColor),
                 ),
               ),

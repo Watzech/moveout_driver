@@ -49,17 +49,17 @@ class Request {
   }
 
   Request.fromMap(Map<String, dynamic> map)
-      : id = map['_id'],
-        cpfClient = map['cpfClient'],
-        price = map['price'],
-        origin = map['origin'],
-        destination = map['destination'],
-        distance = map['distance'],
-        helpers = map['helpers'],
-        interesteds = map['interesteds'],
-        date = map['date'],
-        load = map['load'],
-        createdAt = DateTime.parse(map['createdAt']),
-        status = map['status'],
-        updatedAt = DateTime.parse(map['updatedAt']);
+    : id = map['_id'],
+      cpfClient = map['cpfClient'],
+      price = map['price'],
+      origin = map['origin'],
+      destination = map['destination'],
+      distance = map['distance'],
+      helpers = map['helpers'],
+      interesteds = map['interesteds'],
+      date = map['date'],
+      load = map['load'],
+      createdAt = map['createdAt'].runtimeType == String ? DateTime.parse(map['createdAt']) : map['createdAt'],
+      status = map['status'],
+      updatedAt = map['updatedAt'].runtimeType == String ? DateTime.parse(map['updatedAt']) : map['updatedAt'];
 }

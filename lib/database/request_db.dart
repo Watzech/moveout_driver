@@ -93,7 +93,7 @@ class RequestDb{
     }
   }
 
-  static Future<List<Map<String, dynamic>>?> getFilteredInfo(String state, String search, bool ascending, ObjectId id, int limit, int offset) async {
+  static Future<List<Map<String, dynamic>>?> getFilteredInfo(String state, String search, bool ascending, String cnh, int limit, int offset) async {
     try {
       await RequestDb.connect();
       final request = await requestCollection?.find(
@@ -104,10 +104,11 @@ class RequestDb{
             where.match("destination.address", search)
           )
         ).and(
+          where.nin("interesteds", [cnh])
+        ).and(
           where.eq("status", "EA")
         ).sortBy("price.finalPrice", descending: ascending ).skip(offset).limit(limit)
       ).toList();
-      print(request);
       return request;
     } catch (e) {
       print(e);

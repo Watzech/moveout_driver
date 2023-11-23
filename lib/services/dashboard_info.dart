@@ -25,7 +25,7 @@ Future<double> getIncome(bool monthly) async {
   List<ObjectId> requestIds = [];
 
   for(var transport in transportList){
-    requestIds.add(transport?["request"]);
+    requestIds.add(ObjectId.parse(transport["request"]));
   }
 
   income = await getRequestsIncome(requestIds);

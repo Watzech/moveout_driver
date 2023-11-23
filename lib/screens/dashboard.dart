@@ -29,6 +29,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   var subscriptionInfo;
+  int _finishedTransports = 0;
   double _rating = 0;
   double _monthlyIncome = 0;
   double _totalIncome = 0;
@@ -63,23 +64,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
       var subscribe = await getCurrentSubscription();
       var monthlyIncomeValue = await getIncome(true);
       var totalIncomeValue = await getIncome(false);
+      int finishedTransports = 0;
 
       List<Request> req = [];
 
       for (var element in requestsByUser) {
-        req.add(Request(
-            id: ObjectId.parse(element['_id']),
-            cpfClient: element['cpfClient'],
-            price: element['price'],
-            origin: element['origin'],
-            destination: element['destination'],
-            distance: element['distance'],
-            date: element['date'],
-            helpers: element['helpers'],
-            load: element['load'],
-            createdAt: DateTime.parse(element['createdAt']),
-            updatedAt: DateTime.parse(element['updatedAt']),
-            status: element['status']));
+        if(element["request"] != null){
+          dynamic requestItem = await getRequest(ObjectId.parse(element["request"]));
+          req.add(Request.fromMap(requestItem));
+          if(requestItem["status"] == "CO"){
+            finishedTransports += 1;
+          }
+        }
       }
 
       setState(() {
@@ -88,7 +84,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _monthlyIncome = monthlyIncomeValue;
         _totalIncome = totalIncomeValue;
         _transports = req;
+        _finishedTransports = finishedTransports;
       });
+
     });
   }
 
@@ -272,7 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   DriverSummaryElement(
                                       title: 'Transportes Feitos',
                                       titleSize: summaryTitleSize,
-                                      content: _transports.length.toString(),
+                                      content: _finishedTransports.toString(),
                                       contentSize: summaryContentSize),
                                 ],
                               ),

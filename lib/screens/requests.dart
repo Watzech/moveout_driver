@@ -439,7 +439,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
         isLoading = true;
       });
 
-      var requestsByUser = await getRequests("SP", "Zebedeu", true, 20, 0);
+      var requestsByUser = await getRequests("SP", "", true, 20, 0);
 
       List<Request> req = [];
 

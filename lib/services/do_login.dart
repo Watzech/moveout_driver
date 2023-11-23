@@ -2,6 +2,7 @@ import 'package:moveout1/classes/driver.dart';
 import 'package:moveout1/classes/vehicle.dart';
 import 'package:moveout1/database/driver_db.dart';
 import 'package:moveout1/database/vehicle_db.dart';
+import 'package:moveout1/services/device_info.dart';
 
 Future<bool> doSignup(Driver driver, Vehicle vehicle) async {
 
@@ -20,6 +21,8 @@ Future<bool> doSignup(Driver driver, Vehicle vehicle) async {
     bool plateExists = plateExistList != null && plateExistList.isNotEmpty;
 
     if(!cpfExists && !emailExists && !cnhExists && !plateExists){
+      String? token = await getNotificationToken();
+      driver.token = [token];
       await VehicleDb.insert(vehicle);
       await DriverDb.insert(driver);
       return true;
@@ -50,6 +53,13 @@ Future<dynamic> doLogin(String email, String password) async {
 
           result["userData"] = element;
           result["done"] = true;
+
+          Driver driver = Driver.fromMap(element);
+          String? token = await getNotificationToken();
+          driver.token ??= [];
+          driver.token?.add(token);
+
+          await DriverDb.update(driver);
         }
       });
 
