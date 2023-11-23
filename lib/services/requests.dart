@@ -3,11 +3,10 @@ import 'package:moveout1/classes/request.dart';
 import 'package:moveout1/database/request_db.dart';
 import 'package:moveout1/services/device_info.dart';
 
-Future<List<Map<String, dynamic>>?> getRequests(String state, String search, bool ascending, int limit, int offset) async {
+Future<List<dynamic>?> getRequests(String state, String search, bool ascending, int limit, int offset) async {
 
   dynamic user = await getUserInfo();
-  List<Map<String, dynamic>>? requestList = await saveTempRequest(state, search, ascending, ObjectId.parse(user["_id"]), limit, offset);
-
+  List<dynamic>? requestList = await saveTempRequest(state, search, ascending, ObjectId.parse(user["_id"]), limit, offset);
   return requestList;
 
 }

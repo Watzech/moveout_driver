@@ -8,7 +8,7 @@ class Request {
   dynamic destination;
   dynamic distance;
   bool helpers;
-  List<String> interesteds = [];
+  List<dynamic> interesteds = [];
   List<dynamic> date = [];
   Map<dynamic, dynamic> load;
   final DateTime createdAt;
@@ -59,7 +59,7 @@ class Request {
         interesteds = map['interesteds'],
         date = map['date'],
         load = map['load'],
-        createdAt = map['createdAt'],
+        createdAt = DateTime.parse(map['createdAt']),
         status = map['status'],
-        updatedAt = map['updatedAt'];
+        updatedAt = DateTime.parse(map['updatedAt']);
 }

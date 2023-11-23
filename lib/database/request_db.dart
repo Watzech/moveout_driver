@@ -97,16 +97,17 @@ class RequestDb{
     try {
       await RequestDb.connect();
       final request = await requestCollection?.find(
-        where.match("location.origin.address", state).and(
+        where.match("origin.address", state).and(
           (
-            where.match("location.origin.address", search)
+            where.match("origin.address", search)
           ).or(
-            where.match("location.destination.address", search)
+            where.match("destination.address", search)
           )
         ).and(
-          where.nin("interesteds", [id.toString()])
-        ).sortBy("price.finalPrice", descending: !ascending ).skip(offset).limit(limit)
+          where.eq("status", "EA")
+        ).sortBy("price.finalPrice", descending: ascending ).skip(offset).limit(limit)
       ).toList();
+      print(request);
       return request;
     } catch (e) {
       print(e);
